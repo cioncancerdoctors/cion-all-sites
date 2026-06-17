@@ -35,7 +35,7 @@ jobs:
             echo "matrix={\"doctor\":$CHANGED}" >> $GITHUB_OUTPUT
           fi
 
-  # ── Step 2: Deploy each changed doctor folder via FTPS ────────────────────
+  # ── Step 2: Deploy each changed doctor folder via SFTP (SSH key auth) ────
   deploy:
     needs: detect-changes
     if: needs.detect-changes.outputs.has_changes == 'true'
@@ -51,20 +51,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Resolve FTP path for ${{ matrix.doctor }}
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Pre-accept Hostinger's host key (port 65002)
+          ssh-keyscan -p 65002 -H 145.79.58.156 >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Resolve server path for ${{ matrix.doctor }}
         id: resolve
         run: |
-          # Paths are relative to FTP root (/home/u885652959/)
+          # Full absolute paths on the server
           case "${{ matrix.doctor }}" in
-            dr-imad)         SERVER_DIR="/domains/cioncancerdrimad.com/public_html/" ;;
-            dr-vinay)        SERVER_DIR="/domains/cioncancerdrvinay.com/public_html/" ;;
-            dr-murali)       SERVER_DIR="/domains/cioncancerdrmurali.com/public_html/" ;;
-            dr-sandeep)      SERVER_DIR="/domains/cioncancerdrsandeep.com/public_html/" ;;
-            dr-kiranmayee)   SERVER_DIR="/domains/cioncancerdrkiranmayee.com/public_html/" ;;
-            dr-basudev)      SERVER_DIR="/domains/cioncancerdrbasudev.com/public_html/" ;;
-            dr-raghvendra)   SERVER_DIR="/domains/cioncancerdrraghvendra.com/public_html/" ;;
-            dr-craghavendra) SERVER_DIR="/domains/cioncancerdrcraghavendra.info/public_html/" ;;
-            dr-owais)        SERVER_DIR="/domains/cioncancerdrowais.com/public_html/" ;;
+            dr-imad)         SERVER_DIR="/home/u885652959/domains/cioncancerdrimad.com/public_html/" ;;
+            dr-vinay)        SERVER_DIR="/home/u885652959/domains/cioncancerdrvinay.com/public_html/" ;;
+            dr-murali)       SERVER_DIR="/home/u885652959/domains/cioncancerdrmurali.com/public_html/" ;;
+            dr-sandeep)      SERVER_DIR="/home/u885652959/domains/cioncancerdrsandeep.com/public_html/" ;;
+            dr-kiranmayee)   SERVER_DIR="/home/u885652959/domains/cioncancerdrkiranmayee.com/public_html/" ;;
+            dr-basudev)      SERVER_DIR="/home/u885652959/domains/cioncancerdrbasudev.com/public_html/" ;;
+            dr-raghvendra)   SERVER_DIR="/home/u885652959/domains/cioncancerdrraghvendra.com/public_html/" ;;
+            dr-craghavendra) SERVER_DIR="/home/u885652959/domains/cioncancerdrcraghavendra.info/public_html/" ;;
+            dr-owais)        SERVER_DIR="/home/u885652959/domains/cioncancerdrowais.com/public_html/" ;;
             *)
               echo "ERROR: Unknown doctor '${{ matrix.doctor }}'"
               exit 1
@@ -73,23 +84,15 @@ jobs:
           echo "server_dir=$SERVER_DIR" >> $GITHUB_OUTPUT
           echo "Deploying ${{ matrix.doctor }} → $SERVER_DIR"
 
-      - name: Deploy via FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: 145.79.58.156
-          port: 21
-          protocol: ftps
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          local-dir: "./${{ matrix.doctor }}/"
-          server-dir: ${{ steps.resolve.outputs.server_dir }}
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/leads.log
-            **/errors.log
-            **/*.log
+      - name: Deploy via SFTP (SSH key)
+        run: |
+          lftp -c "
+            set sftp:connect-program 'ssh -a -x -i $HOME/.ssh/deploy_key -p 65002 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null';
+            open sftp://${{ secrets.SFTP_USER }}@145.79.58.156;
+            mirror -R --verbose --ignore-time --exclude-glob=*.log --exclude-glob=leads.log --exclude-glob=errors.log --exclude-glob=.git* \
+              ./${{ matrix.doctor }}/ ${{ steps.resolve.outputs.server_dir }};
+            bye
+          "
 
       - name: Smoke-test deployment
         run: |
