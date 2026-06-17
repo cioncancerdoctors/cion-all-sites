@@ -1,0 +1,106 @@
+name: Deploy CION Doctor Sites
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # ── Step 1: Detect which dr-* folders changed ─────────────────────────────
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      has_changes: ${{ steps.set-matrix.outputs.has_changes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Find changed doctor folders
+        id: set-matrix
+        run: |
+          # Get list of changed dr-* folders
+          CHANGED=$(git diff --name-only HEAD~1 HEAD \
+            | grep '^dr-' \
+            | cut -d/ -f1 \
+            | sort -u \
+            | jq -R . | jq -sc .)
+
+          echo "Changed folders: $CHANGED"
+
+          if [ "$CHANGED" = "[]" ] || [ -z "$CHANGED" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "matrix={\"doctor\":[]}" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "matrix={\"doctor\":$CHANGED}" >> $GITHUB_OUTPUT
+          fi
+
+  # ── Step 2: Deploy each changed doctor folder via SFTP ────────────────────
+  deploy:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+      fail-fast: false   # one doctor failing should not block others
+
+    # Prevent two deploys for the same doctor running simultaneously
+    concurrency:
+      group: deploy-${{ matrix.doctor }}
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve server path for ${{ matrix.doctor }}
+        id: resolve
+        run: |
+          case "${{ matrix.doctor }}" in
+            dr-imad)         SERVER_PATH="/home/u885652959/domains/cioncancerdrimad.com/public_html" ;;
+            dr-vinay)        SERVER_PATH="/home/u885652959/domains/cioncancerdrvinay.com/public_html" ;;
+            dr-murali)       SERVER_PATH="/home/u885652959/domains/cioncancerdrmurali.com/public_html" ;;
+            dr-sandeep)      SERVER_PATH="/home/u885652959/domains/cioncancerdrsandeep.com/public_html" ;;
+            dr-kiranmayee)   SERVER_PATH="/home/u885652959/domains/cioncancerdrkiranmayee.com/public_html" ;;
+            dr-basudev)      SERVER_PATH="/home/u885652959/domains/cioncancerdrbasudev.com/public_html" ;;
+            dr-raghvendra)   SERVER_PATH="/home/u885652959/domains/cioncancerdrraghvendra.com/public_html" ;;
+            dr-craghavendra) SERVER_PATH="/home/u885652959/domains/cioncancerdrcraghavendra.info/public_html" ;;
+            dr-owais)        SERVER_PATH="/home/u885652959/domains/cioncancerdrowais.com/public_html" ;;
+            *)
+              echo "ERROR: Unknown doctor folder '${{ matrix.doctor }}' — no deploy path mapped"
+              exit 1
+              ;;
+          esac
+          echo "server_path=$SERVER_PATH" >> $GITHUB_OUTPUT
+          echo "Deploying ${{ matrix.doctor }} → $SERVER_PATH"
+
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
+      - name: Deploy via SFTP
+        env:
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASS: ${{ secrets.SFTP_PASS }}
+        run: |
+          # mirror --reverse: local → remote (upload only, never deletes remote files)
+          # --no-perms: don't try to set permissions (shared hosting restriction)
+          # --parallel=4: upload up to 4 files simultaneously
+          lftp -u "$SFTP_USER,$SFTP_PASS" "sftp://145.79.58.156:65002" <<'LFTP_SCRIPT'
+            set sftp:auto-confirm yes
+            set net:timeout 30
+            set net:max-retries 3
+            mirror --reverse --no-perms --parallel=4 --verbose \
+              "./${{ matrix.doctor }}/" \
+              "${{ steps.resolve.outputs.server_path }}/"
+            quit
+          LFTP_SCRIPT
+
+      - name: Verify deployment
+        run: |
+          # Check that the doctor's domain is responding (basic smoke test)
+          DOMAIN=$(echo "${{ steps.resolve.outputs.server_path }}" | grep -oP '(?<=domains/).*(?=/public_html)')
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "https://$DOMAIN/" || echo "000")
+          echo "Domain $DOMAIN returned HTTP $HTTP_CODE"
+          if [ "$HTTP_CODE" = "000" ]; then
+            echo "WARNING: Could not reach $DOMAIN — check if site is up"
+          fi

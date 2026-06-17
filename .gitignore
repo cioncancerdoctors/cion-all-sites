@@ -1,0 +1,26 @@
+# ── Credentials & private config (NEVER commit) ──
+cion-config.php
+.env
+*.env
+*.key
+*.pem
+
+# ── Lead logs (contain patient data — NEVER commit) ──
+leads.log
+errors.log
+*.log
+
+# ── Hostinger zips / temp download files ──
+*.zip
+site-baseline/
+
+# ── Windows / editor cruft ──
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+*.swp
+*~
+
+# ── Node (if tooling added later) ──
+node_modules/
