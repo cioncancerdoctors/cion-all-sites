@@ -51,9 +51,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install lftp
-        run: sudo apt-get install -y lftp
-
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
@@ -84,15 +81,16 @@ jobs:
           echo "server_dir=$SERVER_DIR" >> $GITHUB_OUTPUT
           echo "Deploying ${{ matrix.doctor }} → $SERVER_DIR"
 
-      - name: Deploy via SFTP (SSH key)
+      - name: Deploy via rsync over SSH
         run: |
-          lftp -c "
-            set sftp:connect-program 'ssh -a -x -i $HOME/.ssh/deploy_key -p 65002 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes';
-            open sftp://${{ secrets.SFTP_USER }}@145.79.58.156;
-            mirror -R --verbose --ignore-time --exclude-glob=*.log --exclude-glob=leads.log --exclude-glob=errors.log --exclude-glob=.git* \
-              ./${{ matrix.doctor }}/ ${{ steps.resolve.outputs.server_dir }};
-            bye
-          "
+          rsync -avz \
+            --exclude='*.log' \
+            --exclude='leads.log' \
+            --exclude='errors.log' \
+            --exclude='.git*' \
+            -e "ssh -p 65002 -i $HOME/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            "./${{ matrix.doctor }}/" \
+            "${{ secrets.SFTP_USER }}@145.79.58.156:${{ steps.resolve.outputs.server_dir }}"
 
       - name: Smoke-test deployment
         run: |
