@@ -87,7 +87,7 @@ jobs:
       - name: Deploy via SFTP (SSH key)
         run: |
           lftp -c "
-            set sftp:connect-program 'ssh -a -x -i $HOME/.ssh/deploy_key -p 65002 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null';
+            set sftp:connect-program 'ssh -a -x -i $HOME/.ssh/deploy_key -p 65002 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes';
             open sftp://${{ secrets.SFTP_USER }}@145.79.58.156;
             mirror -R --verbose --ignore-time --exclude-glob=*.log --exclude-glob=leads.log --exclude-glob=errors.log --exclude-glob=.git* \
               ./${{ matrix.doctor }}/ ${{ steps.resolve.outputs.server_dir }};
