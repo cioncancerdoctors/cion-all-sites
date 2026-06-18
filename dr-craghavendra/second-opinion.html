@@ -414,7 +414,7 @@ try{var s=localStorage.getItem('cion_lang');if(s)setLang(s)}catch(e){}
     try{
       var res=await fetch('/api/submit.php',{method:'POST',body:new FormData(form)});
       var data=await res.json();
-      if(data&&data.ok){
+      if(data&&data.success){
         form.style.display='none';
         document.getElementById('cion-form-success').classList.add('active');
       } else { throw new Error((data&&data.error)||'submit_failed'); }
