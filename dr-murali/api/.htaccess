@@ -1,0 +1,5 @@
+# Block public access to lead logs (PII) and prevent directory listing.
+<FilesMatch "\.(log)$">
+    Require all denied
+</FilesMatch>
+Options -Indexes

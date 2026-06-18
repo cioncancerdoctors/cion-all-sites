@@ -36,9 +36,9 @@ $phone   = preg_replace('/\D/', '', $_POST['phone'] ?? '');
 $city    = trim($_POST['city']    ?? '');
 $concern = trim($_POST['concern'] ?? '');
 
-// Normalize Indian mobile
-if (strlen($phone) === 12 && str_starts_with($phone, '91')) $phone = substr($phone, 2);
-if (strlen($phone) === 11 && str_starts_with($phone, '0'))  $phone = substr($phone, 1);
+// Normalize Indian mobile (substr instead of str_starts_with for PHP 7 safety)
+if (strlen($phone) === 12 && substr($phone, 0, 2) === '91') $phone = substr($phone, 2);
+if (strlen($phone) === 11 && substr($phone, 0, 1) === '0')  $phone = substr($phone, 1);
 
 // Validate
 if (!$name || strlen($phone) !== 10 || !preg_match('/^[6-9]/', $phone)) {
@@ -121,6 +121,10 @@ if (!$ok) {
         date('[Y-m-d H:i:s] ') . "HubSpot failed | $source | $path | phone=$phone" . PHP_EOL,
         FILE_APPEND | LOCK_EX
     );
+    // Report the real failure so the form shows the error + WhatsApp fallback
+    http_response_code(502);
+    echo json_encode(['success' => false, 'error' => 'Could not save your details. Please call or WhatsApp +91 90634 90160.']);
+    exit;
 }
 
 echo json_encode(['success' => true, 'event_id' => $eventId]);
