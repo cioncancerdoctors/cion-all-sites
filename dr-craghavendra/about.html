@@ -373,10 +373,11 @@ try{var s=localStorage.getItem('cion_lang');if(s)setLang(s)}catch(e){}
     form.submit_timestamp.value=Date.now();
     try{
       var res=await fetch('/api/submit.php',{method:'POST',body:new FormData(form)});
-      var data=await res.json();
-      if(data&&data.success){
+      var text=await res.text();
+      var data=null; try{ data=text?JSON.parse(text):null; }catch(_){}
+      if(res.ok && data && data.success){
         form.style.display='none';
-        document.getElementById('cion-form-success').classList.add('active');
+        var okBox=document.getElementById('cion-form-success'); if(okBox) okBox.classList.add('active');
       } else { throw new Error((data&&data.error)||'submit_failed'); }
     }catch(err){
       btn.disabled=false; btn.textContent=label;
