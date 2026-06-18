@@ -89,6 +89,24 @@ if ($contactId) {
     $contactId = $create['data']['id'] ?? null;
 }
 
+// TEMP DIAGNOSTIC — remove after debugging. Gated by ?diag=cionx9.
+if (($_GET['diag'] ?? '') === 'cionx9') {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'php_version'  => PHP_VERSION,
+        'content_type' => $_SERVER['CONTENT_TYPE'] ?? '',
+        'post_keys'    => array_keys($_POST),
+        'phone'        => $phone,
+        'name'         => $name,
+        'props'        => $props,
+        'search_code'  => $search['code'] ?? null,
+        'create_code'  => $create['code'] ?? null,
+        'create_data'  => $create['data'] ?? null,
+        'contactId'    => $contactId,
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // ── 3. Attach note with full context ──
 if ($contactId) {
     $note = implode("\n", array_filter([
