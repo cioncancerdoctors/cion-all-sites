@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Hind+Madurai:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=Noto+Sans+Telugu:wght@300;400;500&display=swap" rel="stylesheet">
 
 <script type="application/ld+json">
 {
@@ -46,20 +46,20 @@
 <style>
 /* ── TOKENS ── */
 :root {
-  --ink:      #1C1410;
-  --ink2:     #4A3728;
-  --dust:     #F7F3EE;
-  --cream:    #FBF8F3;
-  --warm:     #EFE8DC;
-  --border:   #D9CFC2;
-  --tc:       #B5390A;
-  --tc-soft:  #F5EAE4;
-  --sage:     #4A6741;
-  --sage-soft:#EBF1E8;
-  --gold:     #9C7A3C;
+  --ink:      #0F2635;
+  --ink2:     #2A4558;
+  --dust:     #EEF3F4;
+  --cream:    #F5F9FA;
+  --warm:     #E5EFF0;
+  --border:   #C5D4D8;
+  --tc:       #0E7C86;
+  --tc-soft:  #E3F4F6;
+  --sage:     #1B6B54;
+  --sage-soft:#E0F0EA;
+  --gold:     #C4942A;
   --white:    #FFFFFF;
-  --serif:    'Cormorant', Georgia, serif;
-  --sans:     'Hind Madurai', sans-serif;
+  --serif:    'DM Serif Display', 'Noto Sans Telugu', Georgia, serif;
+  --sans:     'DM Sans', 'Noto Sans Telugu', sans-serif;
   --ease:     cubic-bezier(.4,0,.2,1);
 }
 
@@ -96,38 +96,40 @@ a { color: inherit; text-decoration: none; }
 .nav-wa { background: #25D366; color: #fff; font-family: var(--sans); font-size: 12px; font-weight: 500; padding: 13px 16px; border-radius: 40px; text-align: center; display: block; }
 .nav-call { background: rgba(255,255,255,0.1); color: #fff; font-family: var(--sans); font-size: 12px; font-weight: 500; padding: 13px 16px; border-radius: 40px; text-align: center; display: block; border: 1px solid rgba(255,255,255,0.2); }
 
-/* ── HERO ── */
-.hero { padding-top: 58px; min-height: 100svh; height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; position: relative; overflow: hidden; background: #1a1210; }
-.hero-bg { position: absolute; inset: 0; background: #1a1210; }
+/* ── HERO (light, academic, portrait frame) ── */
+.hero { padding: 78px 20px 44px; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; background: var(--cream); }
+.hero-bg { display: none; }
 .hero-texture { display: none; }
-.hero-photo-wrap { position: absolute; inset: 0; overflow: hidden; }
-.hero-photo-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(20,14,10,0.92) 0%, rgba(20,14,10,0.75) 35%, rgba(20,14,10,0.30) 58%, rgba(20,14,10,0.05) 78%, transparent 100%); }
-.hero-photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 8%; filter: brightness(0.92) contrast(1.05); }
-.hero-content { position: relative; z-index: 2; padding: 0 22px 44px; }
-.hero-kicker { font-family: var(--sans); font-size: 10px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-.hero-kicker::before { content: ''; width: 24px; height: 1px; background: rgba(255,255,255,0.4); display: inline-block; }
-.hero-name { font-family: var(--serif); font-size: clamp(44px, 12vw, 72px); font-weight: 300; line-height: 1.0; color: #ffffff; letter-spacing: -0.01em; margin-bottom: 16px; }
-.hero-name em { font-style: italic; color: rgba(255,210,180,0.95); }
+.hero-photo-wrap { width: 100%; max-width: 240px; margin: 0 auto 26px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; aspect-ratio: 3/4; box-shadow: 0 16px 40px rgba(15,38,53,0.12); position: relative; }
+.hero-photo-wrap::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 4px; background: var(--tc); }
+.hero-photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.hero-content { position: relative; z-index: 2; text-align: center; }
+.hero-kicker { font-family: var(--sans); font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tc); margin-bottom: 14px; line-height: 1.6; }
+.hero-name { font-family: var(--serif); font-size: clamp(38px, 11vw, 60px); font-weight: 400; line-height: 1.02; color: var(--ink); letter-spacing: -0.01em; margin-bottom: 12px; }
+.hero-name em { font-style: italic; color: var(--tc); }
 .te-content { display: block; }
 .en-content { display: none; }
 html[lang="en"] .te-content { display: none; }
 html[lang="en"] .en-content { display: block; }
-.hero-tagline { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.75; max-width: 320px; margin-bottom: 28px; }
-.hero-tagline .highlight { font-style: italic; font-family: var(--serif); font-size: 19px; color: rgba(255,255,255,0.95); display: block; margin-bottom: 6px; line-height: 1.45; }
-.hero-wa-pill { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.95); color: var(--ink); border-radius: 40px; padding: 13px 24px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; transition: background 0.2s; backdrop-filter: blur(8px); }
+.gold-callout { display: flex; gap: 8px; justify-content: center; margin: 0 0 18px; }
+.gold-badge-lg { background: var(--gold); color: #fff; font-size: 9px; font-weight: 600; letter-spacing: 0.09em; padding: 5px 11px; border-radius: 3px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px; }
+.hero-tagline { font-size: 14px; color: var(--ink2); line-height: 1.75; max-width: 360px; margin: 0 auto 26px; }
+.hero-tagline .highlight { font-style: italic; font-family: var(--serif); font-weight: 400; font-size: 21px; color: var(--ink); display: block; margin-bottom: 10px; line-height: 1.4; }
+.hero-wa-pill { display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: #fff; border-radius: 40px; padding: 14px 26px; font-size: 13px; font-weight: 500; letter-spacing: 0.02em; transition: background 0.2s; }
 .hero-wa-pill svg { width: 18px; height: 18px; fill: #25D366; flex-shrink: 0; }
-.hero-wa-pill:hover { background: #fff; }
-.hero-scroll { position: absolute; bottom: 36px; right: 20px; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.hero-scroll span { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink2); writing-mode: vertical-rl; }
-.scroll-line { width: 1px; height: 48px; background: linear-gradient(to bottom, var(--border), transparent); }
+.hero-wa-pill:hover { background: #163a4f; }
+.hero-scroll { display: none; }
+.scroll-line { display: none; }
 
-/* ── TRUST ROW ── */
-.trust-row { background: var(--ink); display: flex; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
-.trust-row::-webkit-scrollbar { display: none; }
-.trust-item { flex-shrink: 0; padding: 16px 20px; border-right: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; }
-.trust-icon { font-size: 18px; flex-shrink: 0; }
-.trust-label { font-size: 10px; color: rgba(255,255,255,0.5); line-height: 1.4; letter-spacing: 0.04em; white-space: nowrap; }
-.trust-label strong { display: block; color: rgba(255,255,255,0.9); font-size: 12px; font-weight: 500; }
+/* ── CREDENTIALS BAR (replaces trust row) ── */
+.cred-bar { background: var(--ink); }
+.cred-bar-item { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding: 13px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.cred-bar-item:last-child { border-bottom: none; }
+.cred-year { font-family: var(--serif); font-size: 15px; color: rgba(255,255,255,0.38); }
+.cred-degree { font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; line-height: 1.35; }
+.cred-degree small { display: block; font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 400; letter-spacing: 0.02em; }
+.cred-gold-tag { font-size: 8px; background: var(--gold); color: #fff; padding: 3px 7px; border-radius: 2px; font-weight: 600; letter-spacing: 0.08em; white-space: nowrap; }
+.cred-bar-foot { background: var(--tc); color: #fff; text-align: center; padding: 9px 20px; font-size: 11px; font-weight: 500; letter-spacing: 0.04em; }
 
 /* ── SECTION BASE ── */
 .section { padding: 52px 20px; }
@@ -153,10 +155,11 @@ html[lang="en"] .en-content { display: block; }
 .body-text p { margin-bottom: 16px; }
 .body-text p:last-child { margin-bottom: 0; }
 
-/* ── DOCTOR NOTE ── */
-.doctor-note { background: var(--tc-soft); border-left: 3px solid var(--tc); padding: 20px 18px; margin: 24px 0; border-radius: 0 8px 8px 0; }
-.doctor-note p { font-family: var(--serif); font-size: 18px; font-weight: 300; font-style: italic; color: var(--ink); line-height: 1.65; margin-bottom: 10px; }
-.doctor-note cite { font-family: var(--sans); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tc); font-style: normal; }
+/* ── DOCTOR PULLQUOTE (academic) ── */
+.doctor-note { border-top: 2px solid var(--tc); border-bottom: 1px solid var(--border); padding: 22px 0; margin: 24px 0; position: relative; }
+.doctor-note::before { content: '\201C'; font-family: var(--serif); position: absolute; top: 6px; left: -2px; font-size: 56px; color: var(--tc); opacity: 0.16; line-height: 1; }
+.doctor-note p { font-family: var(--serif); font-size: 20px; font-weight: 400; font-style: italic; color: var(--ink); line-height: 1.5; margin-bottom: 12px; }
+.doctor-note cite { font-family: var(--sans); font-size: 10px; font-weight: 500; letter-spacing: 0.11em; text-transform: uppercase; color: var(--tc); font-style: normal; }
 
 /* ── ICON CARDS ── */
 .icon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
@@ -167,18 +170,25 @@ html[lang="en"] .en-content { display: block; }
 .ic-desc { font-size: 11px; color: var(--ink2); line-height: 1.6; }
 .ic-arrow { font-size: 11px; color: var(--tc); margin-top: 10px; display: block; }
 
-/* ── DUAL CARDS (evidence-based section) ── */
-.dual-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 24px; }
-.dual-card { border-radius: 12px; padding: 20px 18px; border: 1px solid; }
-.dual-card.mol { background: #EBF1E8; border-color: #C5D9C0; }
-.dual-card.trial { background: #E8EEF5; border-color: #BFD0E0; }
-.dual-card.second { background: var(--tc-soft); border-color: #E8C4B4; }
-.dual-card h4 { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
-.dual-card p { font-size: 12px; color: var(--ink2); line-height: 1.65; }
-.dual-badge { display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; margin-bottom: 10px; }
-.dual-badge.mol { background: var(--sage); color: #fff; }
-.dual-badge.trial { background: #3A6090; color: #fff; }
-.dual-badge.second { background: var(--tc); color: #fff; }
+/* ── CONDITION TABLE (bordered 2-col) ── */
+.condition-cols { display: grid; grid-template-columns: 1fr 1fr; margin-top: 22px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--white); }
+.cond-item { padding: 16px 16px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); display: flex; align-items: flex-start; gap: 11px; transition: background 0.2s; }
+.cond-item:nth-child(even) { border-right: none; }
+.cond-item:nth-last-child(1), .cond-item:nth-last-child(2) { border-bottom: none; }
+.cond-item:hover { background: var(--tc-soft); }
+.cond-icon { font-size: 19px; flex-shrink: 0; line-height: 1.2; }
+.cond-text h4 { font-size: 12.5px; font-weight: 500; color: var(--ink); margin-bottom: 2px; line-height: 1.25; }
+.cond-text p { font-size: 10.5px; color: var(--ink2); line-height: 1.5; }
+.cond-text .cond-flag { font-size: 8px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tc); display: block; margin-top: 3px; }
+
+/* ── EVIDENCE NUMBERED LIST ── */
+.evidence-list { margin-top: 26px; }
+.evidence-item { display: grid; grid-template-columns: 50px 1fr; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--border); }
+.evidence-item:first-child { border-top: 1px solid var(--border); }
+.ev-num { font-family: var(--serif); font-size: 38px; font-weight: 400; color: var(--tc); line-height: 0.9; opacity: 0.55; }
+.ev-body h4 { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+.ev-tag { display: inline-block; font-size: 8px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tc); background: var(--tc-soft); padding: 3px 8px; border-radius: 3px; margin-bottom: 8px; }
+.ev-body p { font-size: 13px; color: var(--ink2); line-height: 1.75; }
 
 /* ── ADVANCED CASES (dark) ── */
 .pt-item { display: flex; gap: 16px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
@@ -219,15 +229,15 @@ html[lang="en"] .en-content { display: block; }
 .mc-wa { background: #25D366; color: #fff; border-radius: 40px; padding: 13px 16px; text-align: center; font-size: 12px; font-weight: 500; display: block; }
 .mc-call { background: rgba(255,255,255,0.08); color: #fff; border-radius: 40px; padding: 13px 16px; text-align: center; font-size: 12px; font-weight: 500; display: block; border: 1px solid rgba(255,255,255,0.15); }
 
-/* ── FAQ ── */
+/* ── FAQ (academic) ── */
 .faq-list { margin-top: 20px; }
-.faq { border-bottom: 1px solid var(--border); }
-.faq:last-child { border-bottom: none; }
-.faq summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; padding: 18px 0; font-size: 14px; font-weight: 500; color: var(--ink); list-style: none; }
+.faq { border-left: 2px solid var(--border); margin-bottom: 10px; padding-left: 16px; transition: border-color 0.2s; }
+.faq[open] { border-left-color: var(--tc); }
+.faq summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; padding: 14px 0; font-size: 14px; font-weight: 500; color: var(--ink); list-style: none; }
 .faq summary::-webkit-details-marker { display: none; }
-.faq summary::after { content: '+'; font-size: 20px; font-weight: 300; color: var(--tc); flex-shrink: 0; transition: transform 0.2s; }
+.faq summary::after { content: '+'; font-size: 20px; font-weight: 400; color: var(--tc); flex-shrink: 0; transition: transform 0.2s; }
 .faq[open] summary::after { transform: rotate(45deg); }
-.faq-ans { font-size: 13px; color: var(--ink2); line-height: 1.8; padding-bottom: 18px; }
+.faq-ans { font-size: 13px; color: var(--ink2); line-height: 1.8; padding-bottom: 16px; }
 
 /* ── STICKY BAR ── */
 .sticky-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); background: rgba(251,248,243,0.96); backdrop-filter: blur(8px); }
@@ -238,7 +248,7 @@ html[lang="en"] .en-content { display: block; }
 .divider { height: 1px; background: var(--border); }
 
 /* ── FOOTER ── */
-footer { background: #120E0B; padding: 36px 20px 96px; color: rgba(255,255,255,0.35); font-size: 11px; line-height: 1.8; }
+footer { background: #0A1B26; padding: 36px 20px 96px; color: rgba(255,255,255,0.35); font-size: 11px; line-height: 1.8; }
 .footer-name { font-family: var(--serif); font-size: 20px; font-weight: 300; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
 .footer-nav { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 16px 0; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); }
 .footer-nav a { color: rgba(255,255,255,0.35); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
@@ -254,26 +264,27 @@ footer { background: #120E0B; padding: 36px 20px 96px; color: rgba(255,255,255,0
 /* ── DESKTOP ── */
 @media (min-width: 768px) {
   .icon-grid { grid-template-columns: repeat(3, 1fr); }
-  .dual-grid { grid-template-columns: repeat(3, 1fr); }
   .network-grid { grid-template-columns: repeat(2, 1fr); }
   .sticky-bar { display: none; }
   .map-section { grid-template-columns: 1fr 1fr; }
   .map-frame { height: 100%; min-height: 340px; }
-  .hero { background: var(--dust); }
-  .hero-bg { background: var(--dust); }
-  .hero-texture { display: block; position: absolute; inset: 0; background-image: radial-gradient(circle at 70% 20%, rgba(181,57,10,0.06) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(74,103,65,0.05) 0%, transparent 50%); }
-  .hero-photo-wrap { position: absolute; right: 0; left: auto; top: 58px; bottom: 0; width: 45%; }
-  .hero-photo-wrap::after { background: linear-gradient(to right, var(--dust) 0%, transparent 40%), linear-gradient(to top, var(--dust) 0%, transparent 25%); }
-  .hero-photo-wrap img { object-position: center top; filter: sepia(8%) brightness(0.97); }
-  .hero-content { padding: 0 48px 52px; max-width: 58%; }
-  .hero-kicker { color: var(--tc); }
-  .hero-kicker::before { background: var(--tc); }
-  .hero-name { color: var(--ink); font-size: clamp(48px,6vw,72px); }
-  .hero-name em { color: var(--tc); }
-  .hero-tagline { color: var(--ink2); }
-  .hero-tagline .highlight { color: var(--ink); }
-  .hero-wa-pill { background: var(--ink); color: #fff; }
-  .hero-wa-pill:hover { background: #333; }
+  .evidence-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .evidence-item { display: block; border-top: 1px solid var(--border); padding: 22px 0 0; }
+  .evidence-item:first-child { border-top: 1px solid var(--border); }
+  .ev-num { display: block; margin-bottom: 12px; }
+  .condition-cols { grid-template-columns: repeat(3, 1fr); }
+  .cond-item:nth-child(even) { border-right: 1px solid var(--border); }
+  .cond-item:nth-child(3n) { border-right: none; }
+  .cond-item:nth-last-child(1), .cond-item:nth-last-child(2), .cond-item:nth-last-child(3) { border-bottom: none; }
+  .cred-bar-inner { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .cred-bar-item { border-bottom: none; border-right: 1px solid rgba(255,255,255,0.08); }
+  .cred-bar-item:last-child { border-right: none; }
+  .hero { display: grid; grid-template-columns: 1fr 320px; gap: 48px; align-items: center; padding: 88px 56px 60px; min-height: 100svh; text-align: left; }
+  .hero-content { text-align: left; order: 1; }
+  .hero-photo-wrap { order: 2; margin: 0; max-width: 320px; width: 320px; aspect-ratio: 3/4; align-self: center; }
+  .gold-callout { justify-content: flex-start; }
+  .hero-tagline { margin-left: 0; margin-right: 0; }
+  .hero-name { font-size: clamp(46px,5vw,64px); }
 }
 
 .nav-overlay { position: fixed; inset: 0; z-index: 998; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
@@ -337,8 +348,12 @@ footer { background: #120E0B; padding: 36px 20px 96px; color: rgba(255,255,255,0
   <div class="hero-content">
     <!-- TELUGU -->
     <div class="te-content">
-      <div class="hero-kicker">మెడికల్ ఆంకాలజిస్ట్ · హైదరాబాద్ · రెండు సార్లు గోల్డ్ మెడలిస్ట్</div>
+      <div class="hero-kicker">మెడికల్ ఆంకాలజిస్ట్ · హైదరాబాద్</div>
       <h1 class="hero-name">డా. సి.<br><em>రఘవేంద్ర</em></h1>
+      <div class="gold-callout">
+        <span class="gold-badge-lg">🥇 గోల్డ్ మెడల్ · 2013</span>
+        <span class="gold-badge-lg">🥇 గోల్డ్ మెడల్ · 2022</span>
+      </div>
       <div class="hero-tagline">
         <span class="highlight">"ఏ మందు అవసరమో అడగను — ఏ మందు పని చేస్తుందో అడుగుతాను."</span>
         CION క్యాన్సర్ క్లినిక్స్, అమీర్‌పేట్
@@ -350,8 +365,12 @@ footer { background: #120E0B; padding: 36px 20px 96px; color: rgba(255,255,255,0
     </div>
     <!-- ENGLISH -->
     <div class="en-content">
-      <div class="hero-kicker">Medical Oncologist · Hyderabad · Two-Time Gold Medallist</div>
+      <div class="hero-kicker">Medical Oncologist · Hyderabad</div>
       <h1 class="hero-name">Dr. C.<br><em>Raghavendra</em></h1>
+      <div class="gold-callout">
+        <span class="gold-badge-lg">🥇 Gold Medal · 2013</span>
+        <span class="gold-badge-lg">🥇 Gold Medal · 2022</span>
+      </div>
       <div class="hero-tagline">
         <span class="highlight">"I don't ask which drug is new. I ask which drug the evidence actually supports."</span>
         CION Cancer Clinics, Ameerpet
@@ -368,28 +387,26 @@ footer { background: #120E0B; padding: 36px 20px 96px; color: rgba(255,255,255,0
   </div>
 </section>
 
-<!-- TRUST ROW -->
-<div class="trust-row">
-  <div class="trust-item">
-    <div class="trust-icon">🥇</div>
-    <div class="trust-label"><strong>MBBS గోల్డ్ మెడలిస్ట్</strong>గవర్నమెంట్ మెడికల్ కాలేజ్, అనంతపురం</div>
+<!-- CREDENTIALS BAR -->
+<div class="cred-bar">
+  <div class="cred-bar-inner">
+    <div class="cred-bar-item">
+      <div class="cred-year">2013</div>
+      <div class="cred-degree">MBBS<small><span class="te-content">గవర్నమెంట్ మెడికల్ కాలేజ్, అనంతపురం</span><span class="en-content">Govt Medical College, Anantapur</span></small></div>
+      <div class="cred-gold-tag">🥇 GOLD</div>
+    </div>
+    <div class="cred-bar-item">
+      <div class="cred-year">2017</div>
+      <div class="cred-degree">DNB <span class="te-content">జనరల్ మెడిసిన్</span><span class="en-content">General Medicine</span><small><span class="te-content">నేషనల్ బోర్డ్, న్యూ ఢిల్లీ</span><span class="en-content">National Board, New Delhi</span></small></div>
+      <div></div>
+    </div>
+    <div class="cred-bar-item">
+      <div class="cred-year">2022</div>
+      <div class="cred-degree">DM <span class="te-content">మెడికల్ ఆంకాలజీ</span><span class="en-content">Medical Oncology</span><small><span class="te-content">మదురై మెడికల్ కాలేజ్</span><span class="en-content">Madurai Medical College</span></small></div>
+      <div class="cred-gold-tag">🥇 GOLD</div>
+    </div>
   </div>
-  <div class="trust-item">
-    <div class="trust-icon">🎓</div>
-    <div class="trust-label"><strong>DNB జనరల్ మెడిసిన్</strong>నేషనల్ బోర్డ్, న్యూ ఢిల్లీ</div>
-  </div>
-  <div class="trust-item">
-    <div class="trust-icon">🥇</div>
-    <div class="trust-label"><strong>DM ఆంకాలజీ గోల్డ్ మెడలిస్ట్</strong>మదురై మెడికల్ కాలేజ్</div>
-  </div>
-  <div class="trust-item">
-    <div class="trust-icon">🫁</div>
-    <div class="trust-label"><strong>లంగ్ క్యాన్సర్</strong>మాలిక్యులర్ ప్రొఫైలింగ్ స్పెషలిస్ట్</div>
-  </div>
-  <div class="trust-item">
-    <div class="trust-icon">🗣️</div>
-    <div class="trust-label"><strong>తెలుగు</strong>మాట్లాడతారు</div>
-  </div>
+  <div class="cred-bar-foot"><span class="te-content">లంగ్ క్యాన్సర్ స్పెషలిస్ట్ · మాలిక్యులర్ ప్రొఫైలింగ్ · తెలుగు మాట్లాడతారు</span><span class="en-content">Lung Cancer Specialist · Molecular Profiling · Speaks Telugu</span></div>
 </div>
 
 <!-- DOCTOR NOTE -->
@@ -442,21 +459,30 @@ footer { background: #120E0B; padding: 36px 20px 96px; color: rgba(255,255,255,0
     <p>Oncology produces new drugs constantly. Not every new drug works for every patient. The decision needs to match your tumour's molecular profile to the trial data — not to whoever presented last at ASCO. That is the discipline I try to hold to.</p>
   </div>
 
-  <div class="dual-grid">
-    <div class="dual-card mol">
-      <span class="dual-badge mol">మాలిక్యులర్ ప్రొఫైలింగ్</span>
-      <h4><span class="te-content">మొదట మ్యుటేషన్ పరీక్ష</span><span class="en-content">Molecular profiling first</span></h4>
-      <p><span class="te-content">లంగ్ క్యాన్సర్‌కు — EGFR, ALK, ROS1, PD-L1 పరీక్షలు చేయించుకున్న తర్వాతే చికిత్స నిర్ణయం. సరైన మ్యుటేషన్‌కు సరైన మందు ఇస్తే ఫలితం చాలా వేరుగా ఉంటుంది. ఇది అంచనాల ఆట కాదు.</span><span class="en-content">For lung cancer — test EGFR, ALK, ROS1, PD-L1 before deciding anything. The right targeted drug for the right mutation can be dramatically more effective than standard chemotherapy. This is not guesswork.</span></p>
+  <div class="evidence-list">
+    <div class="evidence-item">
+      <div class="ev-num">01</div>
+      <div class="ev-body">
+        <span class="ev-tag"><span class="te-content">మాలిక్యులర్ ప్రొఫైలింగ్</span><span class="en-content">Molecular profiling</span></span>
+        <h4><span class="te-content">మొదట మ్యుటేషన్ పరీక్ష</span><span class="en-content">Molecular profiling first</span></h4>
+        <p><span class="te-content">లంగ్ క్యాన్సర్‌కు — EGFR, ALK, ROS1, PD-L1 పరీక్షలు చేయించుకున్న తర్వాతే చికిత్స నిర్ణయం. సరైన మ్యుటేషన్‌కు సరైన మందు ఇస్తే ఫలితం చాలా వేరుగా ఉంటుంది. ఇది అంచనాల ఆట కాదు.</span><span class="en-content">For lung cancer — test EGFR, ALK, ROS1, PD-L1 before deciding anything. The right targeted drug for the right mutation can be dramatically more effective than standard chemotherapy. This is not guesswork.</span></p>
+      </div>
     </div>
-    <div class="dual-card trial">
-      <span class="dual-badge trial">ట్రయల్ డేటా</span>
-      <h4><span class="te-content">కాన్ఫరెన్స్ మాటలు కాదు</span><span class="en-content">Trial data, not trends</span></h4>
-      <p><span class="te-content">కొత్త మందులు మార్కెటింగ్‌తో లాంచ్ అవుతాయి. నేను Phase 3 ట్రయల్ డేటా మరియు overall survival సంఖ్యలు చూసిన తర్వాతే సూచిస్తాను. మీ చికిత్స నిర్ణయం survival డేటా ఆధారంగా ఉండాలి, conference buzz ఆధారంగా కాదు.</span><span class="en-content">New drugs get launched with marketing. I wait for the Phase 3 trial data and overall survival numbers before recommending. Your treatment decision should be based on survival data, not conference buzz.</span></p>
+    <div class="evidence-item">
+      <div class="ev-num">02</div>
+      <div class="ev-body">
+        <span class="ev-tag"><span class="te-content">ట్రయల్ డేటా</span><span class="en-content">Trial data</span></span>
+        <h4><span class="te-content">కాన్ఫరెన్స్ మాటలు కాదు</span><span class="en-content">Trial data, not trends</span></h4>
+        <p><span class="te-content">కొత్త మందులు మార్కెటింగ్‌తో లాంచ్ అవుతాయి. నేను Phase 3 ట్రయల్ డేటా మరియు overall survival సంఖ్యలు చూసిన తర్వాతే సూచిస్తాను. మీ చికిత్స నిర్ణయం survival డేటా ఆధారంగా ఉండాలి, conference buzz ఆధారంగా కాదు.</span><span class="en-content">New drugs get launched with marketing. I wait for the Phase 3 trial data and overall survival numbers before recommending. Your treatment decision should be based on survival data, not conference buzz.</span></p>
+      </div>
     </div>
-    <div class="dual-card second">
-      <span class="dual-badge second">సెకండ్ ఒపీనియన్</span>
-      <h4><span class="te-content">అడగడం మీ హక్కు</span><span class="en-content">Second opinion as a right</span></h4>
-      <p><span class="te-content">ఒక ప్లాన్ ఇచ్చారు, అది ఆధారాలతో అనిపించలేదా? రెండో అభిప్రాయం అడగడం అమ్యాదస్తత కాదు. అది మిమ్మల్ని మీరు రక్షించుకోవడం. నేను ఇది స్వాగతిస్తాను.</span><span class="en-content">If you've been given a plan and it doesn't feel evidence-based, a second opinion is not disloyalty. It's how you protect yourself. I welcome this — the answer I give either confirms or changes the plan, and either way you make a better decision.</span></p>
+    <div class="evidence-item">
+      <div class="ev-num">03</div>
+      <div class="ev-body">
+        <span class="ev-tag"><span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second opinion</span></span>
+        <h4><span class="te-content">అడగడం మీ హక్కు</span><span class="en-content">Second opinion as a right</span></h4>
+        <p><span class="te-content">ఒక ప్లాన్ ఇచ్చారు, అది ఆధారాలతో అనిపించలేదా? రెండో అభిప్రాయం అడగడం అమ్యాదస్తత కాదు. అది మిమ్మల్ని మీరు రక్షించుకోవడం. నేను ఇది స్వాగతిస్తాను.</span><span class="en-content">If you've been given a plan and it doesn't feel evidence-based, a second opinion is not disloyalty. It's how you protect yourself. I welcome this — the answer I give either confirms or changes the plan, and either way you make a better decision.</span></p>
+      </div>
     </div>
   </div>
 </section>
@@ -474,42 +500,49 @@ footer { background: #120E0B; padding: 36px 20px 96px; color: rgba(255,255,255,0
     <span class="en-content">My areas of <em>focus</em></span>
   </h2>
 
-  <div class="icon-grid">
-    <a href="lung-cancer.html" class="icon-card">
-      <div class="ic-icon">🫁</div>
-      <div class="ic-title"><span class="te-content">ఊపిరితిత్తుల క్యాన్సర్</span><span class="en-content">Lung Cancer</span></div>
-      <div class="ic-desc"><span class="te-content">ప్రత్యేక ఆసక్తి. మాలిక్యులర్ ప్రొఫైలింగ్, టార్గెటెడ్ థెరపీ, ఇమ్యునోథెరపీ, SBRT సమన్వయం.</span><span class="en-content">Special interest. Molecular profiling, targeted therapy, immunotherapy, SBRT coordination — treatment matched to your tumour's biology.</span></div>
-      <span class="ic-arrow">→</span>
+  <div class="condition-cols">
+    <a href="lung-cancer.html" class="cond-item">
+      <span class="cond-icon">🫁</span>
+      <div class="cond-text">
+        <h4><span class="te-content">ఊపిరితిత్తుల క్యాన్సర్</span><span class="en-content">Lung Cancer</span></h4>
+        <p><span class="te-content">మాలిక్యులర్ ప్రొఫైలింగ్, టార్గెటెడ్ థెరపీ, ఇమ్యునోథెరపీ.</span><span class="en-content">Molecular profiling, targeted therapy, immunotherapy.</span></p>
+        <span class="cond-flag"><span class="te-content">ప్రత్యేక ఆసక్తి</span><span class="en-content">Special interest</span></span>
+      </div>
     </a>
-    <a href="blood-cancers.html" class="icon-card">
-      <div class="ic-icon">🩸</div>
-      <div class="ic-title"><span class="te-content">రక్త క్యాన్సర్లు</span><span class="en-content">Blood Cancers</span></div>
-      <div class="ic-desc"><span class="te-content">లుకేమియా, లింఫోమా, మైలోమా — హీమేటో-ఆంకాలజీ నా DM శిక్షణలో భాగం.</span><span class="en-content">Leukaemia, lymphoma, myeloma — haemato-oncology is core to my DM training.</span></div>
-      <span class="ic-arrow">→</span>
+    <a href="blood-cancers.html" class="cond-item">
+      <span class="cond-icon">🩸</span>
+      <div class="cond-text">
+        <h4><span class="te-content">రక్త క్యాన్సర్లు</span><span class="en-content">Blood Cancers</span></h4>
+        <p><span class="te-content">లుకేమియా, లింఫోమా, మైలోమా — హీమేటో-ఆంకాలజీ.</span><span class="en-content">Leukaemia, lymphoma, myeloma — haemato-oncology.</span></p>
+      </div>
     </a>
-    <a href="breast-cancer.html" class="icon-card">
-      <div class="ic-icon">🎗️</div>
-      <div class="ic-title"><span class="te-content">బ్రెస్ట్ క్యాన్సర్</span><span class="en-content">Breast Cancer</span></div>
-      <div class="ic-desc"><span class="te-content">మెడికల్ ఆంకాలజీ వైపు — కీమో, టార్గెటెడ్ థెరపీ, హార్మోనల్ థెరపీ.</span><span class="en-content">Medical oncology side — chemo, targeted therapy, hormonal therapy based on receptor status.</span></div>
-      <span class="ic-arrow">→</span>
+    <a href="breast-cancer.html" class="cond-item">
+      <span class="cond-icon">🎗️</span>
+      <div class="cond-text">
+        <h4><span class="te-content">బ్రెస్ట్ క్యాన్సర్</span><span class="en-content">Breast Cancer</span></h4>
+        <p><span class="te-content">కీమో, టార్గెటెడ్ థెరపీ, హార్మోనల్ థెరపీ.</span><span class="en-content">Chemo, targeted therapy, hormonal therapy.</span></p>
+      </div>
     </a>
-    <a href="sarcoma.html" class="icon-card">
-      <div class="ic-icon">🦴</div>
-      <div class="ic-title"><span class="te-content">సార్కోమా</span><span class="en-content">Sarcoma</span></div>
-      <div class="ic-desc"><span class="te-content">ఎముక మరియు మృదు కణజాల సార్కోమా — అరుదైన కేసులు, మెడికల్ మేనేజ్‌మెంట్.</span><span class="en-content">Bone and soft tissue sarcoma — rare; I see these regularly. Medical management and coordination.</span></div>
-      <span class="ic-arrow">→</span>
+    <a href="sarcoma.html" class="cond-item">
+      <span class="cond-icon">🦴</span>
+      <div class="cond-text">
+        <h4><span class="te-content">సార్కోమా</span><span class="en-content">Sarcoma</span></h4>
+        <p><span class="te-content">ఎముక, మృదు కణజాల సార్కోమా — అరుదైన కేసులు.</span><span class="en-content">Bone and soft tissue sarcoma — rare cases.</span></p>
+      </div>
     </a>
-    <a href="gynaecological-cancers.html" class="icon-card">
-      <div class="ic-icon">🌸</div>
-      <div class="ic-title"><span class="te-content">స్త్రీ సంబంధిత క్యాన్సర్లు</span><span class="en-content">Gynaecological Cancers</span></div>
-      <div class="ic-desc"><span class="te-content">అండాశయ, గర్భాశయ క్యాన్సర్లు — సిస్టమిక్ చికిత్స.</span><span class="en-content">Ovarian, uterine cancers — systemic treatment planning.</span></div>
-      <span class="ic-arrow">→</span>
+    <a href="gynaecological-cancers.html" class="cond-item">
+      <span class="cond-icon">🌸</span>
+      <div class="cond-text">
+        <h4><span class="te-content">స్త్రీ సంబంధిత క్యాన్సర్లు</span><span class="en-content">Gynae Cancers</span></h4>
+        <p><span class="te-content">అండాశయ, గర్భాశయ క్యాన్సర్లు — సిస్టమిక్ చికిత్స.</span><span class="en-content">Ovarian, uterine — systemic treatment.</span></p>
+      </div>
     </a>
-    <a href="second-opinion.html" class="icon-card">
-      <div class="ic-icon">🔍</div>
-      <div class="ic-title"><span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second Opinion</span></div>
-      <div class="ic-desc"><span class="te-content">ఆధారాలు స్వతంత్రంగా సమీక్షించాలంటే — నేను ఇక్కడ ఉన్నాను.</span><span class="en-content">When you want the evidence reviewed independently before committing to a plan.</span></div>
-      <span class="ic-arrow">→</span>
+    <a href="second-opinion.html" class="cond-item">
+      <span class="cond-icon">🔍</span>
+      <div class="cond-text">
+        <h4><span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second Opinion</span></h4>
+        <p><span class="te-content">ఆధారాలు స్వతంత్రంగా సమీక్షించాలంటే.</span><span class="en-content">Independent review of the evidence.</span></p>
+      </div>
     </a>
   </div>
 </section>
