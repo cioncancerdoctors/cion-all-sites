@@ -17,13 +17,16 @@
 {
   "@context": "https://schema.org",
   "@type": "Physician",
-  "name": "Dr. Vinay",
-  "description": "Surgical Oncologist at CION Cancer Clinics, Hyderabad. Specialises in breast cancer surgery (lumpectomy, mastectomy, oncoplastic surgery), sentinel node biopsy, and cervical cancer surgery. Focuses on breast conservation when oncologically safe.",
+  "name": "Dr. Vinay Mamidala",
+  "alternateName": "Dr. Vinay",
+  "description": "Surgical Oncologist at CION Cancer Clinics, Hyderabad. MCh Surgical Oncology (Dr. B. Borooah Cancer Institute, Guwahati) with fellowships in minimal-access and robotic surgery. Specialises in breast cancer surgery and oncoplasty, sentinel node biopsy, and cervical cancer surgery, with a focus on breast conservation when oncologically safe.",
   "medicalSpecialty": "MedicalSpecialty/SurgicalOncology",
   "hasCredential": [
-    {"@type": "EducationalOccupationalCredential", "credentialCategory": "MBBS"},
-    {"@type": "EducationalOccupationalCredential", "credentialCategory": "MS General Surgery"},
-    {"@type": "EducationalOccupationalCredential", "credentialCategory": "MCh Surgical Oncology"}
+    {"@type": "EducationalOccupationalCredential", "credentialCategory": "MBBS", "recognizedBy": {"@type": "Organization", "name": "Guntur Medical College, Guntur"}},
+    {"@type": "EducationalOccupationalCredential", "credentialCategory": "MS General Surgery", "recognizedBy": {"@type": "Organization", "name": "NRI Medical College, Guntur"}},
+    {"@type": "EducationalOccupationalCredential", "credentialCategory": "MCh Surgical Oncology", "recognizedBy": {"@type": "Organization", "name": "Dr. B. Borooah Cancer Institute, Guwahati"}},
+    {"@type": "EducationalOccupationalCredential", "credentialCategory": "FMAS - Fellowship in Minimal Access Surgery"},
+    {"@type": "EducationalOccupationalCredential", "credentialCategory": "FARIS - Fellowship in Advanced Robotic and Innovative Surgery"}
   ],
   "worksFor": {
     "@type": "MedicalOrganization",
@@ -604,28 +607,33 @@ footer { background: #120E0B; padding: 36px 20px 96px; color: rgba(255,255,255,0
     <span class="en-content">My <em>training</em></span>
   </h2>
 
-  <!-- TODO: confirm exact credentials and institutions before publishing -->
   <div class="cred-list">
     <div class="cred-item">
       <div class="cred-icon">🎓</div>
       <div class="cred-text">
-        <h4>MBBS</h4>
-        <p><span class="te-content">వైద్య విద్య పునాది</span><span class="en-content">Medical degree</span></p>
+        <h4>MBBS — Guntur Medical College, Guntur</h4>
+        <p><span class="te-content">వైద్య విద్య పునాది</span><span class="en-content">Foundation in medicine</span></p>
       </div>
     </div>
     <div class="cred-item">
       <div class="cred-icon">🏥</div>
       <div class="cred-text">
-        <h4>MS General Surgery</h4>
-        <p><span class="te-content">జనరల్ సర్జరీలో పోస్ట్‌గ్రాడ్యుయేషన్</span><span class="en-content">Postgraduate surgical training</span></p>
+        <h4>MS General Surgery — NRI Medical College, Guntur</h4>
+        <p><span class="te-content">జనరల్ సర్జరీలో పోస్ట్‌గ్రాడ్యుయేషన్</span><span class="en-content">Postgraduate training in general surgery</span></p>
       </div>
     </div>
     <div class="cred-item">
       <div class="cred-icon">🔬</div>
       <div class="cred-text">
-        <!-- TODO: confirm exact credentials and institutions — MCh or DNB Surgical Oncology, and the awarding institution -->
-        <h4>MCh / DNB Surgical Oncology</h4>
-        <p><span class="te-content">సర్జికల్ ఆంకాలజీలో సూపర్-స్పెషలైజేషన్</span><span class="en-content">Super-specialisation in surgical oncology</span></p>
+        <h4>MCh Surgical Oncology — Dr. B. Borooah Cancer Institute, Guwahati</h4>
+        <p><span class="te-content">సర్జికల్ ఆంకాలజీలో సూపర్-స్పెషలైజేషన్ — దేశంలోని ప్రముఖ క్యాన్సర్ సంస్థలలో ఒకటి.</span><span class="en-content">Super-specialisation in surgical oncology at one of India's leading cancer institutes.</span></p>
+      </div>
+    </div>
+    <div class="cred-item">
+      <div class="cred-icon">🤖</div>
+      <div class="cred-text">
+        <h4>FMAS · FARIS — Robotic &amp; Minimal-Access Surgery</h4>
+        <p><span class="te-content">కనిష్ట కోత సర్జరీ (FMAS) మరియు అధునాతన రోబోటిక్ సర్జరీ (FARIS) ఫెలోషిప్‌లు.</span><span class="en-content">Fellowships in minimal-access surgery (FMAS) and advanced robotic and innovative surgery (FARIS).</span></p>
       </div>
     </div>
     <div class="cred-item">
@@ -828,8 +836,7 @@ footer { background: #120E0B; padding: 36px 20px 96px; color: rgba(255,255,255,0
 <!-- FOOTER -->
 <footer>
   <div class="footer-name">డా. వినయ్</div>
-  <!-- TODO: confirm exact credentials and institutions -->
-  MBBS · MS General Surgery · MCh / DNB Surgical Oncology<br>
+  MBBS · MS General Surgery · MCh Surgical Oncology (Dr. BBCI, Guwahati) · FMAS · FARIS<br>
   CION Cancer Clinics · Inside Aster Prime Hospital, Ameerpet, Hyderabad 500038<br>
   Mon–Sat · 10 AM – 5 PM · +91 90634 90160
 
