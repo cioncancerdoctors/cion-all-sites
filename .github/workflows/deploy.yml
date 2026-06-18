@@ -3,16 +3,22 @@ name: Deploy CION Doctor Sites
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      doctor:
+        description: "Deploy a single doctor folder (e.g. dr-craghavendra). Blank = none."
+        required: false
+        default: ""
 
 # Deploys changed dr-* folders to each doctor's public_html over FTPS.
 # Switched from rsync/SSH (Hostinger throttled port 65002, causing intermittent
 # "Connection timed out"). FTP-Deploy-Action only uploads CHANGED files (state file)
 # and does NOT delete pre-existing remote files, matching the old no-delete behaviour.
 #
-# Server (145.79.58.156) and username (reuses the existing SFTP_USER secret) are set
-# below. The ONLY new repo secret you must add is:
-#   FTP_PASSWORD  the FTP password for that account (hPanel -> Files -> FTP Accounts)
-# If the FTP username differs from SFTP_USER, change `username:` below to a new secret.
+# Uses existing secrets: SFTP_USER (username) + SFTP_PASS (the account password, which
+# also works for FTP). No new secret needed. Server IP is hardcoded below.
+# Manual test/redeploy: Actions -> Deploy CION Doctor Sites -> Run workflow -> enter a
+# doctor folder (e.g. dr-craghavendra).
 
 jobs:
   detect-changes:
@@ -27,8 +33,13 @@ jobs:
       - name: Find changed doctor folders
         id: set-matrix
         run: |
-          CHANGED=$(git diff --name-only HEAD~1 HEAD \
-            | grep '^dr-' | cut -d/ -f1 | sort -u | jq -R . | jq -sc .)
+          MANUAL="${{ github.event.inputs.doctor }}"
+          if [ -n "$MANUAL" ]; then
+            CHANGED=$(echo "$MANUAL" | jq -R . | jq -sc .)
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD \
+              | grep '^dr-' | cut -d/ -f1 | sort -u | jq -R . | jq -sc .)
+          fi
           echo "Changed folders: $CHANGED"
           if [ "$CHANGED" = "[]" ] || [ -z "$CHANGED" ]; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
@@ -76,7 +87,7 @@ jobs:
         with:
           server: 145.79.58.156
           username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          password: ${{ secrets.SFTP_PASS }}
           protocol: ftps
           port: 21
           local-dir: ./${{ matrix.doctor }}/
