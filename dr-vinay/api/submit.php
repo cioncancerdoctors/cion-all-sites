@@ -47,6 +47,10 @@ if (!$name || strlen($phone) !== 10 || !preg_match('/^[6-9]/', $phone)) {
     exit;
 }
 
+// Store in E.164 (+91) to match HubSpot's existing format so leads dedupe/update
+// existing contacts instead of creating bare-number duplicates.
+$phone = '+91' . $phone;
+
 // ── HubSpot helper ──
 function hs(string $method, string $url, array $body): array {
     global $HS_TOKEN;
@@ -88,6 +92,7 @@ if ($contactId) {
     $create    = hs('POST', "$HS_BASE/contacts", ['properties' => $props]);
     $contactId = $create['data']['id'] ?? null;
 }
+
 
 // ── 3. Attach note with full context ──
 if ($contactId) {
