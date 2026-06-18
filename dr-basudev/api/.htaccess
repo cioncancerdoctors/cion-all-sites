@@ -1,5 +1,5 @@
-# Block public access to lead logs (PII) and prevent directory listing.
-<FilesMatch "\.(log)$">
+# Block public access to logs (PII) and any backup/source artifacts; no listing.
+<FilesMatch "\.(log|bak|old|orig|save|swp|inc|env)$|~$">
     Require all denied
 </FilesMatch>
 Options -Indexes
