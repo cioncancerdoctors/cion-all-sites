@@ -4,8 +4,17 @@ on:
   push:
     branches: [main]
 
+# Deploys changed dr-* folders to each doctor's public_html over FTPS.
+# Switched from rsync/SSH (Hostinger throttled port 65002, causing intermittent
+# "Connection timed out"). FTP-Deploy-Action only uploads CHANGED files (state file)
+# and does NOT delete pre-existing remote files, matching the old no-delete behaviour.
+#
+# Server (145.79.58.156) and username (reuses the existing SFTP_USER secret) are set
+# below. The ONLY new repo secret you must add is:
+#   FTP_PASSWORD  the FTP password for that account (hPanel -> Files -> FTP Accounts)
+# If the FTP username differs from SFTP_USER, change `username:` below to a new secret.
+
 jobs:
-  # ── Step 1: Detect which dr-* folders changed ─────────────────────────────
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
@@ -15,18 +24,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-
       - name: Find changed doctor folders
         id: set-matrix
         run: |
           CHANGED=$(git diff --name-only HEAD~1 HEAD \
-            | grep '^dr-' \
-            | cut -d/ -f1 \
-            | sort -u \
-            | jq -R . | jq -sc .)
-
+            | grep '^dr-' | cut -d/ -f1 | sort -u | jq -R . | jq -sc .)
           echo "Changed folders: $CHANGED"
-
           if [ "$CHANGED" = "[]" ] || [ -z "$CHANGED" ]; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "matrix={\"doctor\":[]}" >> $GITHUB_OUTPUT
@@ -35,7 +38,6 @@ jobs:
             echo "matrix={\"doctor\":$CHANGED}" >> $GITHUB_OUTPUT
           fi
 
-  # ── Step 2: Deploy each changed doctor folder via SFTP (SSH key auth) ────
   deploy:
     needs: detect-changes
     if: needs.detect-changes.outputs.has_changes == 'true'
@@ -43,78 +45,53 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
       fail-fast: false
-      # Hostinger SSH rate-limits bursts of simultaneous connections, so deploy
-      # one doctor at a time. Combined with the rsync retry, this makes multi-site
-      # pushes reliable (parallel bursts were causing "Connection timed out").
-      max-parallel: 1
-
+      max-parallel: 2
     concurrency:
       group: deploy-${{ matrix.doctor }}
       cancel-in-progress: false
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          # Pre-accept Hostinger's host key (port 65002)
-          ssh-keyscan -p 65002 -H 145.79.58.156 >> ~/.ssh/known_hosts 2>/dev/null || true
-
-      - name: Resolve server path for ${{ matrix.doctor }}
+      - name: Resolve domain for ${{ matrix.doctor }}
         id: resolve
         run: |
-          # Full absolute paths on the server
           case "${{ matrix.doctor }}" in
-            dr-imad)         SERVER_DIR="/home/u885652959/domains/cioncancerdrimad.com/public_html/" ;;
-            dr-vinay)        SERVER_DIR="/home/u885652959/domains/cioncancerdrvinay.com/public_html/" ;;
-            dr-murali)       SERVER_DIR="/home/u885652959/domains/cioncancerdrmurali.com/public_html/" ;;
-            dr-sandeep)      SERVER_DIR="/home/u885652959/domains/cioncancerdrsandeep.com/public_html/" ;;
-            dr-kiranmayee)   SERVER_DIR="/home/u885652959/domains/cioncancerdrkiranmayee.com/public_html/" ;;
-            dr-basudev)      SERVER_DIR="/home/u885652959/domains/cioncancerdrbasudev.com/public_html/" ;;
-            dr-raghvendra)   SERVER_DIR="/home/u885652959/domains/cioncancerdrraghvendra.com/public_html/" ;;
-            dr-craghavendra) SERVER_DIR="/home/u885652959/domains/cioncancerdrcraghavendra.info/public_html/" ;;
-            dr-owais)        SERVER_DIR="/home/u885652959/domains/cioncancerdrowais.com/public_html/" ;;
-            *)
-              echo "ERROR: Unknown doctor '${{ matrix.doctor }}'"
-              exit 1
-              ;;
+            dr-imad)         DOMAIN="cioncancerdrimad.com" ;;
+            dr-vinay)        DOMAIN="cioncancerdrvinay.com" ;;
+            dr-murali)       DOMAIN="cioncancerdrmurali.com" ;;
+            dr-sandeep)      DOMAIN="cioncancerdrsandeep.com" ;;
+            dr-kiranmayee)   DOMAIN="cioncancerdrkiranmayee.com" ;;
+            dr-basudev)      DOMAIN="cioncancerdrbasudev.com" ;;
+            dr-raghvendra)   DOMAIN="cioncancerdrraghvendra.com" ;;
+            dr-craghavendra) DOMAIN="cioncancerdrcraghavendra.info" ;;
+            dr-owais)        DOMAIN="cioncancerdrowais.com" ;;
+            *) echo "ERROR: Unknown doctor '${{ matrix.doctor }}'"; exit 1 ;;
           esac
-          echo "server_dir=$SERVER_DIR" >> $GITHUB_OUTPUT
-          echo "Deploying ${{ matrix.doctor }} → $SERVER_DIR"
+          echo "domain=$DOMAIN" >> $GITHUB_OUTPUT
+          echo "server_dir=domains/$DOMAIN/public_html/" >> $GITHUB_OUTPUT
+          echo "Deploying ${{ matrix.doctor }} -> domains/$DOMAIN/public_html/"
 
-      - name: Deploy via rsync over SSH
-        run: |
-          set +e
-          attempt=1; max=4; rc=1
-          until [ $attempt -gt $max ]; do
-            echo "rsync attempt $attempt/$max ..."
-            rsync -avz \
-              --exclude='*.log' \
-              --exclude='leads.log' \
-              --exclude='errors.log' \
-              --exclude='.git*' \
-              -e "ssh -p 65002 -i $HOME/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=25 -o ServerAliveInterval=10 -o ServerAliveCountMax=3" \
-              "./${{ matrix.doctor }}/" \
-              "${{ secrets.SFTP_USER }}@145.79.58.156:${{ steps.resolve.outputs.server_dir }}"
-            rc=$?
-            if [ $rc -eq 0 ]; then echo "rsync succeeded on attempt $attempt"; break; fi
-            wait=$((attempt*15))
-            echo "rsync failed (rc=$rc) on attempt $attempt; retrying in ${wait}s ..."
-            sleep $wait
-            attempt=$((attempt+1))
-          done
-          exit $rc
+      - name: Deploy via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 145.79.58.156
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./${{ matrix.doctor }}/
+          server-dir: ${{ steps.resolve.outputs.server_dir }}
+          # Keep server-side logs and never touch git/state metadata.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/*.log
+            **/leads.log
+            **/errors.log
 
       - name: Smoke-test deployment
         run: |
-          DOMAIN=$(echo "${{ steps.resolve.outputs.server_dir }}" \
-            | grep -oP '(?<=domains/).*(?=/public_html)')
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-            --max-time 15 "https://$DOMAIN/" || echo "000")
-          echo "$DOMAIN → HTTP $HTTP_CODE"
-          if [ "$HTTP_CODE" = "000" ]; then
-            echo "::warning::Could not reach $DOMAIN after deploy"
-          fi
+          DOMAIN="${{ steps.resolve.outputs.domain }}"
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://$DOMAIN/" || echo "000")
+          echo "$DOMAIN -> HTTP $HTTP_CODE"
+          if [ "$HTTP_CODE" = "000" ]; then echo "::warning::Could not reach $DOMAIN after deploy"; fi
