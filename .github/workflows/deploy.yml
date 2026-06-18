@@ -83,14 +83,26 @@ jobs:
 
       - name: Deploy via rsync over SSH
         run: |
-          rsync -avz \
-            --exclude='*.log' \
-            --exclude='leads.log' \
-            --exclude='errors.log' \
-            --exclude='.git*' \
-            -e "ssh -p 65002 -i $HOME/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-            "./${{ matrix.doctor }}/" \
-            "${{ secrets.SFTP_USER }}@145.79.58.156:${{ steps.resolve.outputs.server_dir }}"
+          set +e
+          attempt=1; max=4; rc=1
+          until [ $attempt -gt $max ]; do
+            echo "rsync attempt $attempt/$max ..."
+            rsync -avz \
+              --exclude='*.log' \
+              --exclude='leads.log' \
+              --exclude='errors.log' \
+              --exclude='.git*' \
+              -e "ssh -p 65002 -i $HOME/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=25 -o ServerAliveInterval=10 -o ServerAliveCountMax=3" \
+              "./${{ matrix.doctor }}/" \
+              "${{ secrets.SFTP_USER }}@145.79.58.156:${{ steps.resolve.outputs.server_dir }}"
+            rc=$?
+            if [ $rc -eq 0 ]; then echo "rsync succeeded on attempt $attempt"; break; fi
+            wait=$((attempt*15))
+            echo "rsync failed (rc=$rc) on attempt $attempt; retrying in ${wait}s ..."
+            sleep $wait
+            attempt=$((attempt+1))
+          done
+          exit $rc
 
       - name: Smoke-test deployment
         run: |
