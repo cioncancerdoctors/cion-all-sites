@@ -43,6 +43,10 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
       fail-fast: false
+      # Hostinger SSH rate-limits bursts of simultaneous connections, so deploy
+      # one doctor at a time. Combined with the rsync retry, this makes multi-site
+      # pushes reliable (parallel bursts were causing "Connection timed out").
+      max-parallel: 1
 
     concurrency:
       group: deploy-${{ matrix.doctor }}
