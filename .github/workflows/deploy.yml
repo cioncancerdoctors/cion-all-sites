@@ -56,7 +56,8 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
       fail-fast: false
-      max-parallel: 2
+      # One FTP connection at a time — Hostinger throttles concurrent control sockets.
+      max-parallel: 1
     concurrency:
       group: deploy-${{ matrix.doctor }}
       cancel-in-progress: false
@@ -82,7 +83,10 @@ jobs:
           echo "server_dir=domains/$DOMAIN/public_html/" >> $GITHUB_OUTPUT
           echo "Deploying ${{ matrix.doctor }} -> domains/$DOMAIN/public_html/"
 
+      # Attempt 1 (Hostinger occasionally times out the FTP control socket).
       - name: Deploy via FTPS
+        id: ftp1
+        continue-on-error: true
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: 145.79.58.156
@@ -90,9 +94,33 @@ jobs:
           password: ${{ secrets.SFTP_PASS }}
           protocol: ftps
           port: 21
+          timeout: 60000
           local-dir: ./${{ matrix.doctor }}/
           server-dir: ${{ steps.resolve.outputs.server_dir }}
-          # Keep server-side logs and never touch git/state metadata.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/*.log
+            **/leads.log
+            **/errors.log
+
+      - name: Wait before retry
+        if: steps.ftp1.outcome == 'failure'
+        run: sleep 20
+
+      # Attempt 2 (only if the first failed) — self-heals transient timeouts.
+      - name: Deploy via FTPS (retry)
+        if: steps.ftp1.outcome == 'failure'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 145.79.58.156
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASS }}
+          protocol: ftps
+          port: 21
+          timeout: 60000
+          local-dir: ./${{ matrix.doctor }}/
+          server-dir: ${{ steps.resolve.outputs.server_dir }}
           exclude: |
             **/.git*
             **/.git*/**
