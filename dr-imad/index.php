@@ -11,7 +11,7 @@ require __DIR__ . '/_inc.php';
 <head>
 <?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Physician","name":"Dr. Mohammed Imaduddin","alternateName":"Dr. Imad","medicalSpecialty":"SurgicalOncology","url":"https://cioncancerdrimad.com/","image":"https://cioncancerdrimad.com/assets/images/dr-imad-portrait.jpg","telephone":"+91-9063490160","areaServed":{"@type":"City","name":"Hyderabad"},"affiliation":{"@type":"MedicalOrganization","name":"CION Cancer Clinics"}}
+{"@context":"https://schema.org","@type":"Physician","name":"Dr. Mohammed Imaduddin","alternateName":"Dr. Imad","medicalSpecialty":"SurgicalOncology","url":"https://cioncancerdrimad.com/","image":"https://cioncancerdrimad.com/assets/images/dr-imad-portrait.jpg","telephone":"+91-9063490160","knowsLanguage":["English","Telugu","Hindi","Urdu"],"identifier":{"@type":"PropertyValue","propertyID":"Telangana State Medical Council Registration Number","value":"77184","description":"Medical registration number issued by Telangana State Medical Council"},"areaServed":{"@type":"City","name":"Hyderabad"},"affiliation":{"@type":"MedicalOrganization","name":"CION Cancer Clinics"},"sameAs":["https://www.instagram.com/cioncancerdr.imad/","https://www.facebook.com/profile.php?id=61583508992848","https://www.youtube.com/channel/UCGymTi4idfSBNDPP5uKAT9g","https://www.practo.com/hyderabad/doctor/dr-mohammed-imaduddin-oncologist","https://share.google/TyZ2PlcKqaMRlr3SB"]}
 </script>
 
 <script type="application/ld+json">{
