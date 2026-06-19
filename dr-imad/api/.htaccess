@@ -1,0 +1,10 @@
+# Block direct web access to logs and CSV files
+<FilesMatch "\.(csv|log|txt)$">
+    Require all denied
+</FilesMatch>
+Options -Indexes
+
+# PHP environment variables (no env var panel on this plan)
+SetEnv HUBSPOT_TOKEN pat-na2-cec8f77d-600c-4a47-8f23-03c8dbe634dd
+SetEnv META_CAPI_TOKEN your-meta-capi-token-here
+SetEnv META_PIXEL_ID 2033473084217961

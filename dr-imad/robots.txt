@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Block landing pages (paid ad LPs, noindex via meta too)
+Disallow: /landing/
+
+# Block admin / internal paths
+Disallow: /api/
+Disallow: /partials/
+Disallow: /data/
+Disallow: /docs/
+
+# Block server-generated files
+Disallow: /*.csv$
+Disallow: /*.log$
+Disallow: /*.json$
+
+# Allow CSS, JS, images
+Allow: /assets/
+
+Sitemap: https://cioncancerdrimad.com/sitemap.xml

@@ -1,0 +1,99 @@
+# ─────────────────────────────────────────────────────────────
+# CION Cancer Clinics — Dr. Mohammed Imaduddin
+# .htaccess — security, performance, redirects
+# ─────────────────────────────────────────────────────────────
+
+# ── Force HTTPS ──
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ── Force www → non-www (or vice versa, pick one consistent) ──
+# Currently set to non-www (cioncancerdrimad.com)
+RewriteCond %{HTTP_HOST} ^www\.cioncancerdrimad\.com [NC]
+RewriteRule ^ https://cioncancerdrimad.com%{REQUEST_URI} [L,R=301]
+
+# ── Block direct access to sensitive files ──
+<FilesMatch "\.(csv|log|json|md|env|sql|bak)$">
+    Order allow,deny
+    Deny from all
+    Satisfy all
+</FilesMatch>
+
+# ── Block access to specific dirs ──
+RedirectMatch 403 ^/api/leads\.csv$
+RedirectMatch 403 ^/api/rate-limit\.json$
+RedirectMatch 403 ^/api/recent-phones\.json$
+RedirectMatch 403 ^/api/errors\.log$
+RedirectMatch 403 ^/data/.*\.json$
+RedirectMatch 403 ^/docs/.*\.md$
+
+# Allow submit.php
+<Files "submit.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# ── Custom 404 ──
+ErrorDocument 404 /404.php
+
+# ── Security headers ──
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# ── Gzip compression ──
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
+    AddOutputFilterByType DEFLATE application/javascript application/json application/xml application/xhtml+xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ── Browser caching ──
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault                          "access plus 1 month"
+    ExpiresByType text/html                 "access plus 1 hour"
+    ExpiresByType text/css                  "access plus 1 year"
+    ExpiresByType application/javascript    "access plus 1 year"
+    ExpiresByType image/jpeg                "access plus 1 year"
+    ExpiresByType image/png                 "access plus 1 year"
+    ExpiresByType image/webp                "access plus 1 year"
+    ExpiresByType image/svg+xml             "access plus 1 year"
+    ExpiresByType image/x-icon              "access plus 1 year"
+    ExpiresByType font/woff                 "access plus 1 year"
+    ExpiresByType font/woff2                "access plus 1 year"
+</IfModule>
+
+# ── Cache-Control headers ──
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|jpg|jpeg|png|webp|svg|ico|woff|woff2)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "public, max-age=3600, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# ── Pretty URLs (strip .html, optional) ──
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.+?)/?$ $1.html [L]
+
+# Redirect old WordPress URLs to new structure (added as pages migrate)
+# Example:
+# Redirect 301 /about-dr-imaduddin/ /why-dr-imad/
+
+# -- Block /INTERNAL/ directory --
+RedirectMatch 403 ^/INTERNAL/
+RedirectMatch 403 ^/internal/
+
+# -- PHP upload limits for report attachments --
+php_value upload_max_filesize 10M
+php_value post_max_size 32M
+php_value max_execution_time 60
