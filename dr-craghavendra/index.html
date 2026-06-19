@@ -19,33 +19,12 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=Noto+Sans+Telugu:wght@300;400;500&display=swap" rel="stylesheet">
 
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Physician",
-  "name": "Dr. C. Raghavendra Reddy",
-  "description": "Medical Oncologist and Hemato-Oncologist at CION Cancer Clinics, Hyderabad. Two-time gold medallist — MBBS (Govt Medical College, Anantapur, 2013) and DM Medical Oncology (Madurai Medical College, 2022). Special interest in lung cancer precision oncology, molecular profiling, and targeted therapy. Also treats blood cancers, breast cancer, sarcoma, and gynaecological cancers.",
-  "medicalSpecialty": ["MedicalSpecialty/Oncologic", "MedicalSpecialty/Hematology"],
-  "hasCredential": [
-    {"@type": "EducationalOccupationalCredential", "credentialCategory": "MBBS Gold Medallist", "recognizedBy": {"@type": "Organization", "name": "Government Medical College, Anantapur"}, "dateCreated": "2013"},
-    {"@type": "EducationalOccupationalCredential", "credentialCategory": "DNB General Medicine", "recognizedBy": {"@type": "Organization", "name": "National Board of Examinations, New Delhi"}, "dateCreated": "2017"},
-    {"@type": "EducationalOccupationalCredential", "credentialCategory": "DM Medical Oncology Gold Medallist", "recognizedBy": {"@type": "Organization", "name": "Madurai Medical College"}, "dateCreated": "2022"}
-  ],
-  "worksFor": {
-    "@type": "MedicalOrganization",
-    "name": "CION Cancer Clinics",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "2nd Floor, Inside Aster Prime Hospital, Satyam Theatre Road, beside Blue Fox Hotel",
-      "addressLocality": "Ameerpet",
-      "addressRegion": "Telangana",
-      "postalCode": "500038",
-      "addressCountry": "IN"
-    }
-  },
-  "telephone": "+919063490160",
-  "url": "https://cioncancerdrcraghavendra.info/",
-  "knowsAbout": ["Lung Cancer", "Molecular Profiling", "Targeted Therapy", "Immunotherapy", "EGFR mutations", "Blood Cancers", "Leukaemia", "Lymphoma", "Sarcoma", "Breast Cancer", "Gynaecological Cancers", "Evidence-Based Oncology"]
-}
+{"@context":"https://schema.org","@graph":[
+{"@type":"Physician","@id":"https://cioncancerdrcraghavendra.info/#physician","name":"Dr. C. Raghavendra Reddy","alternateName":"డా. సి. రఘవేంద్ర","url":"https://cioncancerdrcraghavendra.info/","image":"https://cioncancerdrcraghavendra.info/dr-craghavendra-portrait.png","medicalSpecialty":"Oncologic","knowsLanguage":["Telugu","English","Hindi"],"identifier":{"@type":"PropertyValue","propertyID":"Telangana State Medical Council Registration","value":"82468"},"alumniOf":"MBBS (Gold Medal), DNB General Medicine, DM Medical Oncology (Gold Medal)","worksFor":{"@id":"https://cioncancerdrcraghavendra.info/#clinic"},"affiliation":{"@type":"MedicalOrganization","name":"CION Cancer Clinics","url":"https://www.cioncancerclinics.com/"},"address":{"@id":"https://cioncancerdrcraghavendra.info/#address"},"telephone":"+919063490160","sameAs":["https://www.instagram.com/cioncancerdr.raghavendra/","https://www.facebook.com/profile.php?id=61583246926362","https://www.youtube.com/channel/UCjbl0TSg-CUIej_VVvCaVXg"]},
+{"@type":"MedicalClinic","@id":"https://cioncancerdrcraghavendra.info/#clinic","name":"CION Cancer Clinics — Kukatpally","url":"https://cioncancerdrcraghavendra.info/","medicalSpecialty":"Oncologic","address":{"@id":"https://cioncancerdrcraghavendra.info/#address"},"telephone":"+919063490160"},
+{"@type":"PostalAddress","@id":"https://cioncancerdrcraghavendra.info/#address","streetAddress":"Mumbai Highway, Opp. Big Bazaar, Balaji Nagar, Kukatpally","addressLocality":"Hyderabad","addressRegion":"Telangana","postalCode":"500072","addressCountry":"IN"},
+{"@type":"WebSite","@id":"https://cioncancerdrcraghavendra.info/#website","url":"https://cioncancerdrcraghavendra.info/","name":"Dr. C. Raghavendra Reddy — CION Cancer Clinics","inLanguage":["te-IN","en-IN"],"publisher":{"@id":"https://cioncancerdrcraghavendra.info/#physician"}}
+]}
 </script>
 
 <style>
@@ -361,7 +340,7 @@ footer { background: #0A1B26; padding: 36px 20px 96px; color: rgba(255,255,255,0
       </div>
       <div class="hero-tagline">
         <span class="highlight">"ఏ మందు అవసరమో అడగను — ఏ మందు పని చేస్తుందో అడుగుతాను."</span>
-        CION క్యాన్సర్ క్లినిక్స్, అమీర్‌పేట్
+        CION క్యాన్సర్ క్లినిక్స్, కూకట్‌పల్లి
       </div>
       <a href="https://wa.me/919063490160?text=నమస్కారం%20డా.%20రఘవేంద్ర%20రెడ్డి%2C%20నేను%20అపాయింట్‌మెంట్%20కావాలి." class="hero-wa-pill">
         <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -378,7 +357,7 @@ footer { background: #0A1B26; padding: 36px 20px 96px; color: rgba(255,255,255,0
       </div>
       <div class="hero-tagline">
         <span class="highlight">"I don't ask which drug is new. I ask which drug the evidence actually supports."</span>
-        CION Cancer Clinics, Ameerpet
+        CION Cancer Clinics, Kukatpally
       </div>
       <a href="https://wa.me/919063490160?text=Hello%20Dr.%20Raghavendra%2C%20I%20would%20like%20to%20book%20a%20consultation." class="hero-wa-pill">
         <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -679,6 +658,51 @@ footer { background: #0A1B26; padding: 36px 20px 96px; color: rgba(255,255,255,0
 
 <div class="divider"></div>
 
+<!-- CREDENTIALS & OFFICIAL PROFILES -->
+<section class="section section-cream">
+  <div class="sec-eyebrow">
+    <span class="te-content">అర్హతలు &amp; ప్రొఫైల్‌లు</span>
+    <span class="en-content">Credentials &amp; profiles</span>
+  </div>
+  <h2 class="sec-h">
+    <span class="te-content">అర్హతలు &amp; <em>అధికారిక ప్రొఫైల్‌లు</em></span>
+    <span class="en-content">Credentials &amp; <em>official profiles</em></span>
+  </h2>
+  <div class="cred-list">
+    <div class="cred-item">
+      <div class="cred-icon">🪪</div>
+      <div class="cred-text">
+        <p><span class="te-content">మెడికల్ రిజి. నం. 82468 · తెలంగాణ స్టేట్ మెడికల్ కౌన్సిల్</span><span class="en-content">Medical Reg. No. 82468 · Telangana State Medical Council</span></p>
+      </div>
+    </div>
+    <div class="cred-item">
+      <div class="cred-icon">🎓</div>
+      <div class="cred-text">
+        <p><span class="te-content">MBBS (గోల్డ్ మెడల్), DNB జనరల్ మెడిసిన్, DM మెడికల్ ఆంకాలజీ (గోల్డ్ మెడల్)</span><span class="en-content">MBBS (Gold Medal), DNB General Medicine, DM Medical Oncology (Gold Medal)</span></p>
+      </div>
+    </div>
+    <div class="cred-item">
+      <div class="cred-icon">🗣️</div>
+      <div class="cred-text">
+        <p><span class="te-content">మాట్లాడే భాషలు: తెలుగు, ఇంగ్లీష్, హిందీ</span><span class="en-content">Speaks: Telugu, English, Hindi</span></p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:18px">
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--tc);margin-bottom:10px">
+      <span class="te-content">నన్ను ఇక్కడ కనుగొనండి:</span>
+      <span class="en-content">Find me on:</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      <a href="https://www.instagram.com/cioncancerdr.raghavendra/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--border);border-radius:40px;padding:9px 16px;font-size:12px;font-weight:500;color:var(--ink)">Instagram</a>
+      <a href="https://www.facebook.com/profile.php?id=61583246926362" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--border);border-radius:40px;padding:9px 16px;font-size:12px;font-weight:500;color:var(--ink)">Facebook</a>
+      <a href="https://www.youtube.com/channel/UCjbl0TSg-CUIej_VVvCaVXg" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--border);border-radius:40px;padding:9px 16px;font-size:12px;font-weight:500;color:var(--ink)">YouTube</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- CION NETWORK -->
 <section class="section section-dark">
   <div class="sec-eyebrow light">
@@ -728,10 +752,10 @@ footer { background: #0A1B26; padding: 36px 20px 96px; color: rgba(255,255,255,0
     </div>
     <h2 style="font-family:var(--serif);font-size:26px;font-weight:300;color:#fff;margin-bottom:6px;line-height:1.2">
       CION Cancer Clinics
-      <span style="display:block;font-size:15px;opacity:0.55;font-weight:300;margin-top:4px">Ameerpet, Hyderabad</span>
+      <span style="display:block;font-size:15px;opacity:0.55;font-weight:300;margin-top:4px">Kukatpally, Hyderabad</span>
     </h2>
 
-    <a href="https://maps.google.com/?q=CION+Cancer+Clinics+Ameerpet+Hyderabad"
+    <a href="https://maps.google.com/?q=CION+Cancer+Clinics+Kukatpally+Hyderabad"
        target="_blank" rel="noopener"
        style="display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#1C1410;border-radius:40px;padding:14px 24px;font-size:13px;font-weight:600;letter-spacing:0.02em;margin:18px 0;width:100%;max-width:320px;text-decoration:none">
       <span style="font-size:18px">📍</span>
@@ -744,9 +768,9 @@ footer { background: #0A1B26; padding: 36px 20px 96px; color: rgba(255,255,255,0
         <span>🏥</span>
         <span>
           <strong style="color:rgba(255,255,255,0.85);display:block;margin-bottom:2px">CION Cancer Clinics</strong>
-          2nd Floor, Inside Aster Prime Hospital,<br>
-          Satyam Theatre Road, beside Blue Fox Hotel,<br>
-          Ameerpet, Hyderabad 500038
+          Mumbai Highway, Opp. Big Bazaar,<br>
+          Balaji Nagar, Kukatpally,<br>
+          Hyderabad 500072
         </span>
       </div>
       <div class="map-addr-item">
@@ -759,8 +783,8 @@ footer { background: #0A1B26; padding: 36px 20px 96px; color: rgba(255,255,255,0
       <div class="map-addr-item">
         <span>🚇</span>
         <span>
-          <span class="te-content">అమీర్‌పేట్ మెట్రో స్టేషన్ నుండి 5 నిమిషాల దూరం</span>
-          <span class="en-content">5 minutes from Ameerpet Metro Station</span>
+          <span class="te-content">కూకట్‌పల్లి మెట్రో దగ్గర, బిగ్ బజార్ ఎదురుగా</span>
+          <span class="en-content">Near Kukatpally Metro, opposite Big Bazaar</span>
         </span>
       </div>
       <div class="map-addr-item">
@@ -780,11 +804,11 @@ footer { background: #0A1B26; padding: 36px 20px 96px; color: rgba(255,255,255,0
 
   <div class="map-frame">
     <iframe
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3806.1!2d78.4461547!3d17.4373365!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91a98e5ca2c7%3A0xb5f90a5e428ad96b!2sAster%20Prime%20Hospital%2C%20Ameerpet!5e0!3m2!1sen!2sin!4v1"
+      src="https://maps.google.com/maps?q=CION+Cancer+Clinics+Kukatpally+Hyderabad&output=embed"
       loading="lazy"
       allowfullscreen
       referrerpolicy="no-referrer-when-downgrade"
-      title="CION Cancer Clinics Ameerpet Hyderabad"
+      title="CION Cancer Clinics Kukatpally Hyderabad"
       style="width:100%;height:100%;border:0;display:block">
     </iframe>
   </div>
@@ -869,7 +893,7 @@ footer { background: #0A1B26; padding: 36px 20px 96px; color: rgba(255,255,255,0
   <div style="font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7">
     Medical Oncologist &amp; Hemato-Oncologist<br>
     MBBS Gold Medallist (Anantapur) · DNB General Medicine (New Delhi) · DM Medical Oncology Gold Medallist (Madurai)<br>
-    CION Cancer Clinics, Ameerpet, Hyderabad 500038
+    CION Cancer Clinics, Kukatpally, Hyderabad 500072
   </div>
   <div class="footer-nav">
     <a href="index.html"><span class="te-content">హోమ్</span><span class="en-content">Home</span></a>
