@@ -34,3 +34,11 @@ dr-imad/api/rate-limit.json
 dr-imad/.ftp-deploy-sync-state.json
 dr-imad/submit.php
 dr-imad/api/submit.php
+
+# dr-imad: broad globs (his site has api/ folders in multiple sections)
+dr-imad/**/submit.php
+dr-imad/**/leads.csv
+dr-imad/**/leads.log
+dr-imad/**/errors.log
+dr-imad/**/rate-limit.json
+dr-imad/**/recent-phones.json
