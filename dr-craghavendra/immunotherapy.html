@@ -53,6 +53,7 @@
 :root{
   --ink:#0F2635; --ink2:#2A4558; --dust:#EEF3F4; --cream:#F5F9FA; --warm:#E5EFF0;
   --border:#C5D4D8; --tc:#0E7C86; --tc-soft:#E3F4F6; --gold:#C4942A; --white:#FFFFFF;
+  --wa:#25D366;
   --serif:'DM Serif Display','Noto Sans Telugu',Georgia,serif;
   --sans:'DM Sans','Noto Sans Telugu',sans-serif; --ease:cubic-bezier(.4,0,.2,1);
 }
@@ -113,6 +114,28 @@ table.cmp td:first-child{background:var(--dust);font-weight:500;color:var(--ink)
 .checklist li::before{content:'›';position:absolute;left:6px;color:var(--tc);font-weight:500}
 .neutral{background:var(--dust);border-radius:10px;padding:16px 18px;margin:14px 0;font-size:14px;color:var(--ink2);line-height:1.8}
 .warn{border-left:3px solid var(--gold);background:#FBF6EA;border-radius:0 8px 8px 0;padding:14px 16px;margin:12px 0;font-size:13.5px;color:#5c4a1f;line-height:1.7}
+
+/* Lead form (teal restyle of the dr-imad HubSpot form) */
+.leadform{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px 22px;margin:30px 0;box-shadow:0 10px 30px rgba(14,124,134,.08)}
+.leadform h2{font-family:var(--serif);font-weight:400;font-size:22px;margin:0 0 4px}
+.leadform .sub{color:var(--ink2);font-size:13.5px;margin:0 0 18px;line-height:1.6}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12.5px;font-weight:500;margin-bottom:5px;color:var(--ink)}
+.field input,.field textarea{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:8px;font-size:15px;font-family:inherit;color:var(--ink);background:var(--cream)}
+.field input:focus,.field textarea:focus{outline:2px solid var(--tc);border-color:var(--tc);background:#fff}
+.hint{font-size:11px;color:var(--ink2);margin-top:4px}
+.honeypot{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.submit{width:100%;background:var(--tc);color:#fff;border:0;padding:15px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;font-family:inherit;transition:opacity .2s}
+.submit:hover{opacity:.92}
+.submit:disabled{opacity:.6;cursor:default}
+.wa-fallback{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--wa);color:#fff;border-radius:8px;padding:13px;font-size:13.5px;font-weight:500;margin-top:10px}
+.consent{font-size:11px;color:var(--ink2);margin-top:12px;line-height:1.55}
+.consent a{color:var(--tc)}
+.form-error{display:none;background:#FBEAEA;color:#9b2c2c;padding:12px 14px;border-radius:8px;font-size:13px;margin-top:10px;line-height:1.5}
+.form-error.active{display:block}
+.form-success{display:none;background:var(--tc-soft);color:var(--ink);border:1px solid var(--tc);padding:20px;border-radius:10px;font-size:15px;text-align:center;line-height:1.6}
+.form-success.active{display:block}
+.form-success .big{font-family:var(--serif);font-size:18px;color:var(--tc);display:block;margin-bottom:6px}
 .doctor-card{display:flex;gap:16px;align-items:center;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;margin:28px 0}
 .doctor-card img{width:64px;height:64px;border-radius:8px;object-fit:cover;object-position:center top;flex-shrink:0;border:1px solid var(--border)}
 .dc-name{font-family:var(--serif);font-size:18px;color:var(--ink)}
@@ -290,6 +313,74 @@ footer{background:#0A1B26;padding:30px 20px 90px;color:rgba(255,255,255,.4);font
     </ul>
   </div>
 
+  <!-- Lead form (primary conversion → /api/submit.php → HubSpot) -->
+  <div class="leadform" id="lead-form">
+    <h2><span class="te-content">మీ రిపోర్టులు సమీక్ష కోసం పంపండి.</span><span class="en-content">Send your reports for review.</span></h2>
+    <p class="sub">
+      <span class="te-content">మీ వివరాలు ఇవ్వండి, పని వేళల్లో మా టీమ్ మిమ్మల్ని కాల్ చేస్తుంది.</span>
+      <span class="en-content">Submit your details and my team will call you during working hours.</span>
+    </p>
+
+    <form id="cion-form" enctype="multipart/form-data" novalidate>
+      <div class="honeypot"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+      <div class="field">
+        <label><span class="te-content">మీ పేరు *</span><span class="en-content">Your Name *</span></label>
+        <input type="text" name="name" required maxlength="80" autocomplete="name">
+      </div>
+      <div class="field">
+        <label><span class="te-content">ఫోన్ నంబర్ *</span><span class="en-content">Phone Number *</span></label>
+        <input type="tel" name="phone" required pattern="[0-9+\-\s]{10,15}" autocomplete="tel" inputmode="tel">
+      </div>
+      <div class="field">
+        <label><span class="te-content">క్యాన్సర్ రకం / సమస్య</span><span class="en-content">Cancer Type / Concern</span></label>
+        <input type="text" name="concern" maxlength="120" placeholder="e.g. Lung, NSCLC, PD-L1, immunotherapy">
+      </div>
+      <div class="field">
+        <label><span class="te-content">నగరం</span><span class="en-content">City</span></label>
+        <input type="text" name="city" maxlength="60" placeholder="Hyderabad">
+      </div>
+      <p class="hint" style="margin:0 0 4px"><span class="te-content">రిపోర్టులు / స్కాన్లు ఉన్నాయా? సమర్పించిన తర్వాత వాట్సాప్‌లో పంపండి.</span><span class="en-content">Have reports or scans? Send them on WhatsApp after you submit.</span></p>
+
+      <!-- Hidden tracking fields — populated by JS below -->
+      <input type="hidden" name="doctor_name" value="dr_craghavendra">
+      <input type="hidden" name="page_type" value="immunotherapy">
+      <input type="hidden" name="offer_type" value="free_consultation">
+      <input type="hidden" name="event_id" value="">
+      <input type="hidden" name="meta_lead_id" value="">
+      <input type="hidden" name="fbclid" value="">
+      <input type="hidden" name="gclid" value="">
+      <input type="hidden" name="fbp" value="">
+      <input type="hidden" name="fbc" value="">
+      <input type="hidden" name="utm_source" value="">
+      <input type="hidden" name="utm_medium" value="">
+      <input type="hidden" name="utm_campaign" value="">
+      <input type="hidden" name="utm_content" value="">
+      <input type="hidden" name="utm_term" value="">
+      <input type="hidden" name="submit_timestamp" value="">
+
+      <button type="submit" class="submit"><span class="te-content">నా సంప్రదింపు బుక్ చేయండి</span><span class="en-content">Book My Consultation</span></button>
+      <p class="consent">
+        <span class="te-content">సమర్పించడం ద్వారా, ఫాలో-అప్ కోసం డా. సి. రఘవేంద్ర టీమ్ మిమ్మల్ని సంప్రదించడానికి మీరు అంగీకరిస్తున్నారు.</span>
+        <span class="en-content">By submitting, you consent to Dr. C. Raghavendra's team contacting you for follow-up.</span>
+      </p>
+    </form>
+
+    <div class="form-error" id="cion-form-error">
+      <span class="te-content">⚠ ఏదో తప్పు జరిగింది. దయచేసి +91 90634 90160కు కాల్ చేయండి లేదా వాట్సాప్ చేయండి.</span>
+      <span class="en-content">⚠ Something went wrong. Please call +91 90634 90160 or message on WhatsApp.</span>
+    </div>
+
+    <a class="wa-fallback" id="cion-wa-fallback" href="https://wa.me/919063490160?text=నమస్కారం%2C%20ఇమ్యునోథెరపీ%20కోసం%20నా%20రిపోర్టులు%20పంపుతున్నాను.">
+      💬 <span class="te-content">వాట్సాప్‌ను ఇష్టపడతారా? మీ రిపోర్టులు పంపండి</span><span class="en-content">Prefer WhatsApp? Send your reports</span>
+    </a>
+
+    <div class="form-success" id="cion-form-success">
+      <span class="big"><span class="te-content">ధన్యవాదాలు.</span><span class="en-content">Thank you.</span></span>
+      <span class="te-content">మా టీమ్ త్వరలో మిమ్మల్ని కాల్ చేస్తుంది.</span><span class="en-content">My team will call you shortly.</span>
+    </div>
+  </div>
+
   <div class="doctor-card">
     <img src="dr-craghavendra-portrait.png" alt="Dr. C. Raghavendra Reddy">
     <div>
@@ -388,6 +479,45 @@ function setLang(l){
 function toggleNav(){document.getElementById('navDrawer').classList.toggle('open');document.getElementById('hamburger').classList.toggle('open');document.getElementById('navOverlay').classList.toggle('show')}
 function closeNav(){document.getElementById('navDrawer').classList.remove('open');document.getElementById('hamburger').classList.remove('open');document.getElementById('navOverlay').classList.remove('show')}
 try{var s=localStorage.getItem('cion_lang');if(s)setLang(s)}catch(e){}
+
+/* ---- Lead form: hidden fields + submit (same contract as /api/submit.php) ---- */
+(function(){
+  function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);return v.toString(16);});}
+  function getCookie(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):'';}
+  function getParam(n){return new URLSearchParams(location.search).get(n)||'';}
+
+  var form=document.getElementById('cion-form'); if(!form) return;
+  var eventId=uuid();
+  form.event_id.value=eventId; form.meta_lead_id.value=eventId;
+  form.fbp.value=getCookie('_fbp'); form.fbc.value=getCookie('_fbc');
+  form.fbclid.value=getParam('fbclid'); form.gclid.value=getParam('gclid');
+  form.utm_source.value=getParam('utm_source'); form.utm_medium.value=getParam('utm_medium');
+  form.utm_campaign.value=getParam('utm_campaign'); form.utm_content.value=getParam('utm_content');
+  form.utm_term.value=getParam('utm_term'); form.submit_timestamp.value=Date.now();
+
+  var errBox=document.getElementById('cion-form-error');
+
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    if(errBox) errBox.classList.remove('active');
+    var btn=form.querySelector('.submit');
+    var label=btn.textContent;
+    btn.disabled=true; btn.textContent='Submitting...';
+    form.submit_timestamp.value=Date.now();
+    try{
+      var res=await fetch('/api/submit.php',{method:'POST',body:new FormData(form)});
+      var text=await res.text();
+      var data=null; try{ data=text?JSON.parse(text):null; }catch(_){}
+      if(res.ok && data && data.success){
+        form.style.display='none';
+        var okBox=document.getElementById('cion-form-success'); if(okBox) okBox.classList.add('active');
+      } else { throw new Error((data&&data.error)||'submit_failed'); }
+    }catch(err){
+      btn.disabled=false; btn.textContent=label;
+      if(errBox) errBox.classList.add('active');
+    }
+  });
+})();
 </script>
 </body>
 </html>
