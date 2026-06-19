@@ -1,0 +1,221 @@
+{
+  "name_full": "Dr. Mohammed Imaduddin",
+  "name_short": "Dr. Imad",
+  "name_alternate": "Dr. Imaduddin",
+  "title_h1": "Dr. Mohammed Imaduddin",
+  "specialty": "Surgical Oncology",
+  "specialty_secondary": "Advanced GI & Peritoneal Cancer Surgeon",
+  "experience_years": 14,
+  "experience_phrase": "14+ years",
+  "experience_phrase_full": "14+ years of medical training and surgical practice",
+  "qualifications_short": "M.B.B.S, MS, M.Ch (AIIMS), FEBS, FACS",
+  "qualifications_chip_list": [
+    "M.B.B.S",
+    "MS",
+    "M.Ch (AIIMS)",
+    "FEBS",
+    "ESSO",
+    "FACS"
+  ],
+  "qualifications_full": [
+    {
+      "degree": "M.B.B.S",
+      "institution": "Osmania Medical College, Hyderabad",
+      "year": "2012"
+    },
+    {
+      "degree": "MS — General Surgery",
+      "institution": "Osmania Medical College, Hyderabad",
+      "year": "2017"
+    },
+    {
+      "degree": "M.Ch — Surgical Oncology",
+      "institution": "AIIMS",
+      "year": "2021"
+    },
+    {
+      "degree": "FEBS — Fellow of the European Board of Surgery",
+      "institution": "European Union of Medical Specialists (UEMS)",
+      "year": "2022"
+    },
+    {
+      "degree": "ESSO Fellowship — Peritoneal Surface Malignancy, HIPEC & PIPAC",
+      "institution": "University Hospital Hannover, Germany (under Prof. Dr. Beate Rau)",
+      "year": "2023"
+    },
+    {
+      "degree": "Advanced Training — CRS & HIPEC Perioperative Management",
+      "institution": "Charité University Hospital, Berlin",
+      "year": ""
+    },
+    {
+      "degree": "FACS — Fellow of the American College of Surgeons",
+      "institution": "American College of Surgeons, USA",
+      "year": ""
+    }
+  ],
+  "trained_at_summary": "AIIMS, Germany, Europe, USA",
+  "trained_at_countries": [
+    "India",
+    "Germany",
+    "Europe (UEMS)",
+    "USA"
+  ],
+  "trained_at_institutions": [
+    "AIIMS",
+    "University Hospital Hannover, Germany",
+    "Charité University Hospital, Berlin, Germany",
+    "Osmania Medical College, Hyderabad"
+  ],
+  "publications_count": 15,
+  "publications_phrase": "15+ international publications",
+  "publications_named": [
+    {
+      "title": "Effect of COVID-19 pandemic lockdowns on planned cancer surgery for 15 tumour types in 61 countries",
+      "journal": "The Lancet Oncology",
+      "year": 2021,
+      "authors": "COVIDSurg Collaborative",
+      "tag": "THE LANCET"
+    },
+    {
+      "title": "Prophylactic Drain Versus No Drain in Curative Gastric Cancer Surgery — A Randomized Controlled Trial",
+      "journal": "Journal of Gastrointestinal Surgery",
+      "year": 2022,
+      "authors": "Muduly, Imaduddin et al. · AIIMS",
+      "tag": "J. GASTRO SURG"
+    },
+    {
+      "title": "Minimally Invasive Esophagectomy: Preservation of Arch of Azygos Vein in Prone Position",
+      "journal": "Journal of Minimal Access Surgery",
+      "year": 2021,
+      "authors": "Kar, Imaduddin et al.",
+      "tag": "MIN. ACCESS SURG"
+    },
+    {
+      "title": "Role of Metronomic Therapy for Advanced Oral Cancers — Multi-Institutional Feasibility Study",
+      "journal": "Head & Neck Journal",
+      "year": 2022,
+      "authors": "Sultania, Imaduddin et al.",
+      "tag": "HEAD & NECK"
+    }
+  ],
+  "procedures_t1": [
+    {
+      "name": "HIPEC + Cytoreductive Surgery (CRS)",
+      "tier": "T1",
+      "training_meta": "🇩🇪 ESSO Fellowship · University Hospital Hannover, Germany"
+    },
+    {
+      "name": "PIPAC — Pressurised Intraperitoneal Aerosol Chemotherapy",
+      "tier": "T1",
+      "training_meta": "🇩🇪 ESSO Fellowship · Hannover & Charité Berlin"
+    },
+    {
+      "name": "Whipple's Procedure (Pancreaticoduodenectomy)",
+      "tier": "T1",
+      "training_meta": "🏅 M.Ch Surgical Oncology · AIIMS"
+    },
+    {
+      "name": "Pelvic Exenteration",
+      "tier": "T1",
+      "training_meta": "🏅 Surgical Oncology Superspeciality · AIIMS"
+    }
+  ],
+  "procedures_t2": [
+    {
+      "name": "Total Gastrectomy + D2 Lymphadenectomy",
+      "tier": "T2",
+      "training_meta": "🔬 AIIMS Thesis Research · Published J Gastrointest Surg 2022"
+    },
+    {
+      "name": "Minimally Invasive Esophagectomy",
+      "tier": "T2",
+      "training_meta": "📄 Published: J Min Access Surg · AIIMS Trained"
+    },
+    {
+      "name": "Colorectal Cancer Resection with Total Mesorectal Excision (TME)",
+      "tier": "T2",
+      "training_meta": "🏅 AIIMS + ESSO Fellowship"
+    },
+    {
+      "name": "Liver Metastases Resection",
+      "tier": "T2",
+      "training_meta": "🏛️ Tumor Board Reviewed · CION Cancer Clinics"
+    }
+  ],
+  "procedures_t3": [
+    {
+      "name": "Ovarian Cancer Debulking + HIPEC",
+      "tier": "T3",
+      "training_meta": "🇩🇪 ESSO Fellowship · HIPEC for Ovarian Cancer · Hannover"
+    },
+    {
+      "name": "Retroperitoneal Tumour Resection",
+      "tier": "T3",
+      "training_meta": "🏅 Surgical Oncology Superspeciality · AIIMS"
+    },
+    {
+      "name": "Peritoneal Surface Malignancy — Multi-visceral Resection",
+      "tier": "T3",
+      "training_meta": "🇩🇪 ESSO + Charité Berlin"
+    },
+    {
+      "name": "Appendix Cancer & PMP Surgery",
+      "tier": "T3",
+      "training_meta": "🏛️ CION Tumor Board · Multi-disciplinary Planning"
+    }
+  ],
+  "centres_hyderabad": [
+    "Kukatpally",
+    "Kompally",
+    "Ameerpet",
+    "Tolichowki",
+    "Masab Tank",
+    "LB Nagar",
+    "Banjara Hills"
+  ],
+  "phone_e164": "919063490160",
+  "phone_display": "+91 90634 90160",
+  "wa_base": "https://wa.me/919063490160",
+  "languages": [
+    "English",
+    "Telugu",
+    "Hindi",
+    "Urdu"
+  ],
+  "languages_te_display": "English, తెలుగు, हिंदी, اردو",
+  "hours_en": "Mon–Sat · 10:00 AM – 5:00 PM",
+  "hours_te": "సోమ–శని · 10:00 AM – 5:00 PM",
+  "city": "Hyderabad",
+  "state": "Telangana",
+  "country": "IN",
+  "postal_code": "500016",
+  "registration_number": "",
+  "legal_entity": "CIPHER Oncology Pvt Ltd",
+  "domain": "cioncancerdrimad.com",
+  "site_url": "https://cioncancerdrimad.com",
+  "kpis": {
+    "complex_surgeries": "500+",
+    "publications": "15+",
+    "fellowships": "5",
+    "experience_years": "14+",
+    "centres": "7"
+  },
+  "hubspot_keys": {
+    "doctor_name_key": "dr_imaduddin_mohammed",
+    "doctor_specialty_key": "surgical_oncology"
+  },
+  "wa_message_templates": {
+    "appointment": "Hello, I would like to book a consultation with Dr. Imaduddin at CION Cancer Clinics.",
+    "second_opinion": "Hello, I would like a second surgical opinion from Dr. Imaduddin.",
+    "online_second_opinion": "Hello, I am sharing my reports for Dr. Imaduddin's free online second opinion. Case ID: ",
+    "cost": "Hello, I would like a cost estimate for cancer surgery.",
+    "report_review": "Hello, I would like to share my reports for review by Dr. Imaduddin.",
+    "pet_ct": "Hello, I would like to book a PET CT scan at the special rate.",
+    "genetic_testing": "Hello, I would like more information on cancer genetic testing.",
+    "cancer_vaccination": "Hello, I would like more information on cancer vaccination.",
+    "general": "Hello, I would like to consult Dr. Imaduddin at CION Cancer Clinics."
+  },
+  "designation": "Head of Department, Surgical Oncology",
+  "designation_te": "హెడ్ ఆఫ్ డిపార్ట్‌మెంట్, సర్జికల్ ఆంకాలజీ"
+}

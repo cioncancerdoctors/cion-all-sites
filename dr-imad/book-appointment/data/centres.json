@@ -1,0 +1,19 @@
+{
+  "city": "Hyderabad",
+  "state": "Telangana",
+  "centres": [
+    {"key": "kukatpally", "name_en": "Kukatpally", "name_te": "కూకట్‌పల్లి", "primary_pin": "500072"},
+    {"key": "kompally", "name_en": "Kompally", "name_te": "కొంపల్లి", "primary_pin": "500100"},
+    {"key": "ameerpet", "name_en": "Ameerpet", "name_te": "అమీర్‌పేట", "primary_pin": "500016"},
+    {"key": "tolichowki", "name_en": "Tolichowki", "name_te": "టోలీచౌకీ", "primary_pin": "500008"},
+    {"key": "masab_tank", "name_en": "Masab Tank", "name_te": "మాసాబ్ ట్యాంక్", "primary_pin": "500028"},
+    {"key": "lb_nagar", "name_en": "LB Nagar", "name_te": "ఎల్బీ నగర్", "primary_pin": "500074"},
+    {"key": "banjara_hills", "name_en": "Banjara Hills", "name_te": "బంజారా హిల్స్", "primary_pin": "500034"}
+  ],
+  "hours_en": "Monday – Saturday · 10:00 AM – 5:00 PM",
+  "hours_te": "సోమవారం – శనివారం · 10:00 AM – 5:00 PM",
+  "default_pin": "500016",
+  "addressLocality": "Hyderabad",
+  "addressRegion": "Telangana",
+  "addressCountry": "IN"
+}

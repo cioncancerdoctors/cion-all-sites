@@ -1,0 +1,134 @@
+{
+  "_note": "All cancer type pages built in Phase 1. Each has bilingual content, schema, FAQ, embedded form. Slug matches URL.",
+
+  "phase1_priority": [
+    {
+      "slug": "gastric-stomach-cancer",
+      "name_en": "Gastric / Stomach Cancer",
+      "name_te": "గ్యాస్ట్రిక్ / కడుపు క్యాన్సర్",
+      "imad_strength": true,
+      "primary_keyword": "gastric cancer treatment Hyderabad",
+      "secondary_keywords": ["stomach cancer surgery", "gastrectomy", "D2 lymphadenectomy"],
+      "imad_note": "AIIMS thesis research area · Published J Gastrointest Surg 2022",
+      "related_treatments": ["surgical-oncology", "hipec-pipac", "gi-cancer-surgery"],
+      "related_listicles": ["best-cancer-surgeons-hyderabad"]
+    },
+    {
+      "slug": "colorectal-cancer",
+      "name_en": "Colorectal Cancer",
+      "name_te": "కొలొరెక్టల్ క్యాన్సర్",
+      "imad_strength": true,
+      "primary_keyword": "colorectal cancer surgery Hyderabad",
+      "secondary_keywords": ["colon cancer", "rectal cancer", "TME", "colectomy"],
+      "imad_note": "AIIMS + ESSO Fellowship — TME and CRS+HIPEC for peritoneal spread",
+      "related_treatments": ["surgical-oncology", "hipec-pipac", "laparoscopic-cancer-surgery"],
+      "related_listicles": ["best-cancer-surgeons-hyderabad"]
+    },
+    {
+      "slug": "ovarian-cancer",
+      "name_en": "Ovarian Cancer",
+      "name_te": "ఓవేరియన్ క్యాన్సర్",
+      "imad_strength": true,
+      "primary_keyword": "ovarian cancer treatment Hyderabad",
+      "secondary_keywords": ["ovarian debulking", "HIPEC ovarian"],
+      "imad_note": "ESSO Fellowship — HIPEC for ovarian cancer · Hannover, Germany",
+      "related_treatments": ["surgical-oncology", "hipec-pipac"],
+      "related_listicles": ["best-hipec-surgeons-hyderabad"]
+    },
+    {
+      "slug": "peritoneal-cancer",
+      "name_en": "Peritoneal Cancer",
+      "name_te": "పెరిటోనియల్ క్యాన్సర్",
+      "imad_strength": true,
+      "primary_keyword": "peritoneal cancer treatment Hyderabad",
+      "secondary_keywords": ["peritoneal carcinomatosis", "peritoneal surface malignancy", "PSM"],
+      "imad_note": "Primary specialty · ESSO Fellowship in Peritoneal Surface Malignancy · Hannover under Prof. Beate Rau",
+      "related_treatments": ["hipec-pipac", "cytoreductive-surgery"],
+      "related_listicles": ["best-hipec-surgeons-hyderabad"]
+    },
+    {
+      "slug": "pancreatic-cancer",
+      "name_en": "Pancreatic Cancer",
+      "name_te": "పాన్‌క్రియాటిక్ క్యాన్సర్",
+      "imad_strength": true,
+      "primary_keyword": "pancreatic cancer surgery Hyderabad",
+      "secondary_keywords": ["Whipple's procedure", "pancreaticoduodenectomy"],
+      "imad_note": "M.Ch Surgical Oncology AIIMS · Whipple's procedure expertise",
+      "related_treatments": ["whipples-procedure", "surgical-oncology"]
+    },
+    {
+      "slug": "oesophageal-cancer",
+      "name_en": "Oesophageal Cancer",
+      "name_te": "ఎసోఫేజియల్ క్యాన్సర్",
+      "imad_strength": true,
+      "primary_keyword": "oesophageal cancer surgery Hyderabad",
+      "secondary_keywords": ["esophageal cancer", "esophagectomy", "minimally invasive esophagectomy"],
+      "imad_note": "Published research: Journal of Minimal Access Surgery · AIIMS-trained",
+      "related_treatments": ["laparoscopic-cancer-surgery", "surgical-oncology"]
+    },
+    {
+      "slug": "liver-cancer",
+      "name_en": "Liver Cancer",
+      "name_te": "లివర్ క్యాన్సర్",
+      "imad_strength": true,
+      "primary_keyword": "liver cancer treatment Hyderabad",
+      "secondary_keywords": ["liver metastases", "hepatic resection"],
+      "imad_note": "Liver metastases resection · CION Tumor Board reviewed",
+      "related_treatments": ["surgical-oncology", "gi-cancer-surgery"]
+    },
+    {
+      "slug": "appendix-cancer-pmp",
+      "name_en": "Appendix Cancer & PMP",
+      "name_te": "అపెండిక్స్ క్యాన్సర్ & PMP",
+      "imad_strength": true,
+      "primary_keyword": "appendix cancer treatment Hyderabad",
+      "secondary_keywords": ["pseudomyxoma peritonei", "PMP", "appendiceal cancer"],
+      "imad_note": "Highly specialised · CRS+HIPEC for PMP",
+      "related_treatments": ["hipec-pipac", "cytoreductive-surgery"]
+    }
+  ],
+
+  "phase2_planned": [
+    {"slug": "breast-cancer", "name_en": "Breast Cancer", "name_te": "బ్రెస్ట్ క్యాన్సర్"},
+    {"slug": "lung-cancer", "name_en": "Lung Cancer", "name_te": "లంగ్ క్యాన్సర్"},
+    {"slug": "oral-cancer", "name_en": "Oral Cancer", "name_te": "నోటి క్యాన్సర్"},
+    {"slug": "cervical-cancer", "name_en": "Cervical Cancer", "name_te": "సెర్వికల్ క్యాన్సర్"},
+    {"slug": "prostate-cancer", "name_en": "Prostate Cancer", "name_te": "ప్రొస్టేట్ క్యాన్సర్"},
+    {"slug": "blood-cancer", "name_en": "Blood Cancer / Leukaemia", "name_te": "బ్లడ్ క్యాన్సర్ / లుకేమియా"},
+    {"slug": "thyroid-cancer", "name_en": "Thyroid Cancer", "name_te": "థైరాయిడ్ క్యాన్సర్"}
+  ],
+
+  "treatments_phase1": [
+    {"slug": "hipec-pipac", "name_en": "HIPEC + PIPAC", "name_te": "HIPEC + PIPAC", "primary_keyword": "HIPEC treatment Hyderabad", "imad_specialty": true},
+    {"slug": "whipples-procedure", "name_en": "Whipple's Procedure", "name_te": "Whipple's ప్రొసీజర్", "primary_keyword": "Whipple's procedure Hyderabad", "imad_specialty": true},
+    {"slug": "cytoreductive-surgery", "name_en": "Cytoreductive Surgery (CRS)", "name_te": "Cytoreductive Surgery (CRS)", "primary_keyword": "cytoreductive surgery Hyderabad", "imad_specialty": true},
+    {"slug": "laparoscopic-cancer-surgery", "name_en": "Laparoscopic Cancer Surgery", "name_te": "Laparoscopic క్యాన్సర్ సర్జరీ", "primary_keyword": "laparoscopic cancer surgery Hyderabad"},
+    {"slug": "surgical-oncology", "name_en": "Surgical Oncology", "name_te": "Surgical Oncology", "primary_keyword": "surgical oncology Hyderabad", "imad_specialty": true},
+    {"slug": "gi-cancer-surgery", "name_en": "GI Cancer Surgery", "name_te": "GI క్యాన్సర్ సర్జరీ", "primary_keyword": "GI cancer surgery Hyderabad", "imad_specialty": true}
+  ],
+
+  "hyderabad_seo_phase1": [
+    {"slug": "surgical-oncologist-hyderabad", "primary_keyword": "surgical oncologist Hyderabad"},
+    {"slug": "hipec-treatment-hyderabad", "primary_keyword": "HIPEC treatment Hyderabad"},
+    {"slug": "gastric-cancer-surgery-hyderabad", "primary_keyword": "gastric cancer surgery Hyderabad"},
+    {"slug": "colorectal-cancer-surgery-hyderabad", "primary_keyword": "colorectal cancer surgery Hyderabad"},
+    {"slug": "peritoneal-cancer-hyderabad", "primary_keyword": "peritoneal cancer treatment Hyderabad"},
+    {"slug": "second-opinion-cancer-hyderabad", "primary_keyword": "second opinion cancer Hyderabad"},
+    {"slug": "cancer-surgery-cost-hyderabad", "primary_keyword": "cancer surgery cost Hyderabad"},
+    {"slug": "aarogyasri-cancer-treatment-hyderabad", "primary_keyword": "Aarogyasri cancer treatment Hyderabad"}
+  ],
+
+  "listicles_phase1": [
+    {"slug": "best-cancer-hospital-hyderabad", "primary_keyword": "best cancer hospital Hyderabad", "cion_position": 1},
+    {"slug": "best-cancer-surgeons-hyderabad", "primary_keyword": "best cancer surgeons Hyderabad", "imad_position": 1},
+    {"slug": "best-hipec-surgeons-hyderabad", "primary_keyword": "best HIPEC surgeons Hyderabad", "imad_position": 1}
+  ],
+
+  "service_pages_phase1": [
+    {"slug": "free-second-opinion", "name_en": "Free Second Opinion", "name_te": "ఉచిత Second Opinion"},
+    {"slug": "free-online-second-opinion", "name_en": "Free Online Second Opinion", "name_te": "ఉచిత Online Second Opinion", "_mechanism": "Path A — Form + WhatsApp upload"},
+    {"slug": "cancer-vaccination", "name_en": "Cancer Vaccination", "name_te": "క్యాన్సర్ వ్యాక్సినేషన్"},
+    {"slug": "pet-ct-scan-hyderabad", "name_en": "PET CT Scan Hyderabad", "name_te": "PET CT స్కాన్ Hyderabad", "_pricing": "Lowest rate in Hyderabad — ₹10,000", "_disclaimer": "Lowest rate among CION-affiliated diagnostic centres. Compare with your provider before booking."},
+    {"slug": "genetic-testing-for-cancer", "name_en": "Cancer Genetic Testing", "name_te": "క్యాన్సర్ Genetic Testing", "_pricing": "Starting ₹10,000", "_pricing_tiers": [{"tier": "Single gene (BRCA1 or BRCA2)", "price": "₹10,000"}, {"tier": "Hereditary cancer panel (12-30 genes)", "price": "₹25,000"}, {"tier": "Comprehensive panel (50+ genes)", "price": "₹40,000+"}]}
+  ]
+}

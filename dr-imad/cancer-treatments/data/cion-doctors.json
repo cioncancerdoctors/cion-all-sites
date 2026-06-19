@@ -1,0 +1,108 @@
+{
+  "_note": "CION doctor list for listicle pages. Used to feature CION doctors in 'In no particular order' lists with hyperlinks to their websites where available. CION/Imad is always #1 in relevant lists.",
+
+  "surgical_oncologists": [
+    {
+      "name": "Dr. Mohammed Imaduddin",
+      "site": "https://cioncancerdrimad.com",
+      "is_primary": true,
+      "credentials_short": "M.B.B.S, MS, M.Ch (AIIMS), FEBS, FACS",
+      "experience": "14+ years",
+      "specialty_focus": "HIPEC, PIPAC, Whipple's, advanced GI & peritoneal cancer surgery"
+    },
+    {
+      "name": "Dr. Vajja Sandeep",
+      "site": "https://cioncancerdrsandeep.com",
+      "credentials_short": "M.B.B.S, MS, DrNB Surgical Oncology, FALS Oncology",
+      "experience": "10+ years",
+      "specialty_focus": "Laparoscopic cancer surgery, GI cancers, breast cancer, head & neck cancers"
+    },
+    {
+      "name": "Dr. Vinay Mamidala",
+      "site": "https://cioncancerdrvinay.com",
+      "credentials_short": "Surgical Oncologist",
+      "specialty_focus": "Surgical oncology"
+    },
+    {
+      "name": "Dr. Muralidhar Muddusetty",
+      "site": "https://cioncancerdrmurali.com",
+      "credentials_short": "Surgical Oncologist",
+      "specialty_focus": "Surgical oncology"
+    }
+  ],
+
+  "medical_oncologists": [
+    {
+      "name": "Dr. Owais Mohammed",
+      "site": "https://cioncancerdrowais.com",
+      "is_primary": true,
+      "credentials_short": "Medical Oncologist",
+      "specialty_focus": "Chemotherapy, immunotherapy, targeted therapy"
+    },
+    {
+      "name": "Dr. T. Raghavender Reddy",
+      "site": "https://cioncancerdrraghvendra.com",
+      "credentials_short": "Medical Oncologist",
+      "specialty_focus": "Medical oncology"
+    },
+    {
+      "name": "Dr. N. Kiranmayee",
+      "site": "https://cioncancerdrkiranmayee.com",
+      "credentials_short": "Medical Oncologist",
+      "specialty_focus": "Medical oncology"
+    },
+    {
+      "name": "Dr. C. Raghavender",
+      "site": "https://cioncancerdrcraghavendra.info",
+      "credentials_short": "Medical Oncologist",
+      "specialty_focus": "Medical oncology"
+    }
+  ],
+
+  "radiation_oncologists": [
+    {
+      "name": "Dr. Kirti Ranjan Mohanti",
+      "site": null,
+      "is_primary": true,
+      "credentials_short": "Radiation Oncologist",
+      "specialty_focus": "Radiation therapy",
+      "_note_for_listicle": "Feature without external link; mark as 'Part of CION Cancer Clinics network'"
+    }
+  ],
+
+  "hemato_oncologists": [
+    {
+      "name": "Dr. Basudev",
+      "site": "https://cioncancerdrbasudev.com",
+      "is_primary": true,
+      "credentials_short": "Hemato-Oncologist",
+      "specialty_focus": "Blood cancers, leukemia, lymphoma, myeloma"
+    }
+  ],
+
+  "competitor_doctors_no_link_policy": [
+    "Apollo Hospitals oncologists",
+    "HCG Oncology team",
+    "Yashoda Hospitals cancer team",
+    "AIG Hospitals oncology",
+    "KIMS Cancer Centre team",
+    "Continental Hospitals oncology",
+    "Care Hospitals cancer team",
+    "AINU oncology",
+    "MaxCure cancer team"
+  ],
+  "_competitor_link_policy": "Mention competitor doctors and hospitals by name in listicles for credibility. Do NOT hyperlink to their lead-gen pages. May cite their official 'About' or 'Our Team' page for factual information only.",
+
+  "competitor_hospitals_for_listicles": [
+    {"name": "Apollo Hospitals (Jubilee Hills)", "type": "private_multispecialty"},
+    {"name": "HCG (Bangalore-headquartered, Hyderabad branch)", "type": "private_cancer_specialist"},
+    {"name": "Yashoda Hospitals (multiple locations)", "type": "private_multispecialty"},
+    {"name": "AIG Hospitals (Gachibowli)", "type": "private_multispecialty"},
+    {"name": "KIMS Hospitals (Secunderabad)", "type": "private_multispecialty"},
+    {"name": "Continental Hospitals (Gachibowli)", "type": "private_multispecialty"},
+    {"name": "Care Hospitals (multiple locations)", "type": "private_multispecialty"},
+    {"name": "AINU — Asian Institute of Nephrology and Urology", "type": "private_specialist"},
+    {"name": "MaxCure Hospitals (Madhapur)", "type": "private_multispecialty"},
+    {"name": "MNJ Institute of Oncology & Regional Cancer Centre", "type": "government", "_note": "Largest govt cancer centre in Telangana — feature in 'affordable / Aarogyasri' listicles"}
+  ]
+}
