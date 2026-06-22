@@ -23,7 +23,6 @@ $page_og_image    = $page_og_image    ?? 'https://cioncancerdrimad.com/assets/im
 <meta name="robots" content="<?php echo $page_robots; ?>">
 <link rel="canonical" href="<?php echo $page_canonical; ?>">
 
-<!-- Bilingual hreflang -->
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
