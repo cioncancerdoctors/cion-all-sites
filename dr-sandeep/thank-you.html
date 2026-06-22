@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thank You | Dr. Sandeep Vajja</title>
+<meta name="description" content="Thank you for sending your details to Dr. Sandeep Vajja's clinic. The team will call you back during working hours about your head and neck concern.">
+<link rel="canonical" href="https://cioncancerdrsandeep.com/thank-you.html">
+  <meta property="og:url" content="https://cioncancerdrsandeep.com/thank-you.html">
+  <meta property="og:image" content="https://cioncancerdrsandeep.com/sandeep-portrait.png">
+  <meta property="og:image:alt" content="Dr. Sandeep Vajja">
+  <meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" href="favicon.png">
+<meta name="robots" content="noindex, follow">
+<meta property="og:title" content="Thank You | Dr. Sandeep Vajja">
+<meta property="og:locale" content="en_IN">
+<meta property="og:locale:alternate" content="te_IN">
+<meta property="og:description" content="Thank you for sending your details. Dr. Sandeep Vajja's team will call you back during working hours.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ── TOKENS ── */
+:root {
+  --ink:        #1C2B25;
+  --ink2:       #41544B;
+  --forest:     #1F5C46;
+  --forest-soft:#E6F0EA;
+  --stone:      #F2F0EA;
+  --white:      #FFFFFF;
+  --border:     #D6D2C7;
+  --head:       'Sora', 'Libre Franklin', 'Noto Sans Telugu', sans-serif;
+  --sans:       'Libre Franklin', 'Noto Sans Telugu', system-ui, sans-serif;
+  --ease:       cubic-bezier(.4,0,.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--white); color: var(--ink); line-height: 1.7; font-size: 15px; overflow-x: hidden; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+
+/* ── LANGUAGE VISIBILITY ── */
+.te-content { display: inline; }
+.en-content { display: none; }
+html[lang="en"] .te-content { display: none; }
+html[lang="en"] .en-content { display: inline; }
+.te-block { display: block; }
+.en-block { display: none; }
+html[lang="en"] .te-block { display: none; }
+html[lang="en"] .en-block { display: block; }
+
+/* ── ICONS ── */
+.ic { width: 22px; height: 22px; stroke: var(--forest); flex-shrink: 0; }
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-toggle { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.lang-opt { font-family: var(--head); font-size: 11px; font-weight: 500; letter-spacing: 0.05em; padding: 5px 11px; color: var(--ink2); cursor: pointer; transition: all 0.2s; background: transparent; }
+.lang-opt.active { color: #fff; background: var(--forest); }
+.lang-opt:hover:not(.active) { color: var(--ink); background: var(--stone); }
+
+/* ── HEADER ── */
+.site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0 20px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.hdr-name { font-family: var(--head); font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; white-space: nowrap; }
+.hdr-name small { font-family: var(--sans); font-size: 9px; font-weight: 500; color: var(--forest); letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-top: 0; }
+.hdr-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.hamburger { width: 34px; height: 34px; display: flex; flex-direction: column; justify-content: center; gap: 5px; cursor: pointer; border: 1px solid var(--border); border-radius: 4px; padding: 0 7px; }
+.hamburger span { width: 100%; height: 1.6px; background: var(--ink); display: block; transition: all 0.3s var(--ease); }
+.hamburger.open span:nth-child(1) { transform: translateY(6.6px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.6px) rotate(-45deg); }
+
+/* ── NAV DRAWER ── */
+.nav-overlay { position: fixed; inset: 0; z-index: 998; background: rgba(28,43,37,0.45); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.nav-overlay.show { opacity: 1; pointer-events: all; }
+.nav-drawer { position: fixed; top: 60px; right: 0; bottom: 0; width: 78%; max-width: 330px; z-index: 999; background: var(--ink); transform: translateX(100%); transition: transform 0.35s var(--ease); padding: 26px 22px; overflow-y: auto; box-shadow: -8px 0 32px rgba(0,0,0,0.25); }
+.nav-drawer.open { transform: translateX(0); }
+.nav-drawer nav a { display: flex; align-items: center; gap: 13px; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 400; transition: color 0.2s; }
+.nav-drawer nav a:hover { color: #fff; }
+.nav-drawer nav a .ic { stroke: rgba(230,240,234,0.75); width: 19px; height: 19px; }
+.nav-cta { margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.nav-wa { background: var(--forest); color: #fff; font-size: 12px; font-weight: 600; padding: 13px 10px; border-radius: 4px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.nav-wa .ic { stroke: #fff; width: 16px; height: 16px; }
+.nav-call { background: rgba(255,255,255,0.08); color: #fff; font-size: 12px; font-weight: 600; padding: 13px 10px; border-radius: 4px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid rgba(255,255,255,0.18); }
+.nav-call .ic { stroke: #fff; width: 16px; height: 16px; }
+
+/* ── ARTICLE LAYOUT ── */
+.wrap { max-width: 720px; margin: 0 auto; padding: 110px 20px 60px; min-height: 70vh; }
+h1 { font-family: var(--head); font-size: clamp(30px, 7vw, 44px); font-weight: 700; line-height: 1.1; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 16px; }
+.ty-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--forest-soft); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+.ty-icon .ic { width: 32px; height: 32px; stroke: var(--forest); }
+.lede { font-size: 17px; color: var(--ink2); line-height: 1.8; margin-bottom: 14px; }
+.lede strong { color: var(--ink); font-weight: 600; }
+.prose p { font-size: 15px; color: var(--ink2); line-height: 1.85; margin-bottom: 16px; }
+.prose strong { color: var(--ink); font-weight: 600; }
+
+/* ── ACTION BUTTONS ── */
+.ty-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 30px 0; }
+.btn-primary { display: inline-flex; align-items: center; gap: 9px; background: var(--forest); color: #fff; border-radius: 6px; padding: 14px 22px; font-family: var(--head); font-size: 14px; font-weight: 600; transition: background 0.2s; }
+.btn-primary:hover { background: #174536; }
+.btn-primary .ic { stroke: #fff; width: 18px; height: 18px; }
+.btn-ghost { display: inline-flex; align-items: center; gap: 9px; background: transparent; color: var(--forest); border: 1px solid var(--forest); border-radius: 6px; padding: 14px 22px; font-family: var(--head); font-size: 14px; font-weight: 600; transition: all 0.2s; }
+.btn-ghost:hover { background: var(--forest); color: #fff; }
+.btn-ghost:hover .ic { stroke: #fff; }
+.btn-ghost .ic { stroke: var(--forest); width: 18px; height: 18px; }
+
+/* ── INTERNAL LINKS ── */
+.ilinks { display: flex; flex-wrap: wrap; gap: 10px; margin: 30px 0 0; }
+.ilinks a { font-family: var(--head); font-size: 12px; font-weight: 600; color: var(--forest); border: 1px solid var(--border); border-radius: 4px; padding: 9px 15px; background: var(--white); display: inline-flex; align-items: center; gap: 8px; transition: border-color 0.2s; }
+.ilinks a:hover { border-color: var(--forest); }
+.ilinks a .ic { width: 15px; height: 15px; stroke: var(--forest); }
+
+/* ── FOOTER ── */
+footer { background: var(--ink); padding: 40px 20px; color: rgba(255,255,255,0.45); font-size: 11.5px; line-height: 1.8; }
+.footer-inner { max-width: 720px; margin: 0 auto; }
+.footer-name { font-family: var(--head); font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 10px; letter-spacing: -0.01em; }
+.footer-sub { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+.footer-nav { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 20px 0; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); }
+.footer-nav a { color: rgba(255,255,255,0.5); font-family: var(--head); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
+.footer-nav a:hover { color: #9DC3B2; }
+.footer-reg { font-size: 10.5px; color: rgba(255,255,255,0.32); margin-top: 14px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="hdr-name">
+    Dr. Sandeep Vajja
+    <small>Head &amp; Neck Cancer Surgeon · Hyderabad</small>
+  </div>
+  <div class="hdr-right">
+    <div class="lang-toggle">
+      <div class="lang-opt active" id="lang-te" onclick="setLang('te')">తె</div>
+      <div class="lang-opt" id="lang-en" onclick="setLang('en')">EN</div>
+    </div>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<!-- NAV DRAWER -->
+<div class="nav-drawer" id="navDrawer">
+  <nav>
+    <a href="index.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M9.5 20v-6h5v6"/></svg>
+      <span class="te-content">హోమ్</span><span class="en-content">Home</span>
+    </a>
+    <a href="oral-cancer.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9c3-2 13-2 16 0"/><path d="M4 9c0 4 3.5 8 8 8s8-4 8-8"/><path d="M8 11.5c1.2 1 6.8 1 8 0"/></svg>
+      <span class="te-content">నోటి క్యాన్సర్</span><span class="en-content">Oral Cancer</span>
+    </a>
+    <a href="throat-cancer.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v5c0 2-2 3-2 6a5 5 0 0 0 10 0c0-3-2-4-2-6V3"/><path d="M9 3h6"/></svg>
+      <span class="te-content">గొంతు క్యాన్సర్</span><span class="en-content">Throat Cancer</span>
+    </a>
+    <a href="thyroid-cancer.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4c0 3-1 5-1 8a5 5 0 0 0 10 0c0-3-1-5-1-8"/><path d="M12 9v4"/><path d="M9.5 11.5h5"/></svg>
+      <span class="te-content">థైరాయిడ్ క్యాన్సర్</span><span class="en-content">Thyroid Cancer</span>
+    </a>
+    <a href="neck-dissection.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4a3 3 0 0 0 6 0V3"/><path d="M7 9c-1 1.5-1.5 3.5-1.5 6V21"/><path d="M17 9c1 1.5 1.5 3.5 1.5 6V21"/><path d="M9.5 13.5h5"/></svg>
+      <span class="te-content">నెక్ డిసెక్షన్</span><span class="en-content">Neck Dissection</span>
+    </a>
+    <a href="second-opinion.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z"/><path d="m20 20-4-4"/><path d="M8.5 11h5M11 8.5v5"/></svg>
+      <span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second Opinion</span>
+    </a>
+    <a href="about.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+      <span class="te-content">నా గురించి</span><span class="en-content">About</span>
+    </a>
+  </nav>
+  <div class="nav-cta">
+    <a href="https://wa.me/919063490160" class="nav-wa">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg>
+      WhatsApp
+    </a>
+    <a href="tel:+919063490160" class="nav-call">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+      Call
+    </a>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="ty-icon">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+  </div>
+
+  <h1>
+    <span class="te-content">ధన్యవాదాలు</span>
+    <span class="en-content">Thank you</span>
+  </h1>
+  <p class="lede">
+    <span class="te-content"><strong>మీ వివరాలు మాకు అందాయి.</strong> పని వేళల్లో డా. సందీప్ వజ్జ టీమ్ మిమ్మల్ని కాల్ చేస్తుంది.</span>
+    <span class="en-content"><strong>We have received your details.</strong> Dr. Sandeep Vajja's team will call you back during working hours.</span>
+  </p>
+  <div class="prose">
+    <p>
+      <span class="te-content">మీరు ఇంకా మీ రిపోర్టులు పంపకపోతే, మీ బయాప్సీ, స్కాన్‌లను వాట్సాప్‌లో పంపండి. మీరు వచ్చేలోపే టీమ్ వాటిని చూసి, మీ సంప్రదింపును మరింత ఉపయోగకరంగా చేయగలదు. ఇది అత్యవసరమైతే, దయచేసి నేరుగా కాల్ చేయండి.</span>
+      <span class="en-content">If you have not already, you can send your biopsy report and scans on WhatsApp. The team can look at them before you visit, which makes your consultation more useful. If this is urgent, please call us directly.</span>
+    </p>
+  </div>
+
+  <div class="ty-actions">
+    <a href="https://wa.me/919063490160?text=%E0%B0%A8%E0%B0%AE%E0%B0%B8%E0%B1%8D%E0%B0%95%E0%B0%BE%E0%B0%B0%E0%B0%82%2C%20%E0%B0%A8%E0%B0%BE%20%E0%B0%B0%E0%B0%BF%E0%B0%AA%E0%B1%8B%E0%B0%B0%E0%B1%8D%E0%B0%9F%E0%B1%81%E0%B0%B2%E0%B1%81%20%E0%B0%AA%E0%B0%82%E0%B0%AA%E0%B1%81%E0%B0%A4%E0%B1%81%E0%B0%A8%E0%B1%8D%E0%B0%A8%E0%B0%BE%E0%B0%A8%E0%B1%81." class="btn-primary">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg>
+      <span class="te-content">వాట్సాప్‌లో రిపోర్టులు పంపండి</span><span class="en-content">Send reports on WhatsApp</span>
+    </a>
+    <a href="tel:+919063490160" class="btn-ghost">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+      <span class="te-content">+91 90634 90160కు కాల్ చేయండి</span><span class="en-content">Call +91 90634 90160</span>
+    </a>
+  </div>
+
+  <div class="ilinks">
+    <a href="index.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg><span class="te-content">హోమ్‌కు తిరిగి వెళ్లండి</span><span class="en-content">Back to Home</span></a>
+    <a href="second-opinion.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z"/><path d="m20 20-4-4"/></svg><span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second Opinion</span></a>
+    <a href="about.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M5 20a7 7 0 0 1 14 0"/></svg><span class="te-content">నా గురించి</span><span class="en-content">About</span></a>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-name">Dr. Sandeep Vajja</div>
+    <div class="footer-sub">
+      <span class="te-content">సర్జికల్ ఆంకాలజిస్ట్ · తల-మెడ క్యాన్సర్ శస్త్రచికిత్స</span>
+      <span class="en-content">Surgical Oncologist · Head &amp; Neck Cancer Surgery</span><br>
+      MBBS · MS Surgical Oncology · DrNB Surgical Oncology<br>
+      CION Cancer Clinics, Plot No 4, Satyam Theatre Road, beside Blue Fox Hotel, Srinivasa Nagar, Ameerpet, Hyderabad 500082
+    </div>
+    <div class="footer-nav">
+      <a href="index.html"><span class="te-content">హోమ్</span><span class="en-content">Home</span></a>
+      <a href="oral-cancer.html"><span class="te-content">నోటి క్యాన్సర్</span><span class="en-content">Oral Cancer</span></a>
+      <a href="throat-cancer.html"><span class="te-content">గొంతు క్యాన్సర్</span><span class="en-content">Throat Cancer</span></a>
+      <a href="thyroid-cancer.html"><span class="te-content">థైరాయిడ్ క్యాన్సర్</span><span class="en-content">Thyroid Cancer</span></a>
+      <a href="neck-dissection.html"><span class="te-content">నెక్ డిసెక్షన్</span><span class="en-content">Neck Dissection</span></a>
+      <a href="second-opinion.html"><span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second Opinion</span></a>
+      <a href="about.html"><span class="te-content">నా గురించి</span><span class="en-content">About</span></a>
+      <a href="privacy.html"><span class="te-content">గోప్యతా విధానం</span><span class="en-content">Privacy</span></a>
+    </div>
+    <div class="footer-reg">
+      <p class="te-block">ఈ వెబ్‌సైట్ సమాచారం కోసం మాత్రమే, ఇది వైద్య సలహా కాదు. ఏ చికిత్స నిర్ణయం తీసుకునే ముందు మీ వైద్యుడిని సంప్రదించండి.</p>
+      <p class="en-block">This website is for informational purposes only and does not constitute medical advice. Consult your doctor before making any treatment decision.</p>
+      <p style="margin-top:8px">© 2026 Dr. Sandeep Vajja · CION Cancer Clinics · Hyderabad · +91 90634 90160</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+function setLang(l) {
+  document.documentElement.lang = l;
+  document.getElementById('lang-te').classList.toggle('active', l === 'te');
+  document.getElementById('lang-en').classList.toggle('active', l === 'en');
+  try { localStorage.setItem('cion-lang', l); } catch(e){}
+}
+function toggleNav() {
+  var d = document.getElementById('navDrawer');
+  var h = document.getElementById('hamburger');
+  var o = document.getElementById('navOverlay');
+  var open = d.classList.toggle('open');
+  h.classList.toggle('open', open);
+  o.classList.toggle('show', open);
+}
+function closeNav() {
+  document.getElementById('navDrawer').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('show');
+}
+(function(){
+  try {
+    var saved = localStorage.getItem('cion-lang');
+    if (saved === 'en') setLang('en');
+  } catch(e){}
+})();
+</script>
+</body>
+</html>
