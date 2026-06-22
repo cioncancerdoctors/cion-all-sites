@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Cancer Types","item":"https://cioncancerdrimad.com/types-of-cancer/"},{"@type":"ListItem","position":3,"name":"Liver Cancer","item":"https://cioncancerdrimad.com/types-of-cancer/liver-cancer/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can liver metastases from colorectal cancer be operated?","acceptedAnswer":{"@type":"Answer","text":"Yes, in selected patients. Studies show 5-year survival of 30-50% is possible after resection of colorectal liver metastases. Tumor Board planning with combined chemotherapy is required."}},{"@type":"Question","name":"What staging system is used for liver cancer surgery?","acceptedAnswer":{"@type":"Answer","text":"Barcelona Clinic Liver Cancer (BCLC) staging guides surgery indications for HCC. Liver function (Child-Pugh score) and adequate future liver remnant (FLR) are key assessment criteria."}}]}</script>

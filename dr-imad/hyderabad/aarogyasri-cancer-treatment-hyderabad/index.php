@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Aarogyasri Cancer Treatment","item":"https://cioncancerdrimad.com/hyderabad/aarogyasri-cancer-treatment-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What cancer surgeries are covered under Aarogyasri?","acceptedAnswer":{"@type":"Answer","text":"Gastric cancer surgery, colorectal surgery, Whipple's procedure, esophagectomy, ovarian cancer surgery and many others. HIPEC is checked case-by-case."}},{"@type":"Question","name":"What documents are needed for Aarogyasri cancer treatment?","acceptedAnswer":{"@type":"Answer","text":"Aarogyasri card, White Ration card, Aadhaar card, passport photo, medical reports (CT/biopsy/blood tests) and reference letters from previous doctors."}}]}</script>

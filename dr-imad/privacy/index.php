@@ -4,7 +4,7 @@ $page_description="Privacy policy, terms of use and grievance redressal for cion
 $page_canonical="https://cioncancerdrimad.com/privacy/";
 $page_robots="noindex, follow";
 require __DIR__."/../_inc.php";
-?><!DOCTYPE html><html lang="te"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
+?><!DOCTYPE html><html lang="en"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Privacy & Terms","item":"https://cioncancerdrimad.com/privacy/"}]}</script>
 <script>
 window.cionPageData = {

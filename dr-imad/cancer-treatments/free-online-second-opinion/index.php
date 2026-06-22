@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Online Second Opinion","item":"https://cioncancerdrimad.com/free-online-second-opinion/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does the online second opinion work?","acceptedAnswer":{"@type":"Answer","text":"Send your CT scan, biopsy and PET-CT reports as photos or PDFs on WhatsApp to +91 90634 90160. Dr. Imaduddin personally reviews and responds within 48 hours."}},{"@type":"Question","name":"Is the online second opinion free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free. No consultation fee charged."}},{"@type":"Question","name":"What types of reports can I send?","acceptedAnswer":{"@type":"Answer","text":"CT scan, MRI, PET-CT films and reports, biopsy/histopathology reports, blood tests and previous treatment records."}}]}</script>

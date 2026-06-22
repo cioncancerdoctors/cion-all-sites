@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Second Opinion Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/second-opinion-cancer-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Where can I get a free cancer second opinion in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"CION Cancer Clinics under Dr. Mohammed Imaduddin. 7 Hyderabad centres. First consultation free. Also available online via WhatsApp."}},{"@type":"Question","name":"Is it worth getting a second opinion for cancer in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Yes. In Dr. Imaduddin's practice, a significant number of patients referred as inoperable become surgical candidates after PCI assessment. A second opinion costs nothing and can change the treatment outcome."}}]}</script>

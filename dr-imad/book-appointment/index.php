@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalBusiness","name":"CION Cancer Clinics","telephone":"+91-9063490160","openingHours":"Mo-Sa 10:00-17:00","address":{"@type":"PostalAddress","addressLocality":"Hyderabad","addressRegion":"Telangana","addressCountry":"IN"}}

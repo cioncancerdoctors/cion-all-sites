@@ -4,7 +4,7 @@ $page_description="PET CT Scan in Hyderabad at ₹10,000 — lowest rate among C
 $page_canonical="https://cioncancerdrimad.com/pet-ct-scan-hyderabad/";
 $page_robots="index, follow, max-image-preview:large";
 require __DIR__."/../_inc.php";
-?><!DOCTYPE html><html lang="te"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
+?><!DOCTYPE html><html lang="en"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"PET CT Scan","item":"https://cioncancerdrimad.com/pet-ct-scan-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the cost of PET CT scan in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Rs 10,000 at CION-affiliated diagnostic centres. This is the lowest rate among CION-affiliated centres. Compare with your provider before booking."}},{"@type":"Question","name":"When is a PET CT scan needed for cancer?","acceptedAnswer":{"@type":"Answer","text":"For initial cancer staging, to assess treatment response after chemotherapy, for pre-surgery planning to confirm no distant spread, and for recurrence detection."}}]}</script>
 <script>

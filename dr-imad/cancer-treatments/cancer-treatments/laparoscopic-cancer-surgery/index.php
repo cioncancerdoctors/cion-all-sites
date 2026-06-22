@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Treatments","item":"https://cioncancerdrimad.com/cancer-treatments/"},{"@type":"ListItem","position":3,"name":"Laparoscopic Surgery","item":"https://cioncancerdrimad.com/cancer-treatments/laparoscopic-cancer-surgery/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is laparoscopic cancer surgery as effective as open surgery?","acceptedAnswer":{"@type":"Answer","text":"For suitable cases, yes. Multiple RCTs (COST, CLASICC, COLOR trials) confirmed equivalent oncological outcomes for laparoscopic versus open colon cancer surgery. Benefit is faster recovery and fewer complications."}},{"@type":"Question","name":"What cancer surgeries can be done laparoscopically?","acceptedAnswer":{"@type":"Answer","text":"Laparoscopic colectomy, minimally invasive esophagectomy (MIE), selected laparoscopic gastrectomy, laparoscopic liver resection for peripheral tumours, and diagnostic laparoscopy with PIPAC delivery."}}]}</script>

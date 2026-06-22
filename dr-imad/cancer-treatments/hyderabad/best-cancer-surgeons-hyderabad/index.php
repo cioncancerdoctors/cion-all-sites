@@ -4,7 +4,7 @@ $page_description="Editorial guide to leading cancer surgeons in Hyderabad — D
 $page_canonical="https://cioncancerdrimad.com/hyderabad/best-cancer-surgeons-hyderabad/";
 $page_robots="index, follow, max-image-preview:large";
 require __DIR__."/../../_inc.php";
-?><!DOCTYPE html><html lang="te"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
+?><!DOCTYPE html><html lang="en"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Best Cancer Surgeons Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/best-cancer-surgeons-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I choose a cancer surgeon in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Check for M.Ch surgical oncology or DNB qualification. Ask about their annual volume for your specific procedure. Look for published research, Tumor Board involvement and willingness to discuss second opinions openly."}},{"@type":"Question","name":"What is the difference between a surgical oncologist and a general surgeon?","acceptedAnswer":{"@type":"Answer","text":"A surgical oncologist has 3 additional years of M.Ch superspeciality training specifically for cancer surgery after MS General Surgery."}}]}</script>
 <script>

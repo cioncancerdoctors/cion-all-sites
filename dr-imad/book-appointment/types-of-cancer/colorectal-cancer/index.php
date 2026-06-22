@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Cancer Types","item":"https://cioncancerdrimad.com/types-of-cancer/"},{"@type":"ListItem","position":3,"name":"Colorectal Cancer","item":"https://cioncancerdrimad.com/types-of-cancer/colorectal-cancer/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What surgery is done for rectal cancer?","acceptedAnswer":{"@type":"Answer","text":"Total Mesorectal Excision (TME), developed by Richard Heald and validated by the Dutch TME Trial. It significantly reduces local recurrence rates through sharp anatomical plane dissection preserving the mesorectal envelope."}},{"@type":"Question","name":"Is laparoscopic surgery suitable for colon cancer?","acceptedAnswer":{"@type":"Answer","text":"Yes, in most cases. Multiple RCTs (COST, CLASICC, COLOR trials) have confirmed that laparoscopic colectomy gives oncological outcomes equivalent to open surgery with faster recovery."}}]}</script>

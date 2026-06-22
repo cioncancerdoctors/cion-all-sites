@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Treatments","item":"https://cioncancerdrimad.com/cancer-treatments/"},{"@type":"ListItem","position":3,"name":"Cytoreductive Surgery","item":"https://cioncancerdrimad.com/cancer-treatments/cytoreductive-surgery/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Cytoreductive Surgery (CRS)?","acceptedAnswer":{"@type":"Answer","text":"CRS surgically removes all visible tumour deposits from the peritoneal cavity. The goal is complete cytoreduction with zero millimetres of visible residual disease, followed by HIPEC in most cases."}},{"@type":"Question","name":"What is the PCI score and why does it matter?","acceptedAnswer":{"@type":"Answer","text":"PCI (Peritoneal Carcinomatosis Index) scores peritoneal cancer extent from 0-39. Cases below 20 are more likely to achieve complete cytoreduction. Above 20, outcomes are generally worse and surgery may not be recommended."}}]}</script>

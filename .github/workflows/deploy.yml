@@ -114,7 +114,9 @@ jobs:
 
       # Attempt 2 (only if the first failed) — self-heals transient timeouts.
       - name: Deploy via FTPS (retry)
+        id: ftp2
         if: steps.ftp1.outcome == 'failure'
+        continue-on-error: true
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: 145.79.58.156
@@ -122,7 +124,36 @@ jobs:
           password: ${{ secrets.SFTP_PASS }}
           protocol: ftps
           port: 21
-          timeout: 60000
+          timeout: 120000
+          local-dir: ./${{ matrix.doctor }}/
+          server-dir: ${{ steps.resolve.outputs.server_dir }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/*.log
+            **/leads.log
+            **/errors.log
+            **/submit.php
+            **/leads.csv
+            **/rate-limit.json
+            **/recent-phones.json
+
+      - name: Wait before final retry
+        if: steps.ftp1.outcome == 'failure' && steps.ftp2.outcome == 'failure'
+        run: sleep 60
+
+      # Attempt 3 (final; only if both prior failed). No continue-on-error: a 3rd
+      # failure fails the job so a page is never silently left unpublished.
+      - name: Deploy via FTPS (final retry)
+        if: steps.ftp1.outcome == 'failure' && steps.ftp2.outcome == 'failure'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 145.79.58.156
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASS }}
+          protocol: ftps
+          port: 21
+          timeout: 120000
           local-dir: ./${{ matrix.doctor }}/
           server-dir: ${{ steps.resolve.outputs.server_dir }}
           exclude: |

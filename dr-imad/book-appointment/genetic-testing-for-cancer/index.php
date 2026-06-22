@@ -4,7 +4,7 @@ $page_description="Genetic testing for cancer hereditary risk by Dr. Mohammed Im
 $page_canonical="https://cioncancerdrimad.com/genetic-testing-for-cancer/";
 $page_robots="index, follow, max-image-preview:large";
 require __DIR__."/../_inc.php";
-?><!DOCTYPE html><html lang="te"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
+?><!DOCTYPE html><html lang="en"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Genetic Testing","item":"https://cioncancerdrimad.com/genetic-testing-for-cancer/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Who should get genetic testing for cancer?","acceptedAnswer":{"@type":"Answer","text":"People with family history of cancer especially at young age, those diagnosed with cancer before age 50, and people with BRCA-associated cancers (breast, ovarian, pancreatic, prostate) or suspected Lynch syndrome."}},{"@type":"Question","name":"What does BRCA testing show?","acceptedAnswer":{"@type":"Answer","text":"BRCA1 and BRCA2 gene mutations significantly increase risk of breast, ovarian, pancreatic and prostate cancers. Testing identifies inherited mutations that can guide treatment and screening decisions for the patient and family."}}]}</script>
 <script>
