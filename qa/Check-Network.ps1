@@ -71,10 +71,10 @@ foreach ($folder in $siteDomain.Keys) {
     if ($t -notmatch '<html lang="en"') { $p0.Add("${rel}: <html lang=en> missing (English-primary, config 07)") }
     if ($t -match '(?s)<title>[^<]*\p{IsTelugu}') { $p0.Add("${rel}: Telugu <title> (metadata must be English, config 07)") }
     if ($t -match 'hreflang=') { $p0.Add("${rel}: stray hreflang (single-URL bilingual: remove)") }
-    if ($t -match '(?i)<meta name="robots"[^>]*(noindex|nofollow)') { $p0.Add("${rel}: robots noindex/nofollow on live page") }
+    if ($rel -notmatch 'thank-you' -and $t -match '(?i)<meta name="robots"[^>]*(noindex|nofollow)') { $p0.Add("${rel}: robots noindex/nofollow on live page") }
 
-    # Breadcrumb schema on non-home pages
-    if (-not $isHome) {
+    # Breadcrumb schema on non-home pages (thank-you is a noindex utility page — exempt)
+    if (-not $isHome -and $rel -notmatch 'thank-you') {
       $j = ([regex]::Match($t,'(\{"@context":"https://schema\.org","@type":"BreadcrumbList[\s\S]*?\}\]\})')).Groups[1].Value
       if (-not $j) { $p0.Add("${rel}: BreadcrumbList missing") }
       else {
