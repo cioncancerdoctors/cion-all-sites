@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Cancer Types","item":"https://cioncancerdrimad.com/types-of-cancer/"},{"@type":"ListItem","position":3,"name":"Pancreatic Cancer","item":"https://cioncancerdrimad.com/types-of-cancer/pancreatic-cancer/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What percentage of pancreatic cancers can be operated?","acceptedAnswer":{"@type":"Answer","text":"Only 15-20% of pancreatic cancers are upfront resectable at diagnosis. The rest require neoadjuvant chemotherapy and reassessment, or are not surgical candidates."}},{"@type":"Question","name":"What chemotherapy is given before Whipple's surgery?","acceptedAnswer":{"@type":"Answer","text":"FOLFIRINOX or gemcitabine-nab-paclitaxel for borderline resectable or locally advanced cases. The decision is made at Tumor Board."}}]}</script>

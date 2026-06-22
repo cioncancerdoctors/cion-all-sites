@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Cancer Types","item":"https://cioncancerdrimad.com/types-of-cancer/"},{"@type":"ListItem","position":3,"name":"Appendix Cancer / PMP","item":"https://cioncancerdrimad.com/types-of-cancer/appendix-cancer-pmp/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Pseudomyxoma Peritonei (PMP)?","acceptedAnswer":{"@type":"Answer","text":"Pseudomyxoma Peritonei (PMP) is a rare condition caused by a mucinous tumour from the appendix spreading to the peritoneal cavity and producing jelly-like material (mucin). It is slowly progressive."}},{"@type":"Question","name":"Is PMP curable?","acceptedAnswer":{"@type":"Answer","text":"In selected cases, CRS+HIPEC using the Sugarbaker technique can achieve long-term disease control and potential cure for PMP. This represents a major advance over the historical view of PMP as incurable."}}]}</script>

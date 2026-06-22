@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Treatments","item":"https://cioncancerdrimad.com/cancer-treatments/"},{"@type":"ListItem","position":3,"name":"GI Cancer Surgery","item":"https://cioncancerdrimad.com/cancer-treatments/gi-cancer-surgery/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What GI cancers does Dr. Imaduddin treat?","acceptedAnswer":{"@type":"Answer","text":"Gastric, colorectal, pancreatic, oesophageal, liver, gallbladder, bile duct and peritoneal cancers. GI cancer surgery is Dr. Imaduddin's core specialty with AIIMS M.Ch thesis on gastric cancer and 15+ publications."}},{"@type":"Question","name":"What is D2 lymphadenectomy and is it standard in India?","acceptedAnswer":{"@type":"Answer","text":"D2 lymphadenectomy removes extended lymph nodes around the stomach. Based on the Japanese D2 trial (JCOG 9501), it is the standard of care for gastric cancer in India and most Asian countries."}}]}</script>

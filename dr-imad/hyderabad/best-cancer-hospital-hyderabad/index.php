@@ -4,7 +4,7 @@ $page_description="Editorial guide to leading cancer hospitals in Hyderabad — 
 $page_canonical="https://cioncancerdrimad.com/hyderabad/best-cancer-hospital-hyderabad/";
 $page_robots="index, follow, max-image-preview:large";
 require __DIR__."/../../_inc.php";
-?><!DOCTYPE html><html lang="te"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
+?><!DOCTYPE html><html lang="en"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Best Cancer Hospitals Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/best-cancer-hospital-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What makes CION Cancer Clinics stand out in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"CION is exclusively focused on cancer care with AIIMS and Germany-trained specialists, multi-disciplinary Tumor Boards, HIPEC and PIPAC availability and Aarogyasri empanelment across 7 Hyderabad centres."}},{"@type":"Question","name":"Which is the best cancer hospital in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"There is no single definitive answer. The right hospital depends on your cancer type, stage, budget and location. CION specialises in GI and peritoneal cancers. Apollo has robotic surgery. AIG excels in hepatobiliary. MNJ offers government-subsidised treatment."}}]}</script>
 <script>

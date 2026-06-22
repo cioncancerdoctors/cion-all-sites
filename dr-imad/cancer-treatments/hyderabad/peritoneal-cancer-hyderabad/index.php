@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Peritoneal Cancer Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/peritoneal-cancer-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Where can I get CRS+HIPEC treatment in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"CION Cancer Clinics, Hyderabad under Dr. Mohammed Imaduddin, who trained specifically under Prof. Beate Rau at University Hospital Hannover."}},{"@type":"Question","name":"Is peritoneal cancer treatable in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Yes, in selected cases. Dr. Imaduddin offers CRS+HIPEC and PIPAC at CION. Suitability is assessed using PCI scoring based on his Hannover fellowship training."}}]}</script>

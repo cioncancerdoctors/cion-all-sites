@@ -24,9 +24,6 @@ $page_og_image    = $page_og_image    ?? 'https://cioncancerdrimad.com/assets/im
 <link rel="canonical" href="<?php echo $page_canonical; ?>">
 
 <!-- Bilingual hreflang -->
-<link rel="alternate" hreflang="te-IN" href="<?php echo $page_canonical; ?>">
-<link rel="alternate" hreflang="en-IN" href="<?php echo $page_canonical; ?>?lang=en">
-<link rel="alternate" hreflang="x-default" href="<?php echo $page_canonical; ?>">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">

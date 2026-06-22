@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Cancer Types","item":"https://cioncancerdrimad.com/types-of-cancer/"},{"@type":"ListItem","position":3,"name":"Oesophageal Cancer","item":"https://cioncancerdrimad.com/types-of-cancer/oesophageal-cancer/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Minimally Invasive Esophagectomy?","acceptedAnswer":{"@type":"Answer","text":"MIE combines a laparoscopic abdominal phase with a thoracoscopic chest phase to remove the oesophagus. It has equivalent oncological outcomes to open esophagectomy with fewer pulmonary complications and faster recovery."}},{"@type":"Question","name":"Is chemoradiation needed before oesophageal cancer surgery?","acceptedAnswer":{"@type":"Answer","text":"Yes, in most cases. The CROSS trial established neoadjuvant chemoradiation before surgery as the standard of care for resectable oesophageal cancer."}}]}</script>

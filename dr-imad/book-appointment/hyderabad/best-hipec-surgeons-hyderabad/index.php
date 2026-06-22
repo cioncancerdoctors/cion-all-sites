@@ -4,7 +4,7 @@ $page_description="Editorial guide to HIPEC surgeons in Hyderabad — a rare spe
 $page_canonical="https://cioncancerdrimad.com/hyderabad/best-hipec-surgeons-hyderabad/";
 $page_robots="index, follow, max-image-preview:large";
 require __DIR__."/../../_inc.php";
-?><!DOCTYPE html><html lang="te"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
+?><!DOCTYPE html><html lang="en"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Best HIPEC Surgeons Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/best-hipec-surgeons-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Who performs HIPEC surgery in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Dr. Mohammed Imaduddin at CION Cancer Clinics is the primary HIPEC specialist in Hyderabad with dedicated ESSO Peritoneal Surface Malignancy Fellowship training from Hannover, Germany."}},{"@type":"Question","name":"What training should a HIPEC surgeon have?","acceptedAnswer":{"@type":"Answer","text":"A HIPEC surgeon should ideally have a dedicated peritoneal surface malignancy fellowship (such as ESSO), regular HIPEC case volume, published research in peritoneal oncology and systematic PCI scoring methodology."}}]}</script>
 <script>

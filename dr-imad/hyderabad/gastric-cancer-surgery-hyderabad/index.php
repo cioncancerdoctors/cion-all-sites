@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Gastric Surgery Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/gastric-cancer-surgery-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Who is the best gastric cancer surgeon in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Dr. Mohammed Imaduddin at CION Cancer Clinics. His AIIMS M.Ch thesis was specifically on D2 gastrectomy in gastric cancer with 15+ publications in this area."}},{"@type":"Question","name":"Is D2 gastrectomy available in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Yes, at CION Cancer Clinics. D2 lymphadenectomy is the standard of care for gastric cancer based on the Japanese D2 trial."}}]}</script>

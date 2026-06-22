@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Cancer Surgery Cost","item":"https://cioncancerdrimad.com/hyderabad/cancer-surgery-cost-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What does HIPEC surgery cost in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"CRS+HIPEC typically costs Rs 4-10 lakh in Hyderabad depending on case complexity and hospital. A personalised quotation requires consultation."}},{"@type":"Question","name":"Is cancer surgery covered under Aarogyasri in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Most major cancer surgeries are covered under Telangana Aarogyasri for eligible patients (White Ration card holders). CION team verifies eligibility and handles paperwork."}}]}</script>

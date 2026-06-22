@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Advanced Surgeries","item":"https://cioncancerdrimad.com/advanced-surgeries/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between T1 and T2 procedures?","acceptedAnswer":{"@type":"Answer","text":"T1 procedures (HIPEC, PIPAC, pelvic exenteration) require specialised fellowship training. T2 procedures (gastrectomy D2, Whipple's, esophagectomy) require M.Ch surgical oncology training. T3 procedures are standard surgical oncology."}},{"@type":"Question","name":"Does Dr. Imaduddin offer laparoscopic surgery?","acceptedAnswer":{"@type":"Answer","text":"Yes, for suitable cases. Laparoscopic colectomy, minimally invasive esophagectomy, laparoscopic gastrectomy and diagnostic laparoscopy are all offered."}}]}</script>

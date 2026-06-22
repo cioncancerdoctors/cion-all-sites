@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"MedicalProcedure","name":"Whipple's Procedure (Pancreaticoduodenectomy)","procedureType":"Surgical","bodyLocation":"Pancreas, Duodenum","performer":{"@type":"Physician","name":"Dr. Mohammed Imaduddin"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Treatments","item":"https://cioncancerdrimad.com/cancer-treatments/"},{"@type":"ListItem","position":3,"name":"Whipple's Procedure","item":"https://cioncancerdrimad.com/cancer-treatments/whipples-procedure/"}]}</script>

@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Treatments","item":"https://cioncancerdrimad.com/cancer-treatments/"},{"@type":"ListItem","position":3,"name":"Surgical Oncology","item":"https://cioncancerdrimad.com/cancer-treatments/surgical-oncology/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between a surgical oncologist and a general surgeon?","acceptedAnswer":{"@type":"Answer","text":"A surgical oncologist completes an additional 3-year M.Ch superspeciality training in cancer surgery after MS General Surgery. This training covers oncological margins, lymph node dissection, multi-organ resection and cancer-specific decision-making."}},{"@type":"Question","name":"How long does it take to become a surgical oncologist in India?","acceptedAnswer":{"@type":"Answer","text":"A minimum of 11.5 years: MBBS (5.5 years) + MS General Surgery (3 years) + M.Ch Surgical Oncology (3 years). Additional fellowships like ESSO and FACS require further training."}}]}</script>

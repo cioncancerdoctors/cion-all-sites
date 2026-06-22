@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"MedicalProcedure","name":"Gastrectomy with D2 Lymphadenectomy","procedureType":"Surgical","bodyLocation":"Stomach","performer":{"@type":"Physician","name":"Dr. Mohammed Imaduddin"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Cancer Types","item":"https://cioncancerdrimad.com/types-of-cancer/"},{"@type":"ListItem","position":3,"name":"Gastric Cancer","item":"https://cioncancerdrimad.com/types-of-cancer/gastric-stomach-cancer/"}]}</script>

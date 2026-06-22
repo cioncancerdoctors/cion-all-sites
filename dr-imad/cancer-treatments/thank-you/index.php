@@ -4,7 +4,7 @@ $page_description="Thank you for contacting Dr. Mohammed Imaduddin. We will call
 $page_canonical="https://cioncancerdrimad.com/thank-you/";
 $page_robots="noindex, nofollow";
 require __DIR__."/../_inc.php";
-?><!DOCTYPE html><html lang="te"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
+?><!DOCTYPE html><html lang="en"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
 <script>
 window.dataLayer = window.dataLayer || [];
 window.dataLayer = window.dataLayer || [];

@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Surgical Oncologist Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/surgical-oncologist-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Who is the Head of Department, Surgical Oncology at CION Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Dr. Mohammed Imaduddin, M.Ch (AIIMS), ESSO Fellow Hannover, FEBS, FACS. He specialises in GI cancers and peritoneal surface malignancy."}},{"@type":"Question","name":"How many CION centres are there in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"7 centres: Kukatpally, Kompally, Ameerpet, Tolichowki, Masab Tank, LB Nagar and Banjara Hills. All open Mon-Sat 10AM-5PM."}}]}</script>

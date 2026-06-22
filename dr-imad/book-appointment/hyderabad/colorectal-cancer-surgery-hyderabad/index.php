@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/"},{"@type":"ListItem","position":3,"name":"Colorectal Surgery Hyderabad","item":"https://cioncancerdrimad.com/hyderabad/colorectal-cancer-surgery-hyderabad/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is TME surgery available in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Yes, at CION Cancer Clinics under Dr. Mohammed Imaduddin. TME (Total Mesorectal Excision) is performed for rectal cancer using the gold-standard Heald technique."}},{"@type":"Question","name":"Can colorectal surgery be done laparoscopically in Hyderabad?","acceptedAnswer":{"@type":"Answer","text":"Yes. Laparoscopic colectomy is routinely offered for suitable colon cancer cases with equivalent oncological outcomes to open surgery."}}]}</script>

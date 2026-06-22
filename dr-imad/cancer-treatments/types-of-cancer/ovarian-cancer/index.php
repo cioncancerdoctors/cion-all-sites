@@ -6,7 +6,7 @@ $page_robots      = "index, follow, max-image-preview:large";
 require __DIR__ . '/../../_inc.php';
 ?>
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head><?php include $ROOT . '/partials/meta-tags.php'; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Cancer Types","item":"https://cioncancerdrimad.com/types-of-cancer/"},{"@type":"ListItem","position":3,"name":"Ovarian Cancer","item":"https://cioncancerdrimad.com/types-of-cancer/ovarian-cancer/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does HIPEC help in ovarian cancer?","acceptedAnswer":{"@type":"Answer","text":"Yes. The OVHIPEC trial published in NEJM (2018) showed that adding HIPEC to interval cytoreductive surgery significantly improved survival in ovarian cancer patients."}},{"@type":"Question","name":"What is interval debulking surgery?","acceptedAnswer":{"@type":"Answer","text":"Interval debulking is cytoreductive surgery performed after 3 cycles of neoadjuvant chemotherapy. It is used for patients not suitable for primary debulking upfront."}}]}</script>

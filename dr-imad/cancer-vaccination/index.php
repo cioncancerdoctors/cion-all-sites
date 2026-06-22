@@ -4,7 +4,7 @@ $page_description="Cancer prevention vaccination in Hyderabad — HPV vaccine fo
 $page_canonical="https://cioncancerdrimad.com/cancer-vaccination/";
 $page_robots="index, follow, max-image-preview:large";
 require __DIR__."/../_inc.php";
-?><!DOCTYPE html><html lang="te"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
+?><!DOCTYPE html><html lang="en"><head><?php include $ROOT."/partials/meta-tags.php"; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://cioncancerdrimad.com/"},{"@type":"ListItem","position":2,"name":"Cancer Vaccination","item":"https://cioncancerdrimad.com/cancer-vaccination/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Which vaccines prevent cancer?","acceptedAnswer":{"@type":"Answer","text":"HPV vaccine prevents cervical cancer (and some other cancers) caused by Human Papillomavirus. Hepatitis B vaccine prevents liver cancer (HCC) caused by chronic Hepatitis B infection."}},{"@type":"Question","name":"At what age should HPV vaccine be given?","acceptedAnswer":{"@type":"Answer","text":"HPV vaccine is most effective for ages 9-45. Girls aged 9-14 need 2 doses. From age 15, 3 doses are required. WHO and NCCN both recommend HPV vaccination."}}]}</script>
 <script>
