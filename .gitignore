@@ -45,3 +45,7 @@ dr-imad/**/recent-phones.json
 
 # Scheduled-task audit logs (local only, never deploy)
 automation-runs/
+
+# Local-only (editor/agent config + local data templates)
+.claude/
+_data/
