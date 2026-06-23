@@ -42,3 +42,6 @@ dr-imad/**/leads.log
 dr-imad/**/errors.log
 dr-imad/**/rate-limit.json
 dr-imad/**/recent-phones.json
+
+# Scheduled-task audit logs (local only, never deploy)
+automation-runs/
