@@ -250,7 +250,7 @@ foreach($Site in $Sites) {
   # All gates passed -- record for batch commit (sitemap updated in post-loop)
   $ss.ok = $true; $ss.stage = "staged"; Save-Status
   $passed.Add(@{ Site=$Site; FileName=$fileName; Url=$url; Domain=$domain })
-  Write-Host "[PASS] $Site: $Site/$fileName"
+  Write-Host "[PASS] ${Site}: $Site/$fileName"
 }
 
 Write-Host "`n=== Loop complete: $($passed.Count)/$($Sites.Count) passed ==="
@@ -296,8 +296,8 @@ $status.qaP0 = $qaP0; Save-Status
 Write-Host "[qa] P0=$qaP0"
 if($qaP0 -ne '0') {
   $p0Detail = ($qaOut -split "`n" | Where-Object { $_ -match '\[P0\]' }) -join "; "
-  $status.errors += "QA P0=$qaP0: $p0Detail"
-  Write-Host "QA P0=$qaP0 -- holding draft for human review"; Stage "held"; exit 4
+  $status.errors += "QA P0=${qaP0}: $p0Detail"
+  Write-Host "QA P0=${qaP0} -- holding draft for human review"; Stage "held"; exit 4
 }
 
 # ---------------------------------------------------------------------------
