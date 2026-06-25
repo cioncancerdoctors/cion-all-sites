@@ -151,6 +151,20 @@ function Invoke-CodexExec {
   return ""
 }
 
+# Extracts <nav>, <footer>, and .doctor-card from an HTML file for prompt injection.
+# Keeps the chrome under ~5 KB so the generation prompt doesn't balloon with a 60 KB template.
+function Get-SiteChrome {
+  param([Parameter(Mandatory=$true)][string]$HtmlPath)
+  $html = [IO.File]::ReadAllText($HtmlPath, [System.Text.Encoding]::UTF8)
+  $out  = ""
+  if ($html -match '(?s)(<nav>[\s\S]*?</nav>)')                          { $out += $Matches[1] + "`n" }
+  if ($html -match '(?s)(<footer>[\s\S]*?</footer>)')                    { $out += $Matches[1] + "`n" }
+  if ($html -match '(?s)(<div class="doctor-card">[\s\S]*?</div>\s*</div>)') { $out += $Matches[1] + "`n" }
+  # Hard cap 5 KB -- just the chrome structural reference
+  if ($out.Length -gt 5000) { $out = $out.Substring(0, 5000) }
+  return $out
+}
+
 # ---------------------------------------------------------------------------
 # STEP 0: audit log FIRST (its absence = run blocked before step 0 = diagnostic)
 # ---------------------------------------------------------------------------
@@ -258,49 +272,41 @@ foreach($Site in $Sites) {
   # 2. GENERATE (codex exec workspace-write -- saves claude tokens)
   $ss.stage = "generate"; Save-Status
   $genStatusFile = Join-Path $runDir ".gen-$Site.txt"
+  # Extract nav+footer+doctor-card in PS so codex never needs to read the full 60 KB template
+  $chrome = Get-SiteChrome -HtmlPath (Join-Path $siteDir $tmpl)
   $genPrompt = @"
-You are generating ONE new bilingual (English+Telugu) SEO page for a cancer doctor website.
+You are generating ONE new bilingual (English+Telugu) SEO page for a cancer doctor website. Write the complete file directly to disk.
 
 SITE: $Site  |  DOMAIN: $domain  |  DOCTOR SPECIALTY: $specialty
 
-STEP 1 - Read $Site/$tmpl to understand the HTML chrome (nav, CSS classes, doctor card, footer, WhatsApp CTA). You MUST copy that chrome exactly -- do not invent new nav links or CSS classes.
+CHROME (copy these HTML sections EXACTLY into your page -- do NOT read any template file):
+$chrome
 
-STEP 2 - Choose ONE new medical topic relevant to $specialty. The slug must be kebab-case and NOT in this list: $existing
+STEP 1 - Choose ONE new medical topic relevant to $specialty. Slug must be kebab-case, NOT in: $existing
 
-STEP 3 - Write exactly one new file: $Site/<slug>.html
+STEP 2 - Write exactly one new file: $Site/<slug>.html
+Use the chrome above for nav, footer, and doctor card. Use the same CSS class names (te-content, en-content, doctor-card, dc-name, dc-cred, dc-cta, faq, etc.).
 
-HTML RULES (follow exactly):
-- DOCTYPE html5, <html lang="en">, UTF-8 charset, UTF-8 no BOM
-- <title>: English only, <=60 characters (include doctor name or city if it fits)
-- <meta name="description">: English only, <=155 characters
-- <link rel="canonical"> self-pointing
-- <meta property="og:locale" content="en_IN"> + <meta property="og:locale:alternate" content="te_IN">
-- NO hreflang tags anywhere
-- JSON-LD block: MedicalWebPage + FAQPage + BreadcrumbList schemas, both with inLanguage ["en","te"]
+HEAD RULES: DOCTYPE html5, <html lang="en">, charset UTF-8, no BOM. <title> English <=60 chars. <meta name="description"> English <=155 chars. <link rel="canonical"> self-pointing to https://$domain/<slug>.html. og:locale=en_IN + og:locale:alternate=te_IN. NO hreflang. JSON-LD: MedicalWebPage + FAQPage + BreadcrumbList, inLanguage ["en","te"].
 
-BILINGUAL RULES (follow exactly):
-- Every user-visible sentence must appear TWICE: once in Telugu, once in English
-- Use paired spans: <span class="te-content">Telugu full sentence here</span><span class="en-content">English full sentence here</span>
-- Keep the ENTIRE sentence (including any links inside it) within ONE span. Never split a sentence across spans. Never nest te-content inside te-content.
-- Telugu must be fluent native medical Telugu -- no word-salad, no gratuitous English mixing (allow proper nouns + accepted abbreviations). No stray Devanagari, Tamil, Kannada, or Malayalam codepoints.
+BILINGUAL RULES: every visible sentence appears twice: <span class="te-content">Telugu</span><span class="en-content">English</span>. Whole sentence in ONE span, never nested. Fluent native Telugu -- no Devanagari/Tamil/Kannada/Malayalam codepoints mixed in.
 
-CONTENT RULES (follow exactly):
-- Structure: bilingual H1 + lede -> direct-answer box (40-60 word paragraph summarising the answer) -> 3-4 body sections -> bilingual FAQ (minimum 5 Q&A pairs) -> doctor card + CTA -> 4-6 internal links (all absolute https://$domain/) -> disclaimer
-- FORBIDDEN: fabricated statistics, survival rate numbers, trial claims, price/cost figures in INR/Rs/lakh/crore (say "cost depends on..." instead), superlatives like best/No.1/top/leading applied to the doctor or clinic, testimonials, before/after claims, cure/guarantee language, treatment promises beyond mainstream oncology
-- REQUIRED: strong medical disclaimer in both languages ("This page is for information only and does not replace medical advice...")
+PAGE STRUCTURE: bilingual H1 + lede -> direct-answer box (40-60 word paragraph) -> 3-4 body sections -> bilingual FAQ (min 5 Q&A) -> doctor-card (from chrome above) -> 4-6 internal links (all absolute https://$domain/) -> disclaimer both languages.
 
-STEP 4 - After writing, verify the file exists on disk.
+FORBIDDEN: fabricated stats/survival rates, price figures (INR/lakh/crore), superlatives (best/No.1/top/leading), testimonials, cure/guarantee language.
 
-STEP 5 - Your FINAL MESSAGE must be EXACTLY this one line and nothing else:
+STEP 3 - After writing, verify the file exists.
+
+STEP 4 - Your FINAL MESSAGE must be EXACTLY this one line and nothing else:
 SLUG=<the-slug-you-chose>
 "@
 
   try {
-    $genTail = Invoke-CodexExec -Prompt $genPrompt -StatusOut $genStatusFile -Sandbox "workspace-write" -TimeoutSec 480
+    $genTail = Invoke-CodexExec -Prompt $genPrompt -StatusOut $genStatusFile -Sandbox "workspace-write" -TimeoutSec 720
     $ss.genTail = $genTail
   } catch {
     $ss.errors += "generation timed out or failed: $_"
-    Write-Host "[timeout] generation for $Site exceeded 480s -- skipping"
+    Write-Host "[timeout] generation for $Site exceeded 720s -- skipping"
     & git checkout -- $Site 2>$null | Out-Null
     & git clean -fd -- $Site 2>$null | Out-Null
     $failedSites.Add($Site); continue
