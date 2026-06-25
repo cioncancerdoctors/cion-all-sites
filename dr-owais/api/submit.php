@@ -7,7 +7,8 @@ header('Content-Type: application/json; charset=utf-8');
 // fallback becomes dead and can be deleted. See seo-engine/cion-config.TEMPLATE.php.
 $__cfg = '/home/u885652959/private/cion-config.php';
 if (is_file($__cfg)) { require_once $__cfg; }
-$HS_TOKEN = defined('CION_HS_TOKEN') ? CION_HS_TOKEN : 'REDACTED';
+if (!defined('CION_HS_TOKEN')) { http_response_code(503); echo json_encode(['success'=>false,'error'=>'Service unavailable.']); exit; }
+$HS_TOKEN = CION_HS_TOKEN;
 
 $HS_BASE  = 'https://api.hubapi.com/crm/v3/objects';
 $LOG_FILE = __DIR__ . '/leads.log';
