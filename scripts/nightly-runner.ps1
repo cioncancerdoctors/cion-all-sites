@@ -1,6 +1,7 @@
 <#
-  CION nightly page runner (deterministic, headless) -- v0.3 (9-site loop + gated auto-merge)
-  GPT-reviewed (gpt-5.5, 2026-06-24) and reconciled. ASCII-only (PS5.1 + cp1252 safe).
+  CION nightly page runner (deterministic, headless) -- v0.4 (timeout wrapper on claude -p)
+  GPT-reviewed (gpt-5.5, 2026-06-25): added Invoke-ClaudeTimeout (Start-Job + orphan-kill).
+  ASCII-only (PS5.1 + cp1252 safe).
   -----------------------------------------------------------------------------------------
   Run by OS Task Scheduler (NO desktop app). The SCRIPT owns the contract;
   `claude -p` (headless) only writes prose/Telugu within a fixed output path.
@@ -57,6 +58,49 @@ function Stage($s) { $script:status.stage = $s; Save-Status; Write-Host "[stage]
 function Die($code, $msg) {
   $script:status.errors += $msg; $script:status.ok = $false
   Save-Status; Write-Host "FAIL($code): $msg"; exit $code
+}
+
+# Wraps "claude -p" with a hard timeout. Throws on timeout so callers can fail-fast.
+# On timeout: kills the background job AND any orphaned claude.exe processes by StartTime.
+# GPT-reviewed design (gpt-5.5, 2026-06-25).
+function Invoke-ClaudeTimeout {
+  param(
+    [Parameter(Mandatory=$true)][string]$Prompt,
+    [Parameter(Mandatory=$true)][string[]]$AllowedTools,
+    [Parameter(Mandatory=$true)][int]$TimeoutSec
+  )
+  $exePath  = $script:claudeExe
+  $repoPath = $script:Repo
+  $started  = Get-Date
+
+  $job = Start-Job -ArgumentList $exePath, $repoPath, $Prompt, (,$AllowedTools) -ScriptBlock {
+    param([string]$ClaudeExe, [string]$Repo, [string]$Prompt, [string[]]$AllowedTools)
+    Set-Location -LiteralPath $Repo
+    $claudeArgs = @("-p", $Prompt, "--allowedTools")
+    foreach ($t in $AllowedTools) { $claudeArgs += $t }
+    & $ClaudeExe @claudeArgs 2>$null | Out-String
+  }
+
+  try {
+    $done = Wait-Job -Job $job -Timeout $TimeoutSec
+    if ($null -eq $done) {
+      Stop-Job -Job $job -ErrorAction SilentlyContinue
+      $exeName = [System.IO.Path]::GetFileNameWithoutExtension($exePath)
+      $now     = Get-Date
+      Get-Process -Name $exeName -ErrorAction SilentlyContinue | ForEach-Object {
+        $proc = $_
+        try {
+          if ($proc.StartTime -ge $started.AddSeconds(-2) -and $proc.StartTime -le $now.AddSeconds(2)) {
+            Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+          }
+        } catch {}
+      }
+      throw "claude.exe timed out after ${TimeoutSec}s"
+    }
+    return (Receive-Job -Job $job -ErrorAction Stop | Out-String)
+  } finally {
+    Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
+  }
 }
 
 # ---------------------------------------------------------------------------
@@ -151,7 +195,15 @@ foreach($Site in $Sites) {
   $ss.stage = "generate"; Save-Status
   $genPrompt = "Generate ONE new bilingual (English+Telugu) SEO page for $Site (domain $domain) in the CION network. Working dir = repo root D:\Cowork\Website\cion-all-sites. Existing slugs (DO NOT duplicate): $existing. READ and obey: seo-engine/content-engine/config/02-content-rules.md, 03-voice-and-safety.md, 05-patient-question-framework.md, 07-technical-seo-and-entity.md. Match the chrome of $Site/$tmpl exactly (nav, CSS classes, footer, doctor card). ENGLISH-PRIMARY: <html lang=`"en`">, English <title> <=60, English meta description <=155, og:locale=en_IN + og:locale:alternate=te_IN, self-canonical, NO hreflang, JSON-LD MedicalWebPage+FAQPage+BreadcrumbList with inLanguage [`"en`",`"te`"]. Paired <span class=`"te-content`">..</span><span class=`"en-content`">..</span>; keep the WHOLE Telugu sentence (including any <a> links inside) in ONE te-content span and the WHOLE English in ONE en-content span -- never nest te-content inside te-content. Include: direct-answer box, bilingual FAQ (5+ Q&A), doctor card + CTA, 4-6 internal links (absolute https://$domain/), disclaimer. Conservative: no fabricated stats/survival/prices (cost = drivers + estimate CTA), no superlatives, no testimonials, no cure. Clean native Telugu only. UTF-8 no BOM. Write EXACTLY one new file $Site/<slug>.html (slug = kebab-case). Reply LAST LINE: SLUG=<slug>"
 
-  $genOut = (& $claudeExe -p $genPrompt --allowedTools "Read" "Write" "WebSearch" "Glob" "Grep" 2>$null | Out-String)
+  try {
+    $genOut = Invoke-ClaudeTimeout -Prompt $genPrompt -AllowedTools @("Read","Write","WebSearch","Glob","Grep") -TimeoutSec 480
+  } catch {
+    $ss.errors += "generation timed out or failed: $_"
+    Write-Host "[timeout] generation for $Site exceeded 480s -- skipping"
+    & git checkout -- $Site 2>$null | Out-Null
+    & git clean -fd -- $Site 2>$null | Out-Null
+    $failedSites.Add($Site); continue
+  }
   $ss.genTail = (($genOut.Trim() -split "`n") | Select-Object -Last 1)
   Save-Status
 
@@ -207,7 +259,11 @@ foreach($Site in $Sites) {
       if($p0Lines.Count -gt 0) {
         Write-Host "[warn] codex P0 for $Site - applying fix pass"
         $fixPrompt = "The page $Site/$fileName has content violations that must be fixed. For each P0 issue below, edit the page to remove or correct the violation WITHOUT adding price figures, testimonials, superlatives, or survival statistics. Issues: $($p0Lines -join '; '). Reply: FIXED"
-        $null = (& $claudeExe -p $fixPrompt --allowedTools "Read" "Edit" "Write" 2>$null | Out-String)
+        try {
+          $null = Invoke-ClaudeTimeout -Prompt $fixPrompt -AllowedTools @("Read","Edit","Write") -TimeoutSec 300
+        } catch {
+          Write-Host "[warn] codex P0 fix timed out (300s) -- proceeding to re-review without fix"
+        }
 
         # Re-extract and re-review (one retry only)
         $html2  = [IO.File]::ReadAllText((Join-Path $Repo "$Site\$fileName"), [Text.Encoding]::UTF8)
@@ -247,7 +303,15 @@ foreach($Site in $Sites) {
   # 6. TELUGU REVIEW (independent claude -p, scoped tools, hard gate)
   $ss.stage = "telugu-review"; Save-Status
   $revPrompt = "STRICT native Telugu medical reviewer. Review ONLY the Telugu in $Site/$fileName in repo D:\Cowork\Website\cion-all-sites (paired te-content/en-content spans). Check: (1) meaning fidelity vs English sibling; (2) natural fluency, not word-salad; (3) no gratuitous English code-mixing inside te-content spans (allow only proper nouns, accepted abbreviations); (4) correct Telugu medical terminology or accepted transliteration; (5) valid Unicode, no stray Devanagari/Tamil/Kannada/Malayalam codepoints; (6) medico-legal -- no cure/guarantee/superlative language in Telugu. FIX in place with Edit/Write; keep English siblings and te/en span balance unchanged. Reply last line ONLY: TELUGU=PASS or TELUGU=FIXED or TELUGU=FAIL"
-  $revOut = (& $claudeExe -p $revPrompt --allowedTools "Read" "Edit" "Write" 2>$null | Out-String)
+  try {
+    $revOut = Invoke-ClaudeTimeout -Prompt $revPrompt -AllowedTools @("Read","Edit","Write") -TimeoutSec 300
+  } catch {
+    $ss.errors += "Telugu review timed out or failed: $_"
+    Write-Host "[timeout] Telugu review for $Site exceeded 300s -- skipping"
+    & git checkout -- $Site 2>$null | Out-Null
+    & git clean -fd -- $Site 2>$null | Out-Null
+    $failedSites.Add($Site); continue
+  }
   $ss.teluguTail = (($revOut.Trim() -split "`n") | Select-Object -Last 1)
   Save-Status
   if($ss.teluguTail -match 'TELUGU=FAIL') {
