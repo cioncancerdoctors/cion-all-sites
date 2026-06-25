@@ -1,0 +1,51 @@
+name: Nightly SEO Page Generation
+
+# Runs daily at 11:00 AM IST (05:30 UTC). Replaces the Windows Task Scheduler runner.
+# Public repo = unlimited free minutes on ubuntu-latest (1x billing).
+# Secrets required (repo Settings -> Secrets -> Actions):
+#   ANTHROPIC_API_KEY  -- for claude -p (page generation + Telugu review)
+#   OPENAI_API_KEY     -- for codex exec (content review)
+
+on:
+  schedule:
+    - cron: '30 5 * * *'   # 11:00 AM IST daily
+  workflow_dispatch:        # manual trigger from Actions tab
+
+permissions:
+  contents: write           # needed to push draft branch + merge to main
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "CION Nightly Runner"
+          git config user.email "cioncancerdoctors@gmail.com"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install claude and codex CLIs
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          npm install -g @openai/codex
+
+      - name: Run nightly generator
+        shell: pwsh
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
+          GH_TOKEN:          ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          scripts/nightly-runner.ps1 -Repo $env:GITHUB_WORKSPACE

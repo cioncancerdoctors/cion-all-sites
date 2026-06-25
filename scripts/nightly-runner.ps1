@@ -133,11 +133,18 @@ Set-Location $Repo
 & git branch -D $branch 2>$null | Out-Null
 & git push origin --delete $branch 2>$null | Out-Null
 
-# Fix gh account (silently flips to kushagrag86 in some sessions)
-& gh auth switch --user $Account 2>$null | Out-Null
-$ghUser = ((& gh api user --jq .login 2>$null) | Out-String).Trim()
-$status.preflight.ghUser = $ghUser
-if($ghUser -ne $Account) { Die 2 "gh account '$ghUser' != '$Account'" }
+# On GitHub Actions: GITHUB_TOKEN is already set -- skip account switch/check
+if($env:GITHUB_ACTIONS -eq 'true') {
+  $ghUser = "github-actions"
+  $status.preflight.ghUser = $ghUser
+  Write-Host "[ok] GitHub Actions runner -- skipping account check"
+} else {
+  # Fix gh account (silently flips to kushagrag86 in some sessions)
+  & gh auth switch --user $Account 2>$null | Out-Null
+  $ghUser = ((& gh api user --jq .login 2>$null) | Out-String).Trim()
+  $status.preflight.ghUser = $ghUser
+  if($ghUser -ne $Account) { Die 2 "gh account '$ghUser' != '$Account'" }
+}
 
 $remote = ((& git remote get-url origin 2>$null) | Out-String).Trim()
 if($remote -notmatch "cion-all-sites") { Die 2 "bad remote: $remote" }
