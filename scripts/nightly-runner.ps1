@@ -66,12 +66,16 @@ New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 Save-Status
 Write-Host "[ok] audit log: $statusPath"
 
-# Prevent the OS from sleeping mid-run (ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
-# Released automatically when the process exits.
+# Prevent the OS from sleeping mid-run (ES_CONTINUOUS | ES_SYSTEM_REQUIRED = 0x80000001).
+# Namespace guard stops "type already defined" error if PS host reruns this script.
+# ToUInt32 from hex string avoids PS5.1's signed-int literal trap for values > 0x7FFFFFFF.
 try {
-  $esCode = 'using System.Runtime.InteropServices; public class PwrMgmt { [DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint s); }'
-  Add-Type -TypeDefinition $esCode -Language CSharp 2>$null
-  [PwrMgmt]::SetThreadExecutionState(0x80000001) | Out-Null
+  if(-not ("NightlyRunner.PwrMgmt" -as [type])) {
+    $esCode = 'using System.Runtime.InteropServices; namespace NightlyRunner { public class PwrMgmt { [DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint s); } }'
+    Add-Type -TypeDefinition $esCode -Language CSharp 2>$null
+  }
+  $ES_ON = [System.Convert]::ToUInt32('80000001', 16)
+  [NightlyRunner.PwrMgmt]::SetThreadExecutionState($ES_ON) | Out-Null
   Write-Host "[ok] sleep prevention active"
 } catch { Write-Host "[warn] could not set sleep prevention: $_" }
 
@@ -95,8 +99,12 @@ $remote = ((& git remote get-url origin 2>$null) | Out-String).Trim()
 if($remote -notmatch "cion-all-sites") { Die 2 "bad remote: $remote" }
 
 & git checkout main 2>$null | Out-Null
+if($LASTEXITCODE -ne 0) { Die 2 "git checkout main failed (untracked files may conflict with tracked files on main)" }
 & git pull origin main 2>$null | Out-Null
-if(((& git status --porcelain 2>$null) | Out-String).Trim()) { Die 2 "working tree not clean" }
+if($LASTEXITCODE -ne 0) { Die 2 "git pull origin main failed" }
+# -uno: ignore untracked files (leftover artefacts from prior partial run are not a problem)
+$trackedDirty = ((& git status --porcelain=v1 -uno 2>$null) | Out-String).Trim()
+if($trackedDirty) { Die 2 "tracked working tree not clean: $trackedDirty" }
 
 if(-not (Get-Command claude -ErrorAction SilentlyContinue)) { Die 3 "claude CLI not found on PATH" }
 $claudeExe = (Get-Command claude).Source
@@ -152,6 +160,8 @@ foreach($Site in $Sites) {
   $outOfScope   = @($changedPaths | Where-Object { $_ -and (-not $_.StartsWith("$Site/")) })
   if($outOfScope.Count -gt 0) {
     foreach($f in $outOfScope) { & git checkout -- $f 2>$null | Out-Null }
+    & git checkout -- $Site 2>$null | Out-Null
+    & git clean -fd -- $Site 2>$null | Out-Null
     $ss.errors += "model wrote outside $Site/: $($outOfScope -join ',')"
     $failedSites.Add($Site); continue
   }
@@ -161,6 +171,7 @@ foreach($Site in $Sites) {
   $new   = @($after | Where-Object { $_ -notin $before })
   if($new.Count -ne 1) {
     & git checkout -- $Site 2>$null | Out-Null
+    & git clean -fd -- $Site 2>$null | Out-Null
     $ss.errors += "expected exactly 1 new page, got $($new.Count)"
     $failedSites.Add($Site); continue
   }
@@ -220,6 +231,7 @@ foreach($Site in $Sites) {
           $p0Lines2 = @($cxOut2 -split "`n" | Where-Object { $_ -match '^P0:' -and $_ -notmatch '\(none\)' })
           if($p0Lines2.Count -gt 0) {
             & git checkout -- $Site 2>$null | Out-Null
+            & git clean -fd -- $Site 2>$null | Out-Null
             $ss.errors += "codex P0 violation after fix: $($p0Lines2 -join ' | ')"
             $failedSites.Add($Site); continue
           }
