@@ -20,8 +20,8 @@
 param(
   [string]$Repo       = "D:\Cowork\Website\cion-all-sites",
   [string]$Account    = "cioncancerdoctors",
-  [string[]]$Sites    = @("dr-imad","dr-vinay","dr-murali","dr-sandeep","dr-kiranmayee","dr-basudev","dr-raghvendra","dr-craghavendra","dr-owais"),
-  [int]$MinPass       = 7,
+  [string[]]$Sites    = @("dr-vinay","dr-murali","dr-sandeep","dr-kiranmayee","dr-basudev","dr-raghvendra","dr-craghavendra","dr-owais"),
+  [int]$MinPass       = 6,
   [int]$DeployTimeout = 900
 )
 $ErrorActionPreference = "Continue"
@@ -65,6 +65,15 @@ function Die($code, $msg) {
 New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 Save-Status
 Write-Host "[ok] audit log: $statusPath"
+
+# Prevent the OS from sleeping mid-run (ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
+# Released automatically when the process exits.
+try {
+  $esCode = 'using System.Runtime.InteropServices; public class PwrMgmt { [DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint s); }'
+  Add-Type -TypeDefinition $esCode -Language CSharp 2>$null
+  [PwrMgmt]::SetThreadExecutionState(0x80000001) | Out-Null
+  Write-Host "[ok] sleep prevention active"
+} catch { Write-Host "[warn] could not set sleep prevention: $_" }
 
 # ---------------------------------------------------------------------------
 # PREFLIGHT
