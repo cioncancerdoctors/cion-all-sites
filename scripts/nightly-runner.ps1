@@ -103,6 +103,53 @@ function Invoke-ClaudeTimeout {
   }
 }
 
+# Wraps "codex exec --sandbox workspace-write" with a hard timeout.
+# Codex writes files directly; -o captures only the final SLUG=/TELUGU= status line.
+# GPT-reviewed pattern (gpt-5.5, 2026-06-25).
+function Invoke-CodexExec {
+  param(
+    [Parameter(Mandatory=$true)][string]$Prompt,
+    [Parameter(Mandatory=$true)][string]$StatusOut,
+    [string]$Sandbox    = "workspace-write",
+    [int]$TimeoutSec    = 480
+  )
+  $repoPath  = $script:Repo
+  $tmpPrompt = Join-Path $env:TEMP "cion-cxp-$(Get-Random).txt"
+  [IO.File]::WriteAllText($tmpPrompt, $Prompt, (New-Object System.Text.UTF8Encoding($false)))
+  Remove-Item $StatusOut -ErrorAction SilentlyContinue
+
+  $started = Get-Date
+  $job = Start-Job -ArgumentList $tmpPrompt, $StatusOut, $Sandbox, $repoPath -ScriptBlock {
+    param([string]$pf, [string]$sf, [string]$sb, [string]$repo)
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    Get-Content $pf -Raw -Encoding UTF8 | codex exec "--cd=$repo" "--sandbox=$sb" --skip-git-repo-check -o $sf - 2>$null
+  }
+
+  $done = Wait-Job -Job $job -Timeout $TimeoutSec
+  Remove-Item $tmpPrompt -ErrorAction SilentlyContinue
+
+  if ($null -eq $done) {
+    Stop-Job -Job $job -ErrorAction SilentlyContinue
+    $now = Get-Date
+    Get-Process -Name "codex" -ErrorAction SilentlyContinue | ForEach-Object {
+      $proc = $_
+      try {
+        if ($proc.StartTime -ge $started.AddSeconds(-5) -and $proc.StartTime -le $now.AddSeconds(2)) {
+          Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+        }
+      } catch {}
+    }
+    Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
+    throw "codex exec timed out after ${TimeoutSec}s"
+  }
+  Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
+
+  if (Test-Path $StatusOut) {
+    return ([IO.File]::ReadAllText($StatusOut, [System.Text.Encoding]::UTF8)).Trim()
+  }
+  return ""
+}
+
 # ---------------------------------------------------------------------------
 # STEP 0: audit log FIRST (its absence = run blocked before step 0 = diagnostic)
 # ---------------------------------------------------------------------------
@@ -198,12 +245,34 @@ foreach($Site in $Sites) {
     Select-Object -First 1).Name
   if(-not $tmpl) { $tmpl = "index.html" }
 
-  # 2. GENERATE (claude -p, scoped tools, Repo as working dir)
+  # 2. GENERATE (codex exec workspace-write -- saves claude tokens)
   $ss.stage = "generate"; Save-Status
-  $genPrompt = "Generate ONE new bilingual (English+Telugu) SEO page for $Site (domain $domain) in the CION network. Working dir = repo root D:\Cowork\Website\cion-all-sites. Existing slugs (DO NOT duplicate): $existing. READ and obey: seo-engine/content-engine/config/02-content-rules.md, 03-voice-and-safety.md, 05-patient-question-framework.md, 07-technical-seo-and-entity.md. Match the chrome of $Site/$tmpl exactly (nav, CSS classes, footer, doctor card). ENGLISH-PRIMARY: <html lang=`"en`">, English <title> <=60, English meta description <=155, og:locale=en_IN + og:locale:alternate=te_IN, self-canonical, NO hreflang, JSON-LD MedicalWebPage+FAQPage+BreadcrumbList with inLanguage [`"en`",`"te`"]. Paired <span class=`"te-content`">..</span><span class=`"en-content`">..</span>; keep the WHOLE Telugu sentence (including any <a> links inside) in ONE te-content span and the WHOLE English in ONE en-content span -- never nest te-content inside te-content. Include: direct-answer box, bilingual FAQ (5+ Q&A), doctor card + CTA, 4-6 internal links (absolute https://$domain/), disclaimer. Conservative: no fabricated stats/survival/prices (cost = drivers + estimate CTA), no superlatives, no testimonials, no cure. Clean native Telugu only. UTF-8 no BOM. Write EXACTLY one new file $Site/<slug>.html (slug = kebab-case). Reply LAST LINE: SLUG=<slug>"
+  $genStatusFile = Join-Path $runDir ".gen-$Site.txt"
+  $genPrompt = @"
+Generate ONE new bilingual (English+Telugu) SEO page for $Site (domain $domain) in the CION cancer doctor network.
+
+STEP 1 - Read these files in full before writing anything:
+  $Site/$tmpl
+  seo-engine/content-engine/config/02-content-rules.md
+  seo-engine/content-engine/config/03-voice-and-safety.md
+  seo-engine/content-engine/config/05-patient-question-framework.md
+  seo-engine/content-engine/config/07-technical-seo-and-entity.md
+
+STEP 2 - Choose a new slug (kebab-case, not in this list): $existing
+
+STEP 3 - Write exactly one new file: $Site/<slug>.html
+Match the HTML chrome of $Site/$tmpl exactly (nav, CSS classes, doctor card, footer, WhatsApp CTA).
+ENGLISH-PRIMARY: <html lang="en">, English <title> <=60 chars, English meta description <=155 chars, og:locale=en_IN + og:locale:alternate=te_IN, self-canonical, NO hreflang tags. JSON-LD: MedicalWebPage + FAQPage + BreadcrumbList, inLanguage ["en","te"]. Bilingual: paired <span class="te-content">Telugu sentence</span><span class="en-content">English sentence</span> -- keep WHOLE sentence in ONE span, never nest. Include: direct-answer box, bilingual FAQ (5+ Q&A), doctor card + CTA, 4-6 internal links (absolute https://$domain/), disclaimer. Conservative: no fabricated stats/survival rates/prices, no superlatives, no testimonials, no cure language. Clean native Telugu, UTF-8 no BOM.
+
+STEP 4 - Verify the file exists on disk.
+
+STEP 5 - Your FINAL MESSAGE must be exactly this one line and nothing else:
+SLUG=<the-slug-you-chose>
+"@
 
   try {
-    $genOut = Invoke-ClaudeTimeout -Prompt $genPrompt -AllowedTools @("Read","Write","WebSearch","Glob","Grep") -TimeoutSec 480
+    $genTail = Invoke-CodexExec -Prompt $genPrompt -StatusOut $genStatusFile -Sandbox "workspace-write" -TimeoutSec 480
+    $ss.genTail = $genTail
   } catch {
     $ss.errors += "generation timed out or failed: $_"
     Write-Host "[timeout] generation for $Site exceeded 480s -- skipping"
@@ -211,7 +280,6 @@ foreach($Site in $Sites) {
     & git clean -fd -- $Site 2>$null | Out-Null
     $failedSites.Add($Site); continue
   }
-  $ss.genTail = (($genOut.Trim() -split "`n") | Select-Object -Last 1)
   Save-Status
 
   # 3. SCOPE CHECK: reject any changed file outside $Site/ (before contract check)
@@ -265,9 +333,10 @@ foreach($Site in $Sites) {
       $p0Lines = @($cxOut -split "`n" | Where-Object { $_ -match '^P0:' -and $_ -notmatch '\(none\)' })
       if($p0Lines.Count -gt 0) {
         Write-Host "[warn] codex P0 for $Site - applying fix pass"
-        $fixPrompt = "The page $Site/$fileName has content violations that must be fixed. For each P0 issue below, edit the page to remove or correct the violation WITHOUT adding price figures, testimonials, superlatives, or survival statistics. Issues: $($p0Lines -join '; '). Reply: FIXED"
+        $fixStatusFile = Join-Path $runDir ".fix-$Site.txt"
+        $fixPrompt = "The file $Site/$fileName has content violations. For each P0 issue below, edit the file in place to remove or correct the violation WITHOUT adding price figures, testimonials, superlatives, or survival statistics. Issues: $($p0Lines -join '; '). Your FINAL MESSAGE must be exactly: FIXED"
         try {
-          $null = Invoke-ClaudeTimeout -Prompt $fixPrompt -AllowedTools @("Read","Edit","Write") -TimeoutSec 300
+          $null = Invoke-CodexExec -Prompt $fixPrompt -StatusOut $fixStatusFile -Sandbox "workspace-write" -TimeoutSec 300
         } catch {
           Write-Host "[warn] codex P0 fix timed out (300s) -- proceeding to re-review without fix"
         }
@@ -307,11 +376,35 @@ foreach($Site in $Sites) {
     Write-Host "[warn] codex unavailable for $Site -- proceeding (generation prompt enforces rules)"
   }
 
-  # 6. TELUGU REVIEW (independent claude -p, scoped tools, hard gate)
+  # 6. TELUGU REVIEW (codex exec workspace-write -- saves claude tokens)
   $ss.stage = "telugu-review"; Save-Status
-  $revPrompt = "STRICT native Telugu medical reviewer. Review ONLY the Telugu in $Site/$fileName in repo D:\Cowork\Website\cion-all-sites (paired te-content/en-content spans). Check: (1) meaning fidelity vs English sibling; (2) natural fluency, not word-salad; (3) no gratuitous English code-mixing inside te-content spans (allow only proper nouns, accepted abbreviations); (4) correct Telugu medical terminology or accepted transliteration; (5) valid Unicode, no stray Devanagari/Tamil/Kannada/Malayalam codepoints; (6) medico-legal -- no cure/guarantee/superlative language in Telugu. FIX in place with Edit/Write; keep English siblings and te/en span balance unchanged. Reply last line ONLY: TELUGU=PASS or TELUGU=FIXED or TELUGU=FAIL"
+  $teStatusFile = Join-Path $runDir ".te-$Site.txt"
+  $revPrompt = @"
+You are a strict native Telugu medical reviewer.
+
+FILE: $Site/$fileName
+
+STEP 1 - Read $Site/$fileName in full.
+
+STEP 2 - Review ONLY the Telugu inside <span class="te-content"> elements. Check:
+(1) Meaning fidelity vs the English sibling <span class="en-content">
+(2) Natural fluency -- not word-salad or mechanical translation
+(3) No gratuitous English code-mixing (allow only proper nouns, accepted abbreviations)
+(4) Correct Telugu medical terminology or accepted transliteration
+(5) Valid Telugu Unicode -- no stray Devanagari/Tamil/Kannada/Malayalam codepoints
+(6) No cure/guarantee/superlative language in Telugu
+
+STEP 3 - If corrections needed: edit $Site/$fileName in place. Keep English siblings, HTML structure, and te/en span balance unchanged.
+
+STEP 4 - Your FINAL MESSAGE must be exactly one line and nothing else:
+TELUGU=PASS   (no changes needed)
+TELUGU=FIXED  (corrections made)
+TELUGU=FAIL   (issues too severe to fix)
+"@
+
   try {
-    $revOut = Invoke-ClaudeTimeout -Prompt $revPrompt -AllowedTools @("Read","Edit","Write") -TimeoutSec 300
+    $teStatus = Invoke-CodexExec -Prompt $revPrompt -StatusOut $teStatusFile -Sandbox "workspace-write" -TimeoutSec 300
+    $ss.teluguTail = $teStatus
   } catch {
     $ss.errors += "Telugu review timed out or failed: $_"
     Write-Host "[timeout] Telugu review for $Site exceeded 300s -- skipping"
@@ -319,7 +412,6 @@ foreach($Site in $Sites) {
     & git clean -fd -- $Site 2>$null | Out-Null
     $failedSites.Add($Site); continue
   }
-  $ss.teluguTail = (($revOut.Trim() -split "`n") | Select-Object -Last 1)
   Save-Status
   if($ss.teluguTail -match 'TELUGU=FAIL') {
     $ss.errors += "Telugu reviewer: FAIL"
