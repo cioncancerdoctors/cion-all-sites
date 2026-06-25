@@ -121,8 +121,9 @@ function Invoke-CodexExec {
   $started = Get-Date
   $job = Start-Job -ArgumentList $tmpPrompt, $StatusOut, $Sandbox, $repoPath -ScriptBlock {
     param([string]$pf, [string]$sf, [string]$sb, [string]$repo)
+    Set-Location -LiteralPath $repo
     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-    Get-Content $pf -Raw -Encoding UTF8 | codex exec "--cd=$repo" "--sandbox=$sb" --skip-git-repo-check -o $sf - 2>$null
+    Get-Content $pf -Raw -Encoding UTF8 | codex exec --sandbox $sb -o $sf - 2>$null
   }
 
   $done = Wait-Job -Job $job -Timeout $TimeoutSec
@@ -236,37 +237,61 @@ foreach($Site in $Sites) {
   $ss = $status.sites[$Site]
   Write-Host "`n=== $Site ($domain) ==="
 
-  # 1. Snapshot existing slugs (script owns the uniqueness contract)
+  # 1. Snapshot existing slugs + lookup specialty (script owns the uniqueness contract)
   $siteDir = Join-Path $Repo $Site
   $before  = Get-ChildItem $siteDir -Filter *.html -File | Select-Object -Expand Name
   $existing = ($before | ForEach-Object { $_ -replace '\.html$','' }) -join ', '
+  # Pick SMALLEST non-excluded page as template (fewer tokens to read)
   $tmpl = (Get-ChildItem $siteDir -Filter *.html -File |
     Where-Object { $_.Name -notin @('index.html','about.html','thank-you.html','privacy.html') } |
+    Sort-Object Length |
     Select-Object -First 1).Name
   if(-not $tmpl) { $tmpl = "index.html" }
+  # Doctor specialty from CSV (used to pick a relevant new topic)
+  $csvPath = Join-Path $Repo "_data\doctor-profiles.filled.csv"
+  $specialty = "Oncology"
+  if (Test-Path $csvPath) {
+    $row = Import-Csv $csvPath | Where-Object { $_.doctor_folder -eq $Site } | Select-Object -First 1
+    if ($row -and $row.specialty) { $specialty = $row.specialty }
+  }
 
   # 2. GENERATE (codex exec workspace-write -- saves claude tokens)
   $ss.stage = "generate"; Save-Status
   $genStatusFile = Join-Path $runDir ".gen-$Site.txt"
   $genPrompt = @"
-Generate ONE new bilingual (English+Telugu) SEO page for $Site (domain $domain) in the CION cancer doctor network.
+You are generating ONE new bilingual (English+Telugu) SEO page for a cancer doctor website.
 
-STEP 1 - Read these files in full before writing anything:
-  $Site/$tmpl
-  seo-engine/content-engine/config/02-content-rules.md
-  seo-engine/content-engine/config/03-voice-and-safety.md
-  seo-engine/content-engine/config/05-patient-question-framework.md
-  seo-engine/content-engine/config/07-technical-seo-and-entity.md
+SITE: $Site  |  DOMAIN: $domain  |  DOCTOR SPECIALTY: $specialty
 
-STEP 2 - Choose a new slug (kebab-case, not in this list): $existing
+STEP 1 - Read $Site/$tmpl to understand the HTML chrome (nav, CSS classes, doctor card, footer, WhatsApp CTA). You MUST copy that chrome exactly -- do not invent new nav links or CSS classes.
+
+STEP 2 - Choose ONE new medical topic relevant to $specialty. The slug must be kebab-case and NOT in this list: $existing
 
 STEP 3 - Write exactly one new file: $Site/<slug>.html
-Match the HTML chrome of $Site/$tmpl exactly (nav, CSS classes, doctor card, footer, WhatsApp CTA).
-ENGLISH-PRIMARY: <html lang="en">, English <title> <=60 chars, English meta description <=155 chars, og:locale=en_IN + og:locale:alternate=te_IN, self-canonical, NO hreflang tags. JSON-LD: MedicalWebPage + FAQPage + BreadcrumbList, inLanguage ["en","te"]. Bilingual: paired <span class="te-content">Telugu sentence</span><span class="en-content">English sentence</span> -- keep WHOLE sentence in ONE span, never nest. Include: direct-answer box, bilingual FAQ (5+ Q&A), doctor card + CTA, 4-6 internal links (absolute https://$domain/), disclaimer. Conservative: no fabricated stats/survival rates/prices, no superlatives, no testimonials, no cure language. Clean native Telugu, UTF-8 no BOM.
 
-STEP 4 - Verify the file exists on disk.
+HTML RULES (follow exactly):
+- DOCTYPE html5, <html lang="en">, UTF-8 charset, UTF-8 no BOM
+- <title>: English only, <=60 characters (include doctor name or city if it fits)
+- <meta name="description">: English only, <=155 characters
+- <link rel="canonical"> self-pointing
+- <meta property="og:locale" content="en_IN"> + <meta property="og:locale:alternate" content="te_IN">
+- NO hreflang tags anywhere
+- JSON-LD block: MedicalWebPage + FAQPage + BreadcrumbList schemas, both with inLanguage ["en","te"]
 
-STEP 5 - Your FINAL MESSAGE must be exactly this one line and nothing else:
+BILINGUAL RULES (follow exactly):
+- Every user-visible sentence must appear TWICE: once in Telugu, once in English
+- Use paired spans: <span class="te-content">Telugu full sentence here</span><span class="en-content">English full sentence here</span>
+- Keep the ENTIRE sentence (including any links inside it) within ONE span. Never split a sentence across spans. Never nest te-content inside te-content.
+- Telugu must be fluent native medical Telugu -- no word-salad, no gratuitous English mixing (allow proper nouns + accepted abbreviations). No stray Devanagari, Tamil, Kannada, or Malayalam codepoints.
+
+CONTENT RULES (follow exactly):
+- Structure: bilingual H1 + lede -> direct-answer box (40-60 word paragraph summarising the answer) -> 3-4 body sections -> bilingual FAQ (minimum 5 Q&A pairs) -> doctor card + CTA -> 4-6 internal links (all absolute https://$domain/) -> disclaimer
+- FORBIDDEN: fabricated statistics, survival rate numbers, trial claims, price/cost figures in INR/Rs/lakh/crore (say "cost depends on..." instead), superlatives like best/No.1/top/leading applied to the doctor or clinic, testimonials, before/after claims, cure/guarantee language, treatment promises beyond mainstream oncology
+- REQUIRED: strong medical disclaimer in both languages ("This page is for information only and does not replace medical advice...")
+
+STEP 4 - After writing, verify the file exists on disk.
+
+STEP 5 - Your FINAL MESSAGE must be EXACTLY this one line and nothing else:
 SLUG=<the-slug-you-chose>
 "@
 
