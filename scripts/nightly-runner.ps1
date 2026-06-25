@@ -272,31 +272,55 @@ foreach($Site in $Sites) {
   # 2. GENERATE (codex exec workspace-write -- saves claude tokens)
   $ss.stage = "generate"; Save-Status
   $genStatusFile = Join-Path $runDir ".gen-$Site.txt"
-  # Extract nav+footer+doctor-card in PS so codex never needs to read the full 60 KB template
+  # Extract chrome (~3 KB) so codex never reads the full 60 KB template
   $chrome = Get-SiteChrome -HtmlPath (Join-Path $siteDir $tmpl)
+  # Extract portrait filename (for og:image) and doctor name (for JSON-LD author) from chrome
+  $portraitM = [regex]::Match($chrome, 'src="([^"]*portrait[^"]*)"')
+  $portrait  = if ($portraitM.Success) { $portraitM.Groups[1].Value } else { "$($Site -replace 'dr-','').png" }
+  $dcNameM   = [regex]::Match($chrome, 'class="dc-name">([^<]+)<')
+  $doctorName = if ($dcNameM.Success) { $dcNameM.Groups[1].Value } else { "the doctor" }
   $genPrompt = @"
-You are generating ONE new bilingual (English+Telugu) SEO page for a cancer doctor website. Write the complete file directly to disk.
+You are generating ONE new bilingual (English+Telugu) SEO page for a cancer doctor website. Write the complete HTML file directly to disk.
 
-SITE: $Site  |  DOMAIN: $domain  |  DOCTOR SPECIALTY: $specialty
+SITE: $Site  |  DOMAIN: $domain  |  DOCTOR: $doctorName  |  SPECIALTY: $specialty
 
-CHROME (copy these HTML sections EXACTLY into your page -- do NOT read any template file):
+CHROME (paste these HTML sections verbatim into your page; do NOT read any file from disk):
 $chrome
 
-STEP 1 - Choose ONE new medical topic relevant to $specialty. Slug must be kebab-case, NOT in: $existing
+STEP 1 - Choose ONE new medical topic for $specialty. Slug = kebab-case, NOT in this list: $existing
 
-STEP 2 - Write exactly one new file: $Site/<slug>.html
-Use the chrome above for nav, footer, and doctor card. Use the same CSS class names (te-content, en-content, doctor-card, dc-name, dc-cred, dc-cta, faq, etc.).
+STEP 2 - Write exactly ONE new file: $Site/<slug>.html
 
-HEAD RULES: DOCTYPE html5, <html lang="en">, charset UTF-8, no BOM. <title> English <=60 chars. <meta name="description"> English <=155 chars. <link rel="canonical"> self-pointing to https://$domain/<slug>.html. og:locale=en_IN + og:locale:alternate=te_IN. NO hreflang. JSON-LD: MedicalWebPage + FAQPage + BreadcrumbList, inLanguage ["en","te"].
+===  REQUIRED <head> TAGS (all mandatory, QA will block on any missing) ===
+<meta charset="UTF-8">
+<html lang="en">
+<title>English title <=60 chars</title>
+<meta name="description" content="English <=155 chars">
+<link rel="canonical" href="https://$domain/<slug>.html">
+<meta property="og:url" content="https://$domain/<slug>.html">  <- must equal canonical
+<meta property="og:image" content="https://$domain/$portrait">
+<meta property="og:image:alt" content="$doctorName">
+<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="en_IN">
+<meta property="og:locale:alternate" content="te_IN">
+NO hreflang tags anywhere in the file.
 
-BILINGUAL RULES: every visible sentence appears twice: <span class="te-content">Telugu</span><span class="en-content">English</span>. Whole sentence in ONE span, never nested. Fluent native Telugu -- no Devanagari/Tamil/Kannada/Malayalam codepoints mixed in.
+===  REQUIRED JSON-LD (three blocks, all mandatory) ===
+Block 1 -- MedicalWebPage: inLanguage ["en","te"], datePublished/dateModified today, author + reviewedBy = {"@type":"Physician","name":"$doctorName"}
+Block 2 -- FAQPage: one Question per FAQ item
+Block 3 -- BreadcrumbList (EXACT format required by QA):
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://$domain/"},{"@type":"ListItem","position":2,"name":"<page title>","item":"https://$domain/<slug>.html"}]}
 
-PAGE STRUCTURE: bilingual H1 + lede -> direct-answer box (40-60 word paragraph) -> 3-4 body sections -> bilingual FAQ (min 5 Q&A) -> doctor-card (from chrome above) -> 4-6 internal links (all absolute https://$domain/) -> disclaimer both languages.
+===  BILINGUAL RULES ===
+Every visible sentence appears twice: <span class="te-content">Telugu</span><span class="en-content">English</span>. Full sentence in ONE span, never nested. Fluent native Telugu -- no Devanagari/Tamil/Kannada/Malayalam codepoints.
 
-FORBIDDEN: fabricated stats/survival rates, price figures (INR/lakh/crore), superlatives (best/No.1/top/leading), testimonials, cure/guarantee language.
+===  PAGE STRUCTURE ===
+bilingual H1 + lede -> direct-answer box (40-60 words) -> 3-4 body sections -> bilingual FAQ (min 5 Q&A with <details class="faq"> pattern) -> doctor-card from chrome above -> 4-6 internal links (absolute https://$domain/) -> strong disclaimer in both languages.
 
-STEP 3 - After writing, verify the file exists.
+===  FORBIDDEN ===
+Fabricated stats or survival rates, price/cost figures in INR/Rs/lakh/crore, superlatives (best/No.1/top/leading) on doctor or clinic, testimonials, cure/guarantee language.
 
+STEP 3 - After writing verify the file exists on disk.
 STEP 4 - Your FINAL MESSAGE must be EXACTLY this one line and nothing else:
 SLUG=<the-slug-you-chose>
 "@
