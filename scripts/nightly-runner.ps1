@@ -235,6 +235,64 @@ function Get-SiteChrome {
   return $out
 }
 
+# Extracts real component markup from this site's richest existing content page.
+# Returns a prompt snippet showing the ACTUAL patterns used on this specific site,
+# so Claude matches the design instead of using a generic template.
+# Falls back to empty string when no content pages exist yet (new site first run).
+function Get-SiteComponentExamples {
+  param([Parameter(Mandatory=$true)][string]$SiteDir)
+
+  # Pick the largest content page (best chance of having all components)
+  $page = Get-ChildItem $SiteDir -Filter "*.html" -File |
+    Where-Object { $_.Name -notmatch '^_|^index' } |
+    Sort-Object Length -Descending |
+    Select-Object -First 1
+  if (-not $page) { return "" }
+
+  $html = [IO.File]::ReadAllText($page.FullName, [System.Text.Encoding]::UTF8)
+  $ro   = [System.Text.RegularExpressions.RegexOptions]::Singleline
+
+  $out = "SITE-SPECIFIC COMPONENT EXAMPLES (from $($page.Name) - copy these exact patterns):`n`n"
+
+  $m = [regex]::Match($html, '<div class="answer-box">[\s\S]*?</div>\s*</div>', $ro)
+  if ($m.Success) {
+    $v = $m.Value.Trim(); if ($v.Length -gt 700) { $v = $v.Substring(0, 700) + "..." }
+    $out += "=== ANSWER BOX ===`n$v`n`n"
+  }
+
+  $m = [regex]::Match($html, '<details class="faq">[\s\S]*?</details>', $ro)
+  if ($m.Success) {
+    $v = $m.Value.Trim(); if ($v.Length -gt 600) { $v = $v.Substring(0, 600) + "..." }
+    $out += "=== ONE FAQ ITEM ===`n$v`n`n"
+  }
+
+  $m = [regex]::Match($html, '<div class="reviewer">[\s\S]*?</div>\s*</div>', $ro)
+  if ($m.Success) {
+    $v = $m.Value.Trim(); if ($v.Length -gt 600) { $v = $v.Substring(0, 600) + "..." }
+    $out += "=== REVIEWER BLOCK ===`n$v`n`n"
+  }
+
+  $m = [regex]::Match($html, '<div class="ilinks">[\s\S]*?</div>', $ro)
+  if ($m.Success) {
+    $v = $m.Value.Trim(); if ($v.Length -gt 500) { $v = $v.Substring(0, 500) + "..." }
+    $out += "=== ILINKS ===`n$v`n`n"
+  }
+
+  # Flag site-specific extra components Claude can use if the CSS defines them
+  $extras = @()
+  if ($html -match 'class="doctor-note"')  { $extras += ".doctor-note (blockquote-style doctor callout for first-person advice)" }
+  if ($html -match 'class="page-eyebrow"') { $extras += ".page-eyebrow (decorative category label above h1)" }
+  if ($html -match '"cc "')                 { $extras += ".cc (side-by-side compare cards instead of table)" }
+  if ($html -match '"quote-mark"')          { $extras += ".quote-mark (decorative quote in .doctor-note)" }
+  if ($extras.Count -gt 0) {
+    $out += "SITE-SPECIFIC EXTRA CLASSES AVAILABLE:`n" + ($extras -join "`n") + "`n`n"
+  }
+
+  # Cap total at 3000 chars to keep total prompt manageable
+  if ($out.Length -gt 3000) { $out = $out.Substring(0, 3000) + "`n...(truncated)" }
+  return $out
+}
+
 # ---------------------------------------------------------------------------
 # STEP 0: audit log FIRST (its absence = run blocked before step 0 = diagnostic)
 # ---------------------------------------------------------------------------
@@ -389,9 +447,12 @@ foreach($Site in $Sites) {
   }
   $plannedTopicPrompt = if ($planTopic) { "TODAY'S TOPIC (mandatory): '$planTopic'. Preferred slug: $planSlug`n`n" } else { "" }
 
-  # Load component spec (single source of truth for HTML patterns)
+  # Load global spec (boilerplate: leadform, doctor card, ordering rules)
   $specPath    = Join-Path $Repo "seo-engine\page-spec-prompt.txt"
   $specContent = if (Test-Path $specPath) { [IO.File]::ReadAllText($specPath, [System.Text.UTF8Encoding]::new($false)) } else { "" }
+  # Extract site-specific component examples from this site's real pages (overrides generic patterns)
+  $siteExamples = Get-SiteComponentExamples -SiteDir $siteDir
+  if ($siteExamples) { Write-Host "[spec] ${Site}: loaded site-specific component examples" }
 
   $genPrompt = @"
 ${plannedTopicPrompt}OUTPUT: respond with a single raw JSON object. No prose, no markdown, no tool calls. Your response must begin with { and end with }.
@@ -435,8 +496,10 @@ Your JSON must contain exactly these 7 fields:
   jsonLd3     -- BreadcrumbList schema
   mainHtml    -- complete body HTML (no <style>, <script>, <head>, <nav>, <footer>)
 
-COMPONENT SPEC — follow exactly, same class names and structure every time:
+COMPONENT SPEC — base patterns for ordering, leadform, and doctor card:
 $specContent
+
+$siteExamples
 "@
 
   Write-Host "[gen] ${Site}: sending $($genPrompt.Length)-char prompt to claude..."
