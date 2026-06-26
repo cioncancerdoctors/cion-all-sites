@@ -151,6 +151,54 @@ function Invoke-CodexExec {
   return ""
 }
 
+# Calls "claude -p --model claude-sonnet-4-6" via stdin; returns raw JSON string.
+# Strips markdown fences if Claude wraps the output. Throws on timeout.
+function Invoke-ClaudeExec {
+  param(
+    [Parameter(Mandatory=$true)][string]$Prompt,
+    [int]$TimeoutSec = 600
+  )
+  $claudeExe = $script:claudeExe
+  $repoPath  = $script:Repo
+  $tmpPrompt = Join-Path $env:TEMP "cion-cla-$(Get-Random).txt"
+  [IO.File]::WriteAllText($tmpPrompt, $Prompt, (New-Object System.Text.UTF8Encoding($false)))
+
+  $started = Get-Date
+  $job = Start-Job -ArgumentList $claudeExe, $repoPath, $tmpPrompt -ScriptBlock {
+    param([string]$exe, [string]$repo, [string]$pf)
+    Set-Location -LiteralPath $repo
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    Get-Content $pf -Raw -Encoding UTF8 | & $exe -p --model claude-sonnet-4-6 2>$null | Out-String
+  }
+
+  try {
+    $done = Wait-Job -Job $job -Timeout $TimeoutSec
+    if ($null -eq $done) {
+      Stop-Job -Job $job -ErrorAction SilentlyContinue
+      $exeName = [System.IO.Path]::GetFileNameWithoutExtension($claudeExe)
+      $now     = Get-Date
+      Get-Process -Name $exeName -ErrorAction SilentlyContinue | ForEach-Object {
+        $proc = $_
+        try {
+          if ($proc.StartTime -ge $started.AddSeconds(-2) -and $proc.StartTime -le $now.AddSeconds(2)) {
+            Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+          }
+        } catch {}
+      }
+      throw "claude.exe timed out after ${TimeoutSec}s"
+    }
+    $raw = (Receive-Job -Job $job -ErrorAction Stop | Out-String).Trim()
+    if ($raw -match '^\s*```') {
+      $raw = [regex]::Replace($raw, '(?s)^\s*```(?:json)?\s*\n?', '')
+      $raw = [regex]::Replace($raw, '\s*```\s*$', '')
+    }
+    return $raw.Trim()
+  } finally {
+    Remove-Item $tmpPrompt -ErrorAction SilentlyContinue
+    Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
+  }
+}
+
 # Extracts <nav>, <footer>, and .doctor-card from an HTML file for prompt injection.
 # Keeps the chrome under ~5 KB so the generation prompt doesn't balloon with a 60 KB template.
 function Get-SiteChrome {
@@ -263,33 +311,29 @@ foreach($Site in $Sites) {
     ForEach-Object { Split-Path $_ -Leaf }
   $before  = @($tracked | Where-Object { $_ })
   $existing = ($before | ForEach-Object { $_ -replace '\.html$','' }) -join ', '
-  Write-Host "[gen] $Site tmpl-pick from $($before.Count) existing pages"
-  # Pick SMALLEST non-excluded COMMITTED page as template (fewer tokens to read)
-  $tmpl = (& git ls-files $Site 2>$null) |
-    ForEach-Object { $_.TrimEnd() } |
-    Where-Object { $_ -match '\.html$' -and ($_ -notmatch '/(index|about|thank-you|privacy)\.html$') } |
-    ForEach-Object { [PSCustomObject]@{ Name=(Split-Path $_ -Leaf); Len=(Get-Item (Join-Path $Repo $_)).Length } } |
-    Sort-Object Len | Select-Object -First 1 | ForEach-Object { $_.Name }
-  if(-not $tmpl) { $tmpl = "second-opinion.html" }
-  if(-not $tmpl) { $tmpl = "index.html" }
-  # Doctor specialty from CSV (used to pick a relevant new topic)
-  $csvPath = Join-Path $Repo "_data\doctor-profiles.filled.csv"
+  Write-Host "[gen] ${Site}: using _template.html ($($before.Count) existing pages)"
+  # Doctor specialty from CSV
+  $csvPath   = Join-Path $Repo "_data\doctor-profiles.filled.csv"
   $specialty = "Oncology"
   if (Test-Path $csvPath) {
     $row = Import-Csv $csvPath | Where-Object { $_.doctor_folder -eq $Site } | Select-Object -First 1
     if ($row -and $row.specialty) { $specialty = $row.specialty }
   }
 
-  # 2. GENERATE (codex exec workspace-write -- saves claude tokens)
+  # 2. GENERATE via Claude (returns JSON; runner fills _template.html)
   $ss.stage = "generate"; Save-Status
-  $genStatusFile = Join-Path $runDir ".gen-$Site.txt"
-  # Extract chrome (~3 KB) so codex never reads the full 60 KB template
-  $chrome = Get-SiteChrome -HtmlPath (Join-Path $siteDir $tmpl)
-  # Extract portrait filename (for og:image) and doctor name (for JSON-LD author) from chrome
-  $portraitM = [regex]::Match($chrome, 'src="([^"]*portrait[^"]*)"')
-  $portrait  = if ($portraitM.Success) { $portraitM.Groups[1].Value } else { "$($Site -replace 'dr-','').png" }
-  $dcNameM   = [regex]::Match($chrome, 'class="dc-name">([^<]+)<')
-  $doctorName = if ($dcNameM.Success) { $dcNameM.Groups[1].Value } else { "the doctor" }
+  $tplPath = Join-Path $siteDir "_template.html"
+  if (-not (Test-Path $tplPath)) {
+    $ss.errors += "no _template.html -- run step 1 first"
+    $failedSites.Add($Site); continue
+  }
+  $tplHtml = [IO.File]::ReadAllText($tplPath, [System.Text.Encoding]::UTF8)
+
+  # Extract portrait filename and doctor name from template (for og:image and schema)
+  $portraitM  = [regex]::Match($tplHtml, 'src="([^"]*portrait[^"]*)"')
+  $portrait   = if ($portraitM.Success) { $portraitM.Groups[1].Value } else { "$($Site -replace 'dr-','').png" }
+  $dcNameM    = [regex]::Match($tplHtml, 'class="dc-name">([^<]+)<')
+  $doctorName = if ($dcNameM.Success) { $dcNameM.Groups[1].Value.Trim() } else { "the doctor" }
 
   # Read today's planned topic from content-plan.csv
   $planCsv   = Join-Path $Repo "_data\content-plan.csv"
@@ -297,80 +341,135 @@ foreach($Site in $Sites) {
   $planTopic = ""
   $planSlug  = ""
   if (Test-Path $planCsv) {
-      $planRow = Import-Csv $planCsv |
-          Where-Object { $_.doctor_folder -eq $Site -and $_.planned_date -eq $todayStr -and $_.status -eq "pending" } |
-          Select-Object -First 1
-      if ($planRow) {
-          $planTopic = $planRow.topic_en
-          $planSlug  = $planRow.slug_hint
-          Write-Host "[plan] ${Site}: today's topic = '$planTopic' (slug-hint: $planSlug)"
-      } else {
-          Write-Host "[plan] ${Site}: no planned topic for $todayStr -- codex picks freely"
-      }
+    $planRow = Import-Csv $planCsv |
+      Where-Object { $_.doctor_folder -eq $Site -and $_.planned_date -eq $todayStr -and $_.status -eq "pending" } |
+      Select-Object -First 1
+    if ($planRow) {
+      $planTopic = $planRow.topic_en
+      $planSlug  = $planRow.slug_hint
+      Write-Host "[plan] ${Site}: topic = '$planTopic' (slug-hint: $planSlug)"
+    } else {
+      Write-Host "[plan] ${Site}: no planned topic for $todayStr -- Claude picks freely"
+    }
   }
-
-  $plannedTopicPrompt = if ($planTopic) { "TODAY'S TOPIC (mandatory): Write a page about `"$planTopic`". Use slug: $planSlug`n`n" } else { "" }
+  $plannedTopicPrompt = if ($planTopic) { "TODAY'S TOPIC (mandatory): '$planTopic'. Preferred slug: $planSlug`n`n" } else { "" }
 
   $genPrompt = @"
-You are generating ONE new bilingual (English+Telugu) SEO page for a cancer doctor website. Write the complete HTML file directly to disk.
+${plannedTopicPrompt}Return ONLY valid JSON -- no prose, no markdown fences, no explanation outside the JSON object.
 
-$plannedTopicPrompt
-SITE: $Site  |  DOMAIN: $domain  |  DOCTOR: $doctorName  |  SPECIALTY: $specialty
+You are generating ONE new bilingual (English + Telugu) medical SEO page for a cancer doctor website.
+SITE: $Site | DOMAIN: $domain | DOCTOR: $doctorName | SPECIALTY: $specialty | DATE: $utcDate
 
-CHROME (paste these HTML sections verbatim into your page; do NOT read any file from disk):
-$chrome
+EXISTING SLUGS (never reuse any of these): $existing
 
-STEP 1 - Choose ONE new medical topic for $specialty. Slug = kebab-case, NOT in this list: $existing
+CONTENT GUARDRAILS (mandatory -- enforced by QA checklist):
+- No fabricated statistics, survival rates, or clinical trial claims
+- No cost/price figures in INR, Rs, lakh, or crore (no exact numbers)
+- No superlatives applied to the doctor or clinic (best, No.1, top, leading, finest)
+- No guarantees, "100% cure", or "miracle" language
+- No patient testimonials or case outcomes
+- All medical claims must be conservative and mainstream oncology
+- First-person doctor voice throughout, in both English and Telugu
+- Use only credentials/speciality already visible in the page template
 
-STEP 2 - Write exactly ONE new file: $Site/<slug>.html
+BILINGUAL RULE -- every patient-facing sentence appears twice in this pattern:
+<span class="te-content">Telugu sentence.</span><span class="en-content">English sentence.</span>
+Full sentence in ONE span. Native Telugu fluency. No Devanagari, Tamil, Kannada, or Malayalam codepoints.
 
-===  REQUIRED <head> TAGS (all mandatory, QA will block on any missing) ===
-<meta charset="UTF-8">
-<html lang="en">
-<title>English title <=60 chars</title>
-<meta name="description" content="English <=155 chars">
-<link rel="canonical" href="https://$domain/<slug>.html">
-<meta property="og:url" content="https://$domain/<slug>.html">  <- must equal canonical
-<meta property="og:image" content="https://$domain/$portrait">
-<meta property="og:image:alt" content="$doctorName">
-<meta name="twitter:card" content="summary">
-<meta property="og:locale" content="en_IN">
-<meta property="og:locale:alternate" content="te_IN">
-NO hreflang tags anywhere in the file.
+REQUIRED JSON RESPONSE (all 7 fields mandatory, no extras):
+{
+  "slug": "kebab-case-unique-slug",
+  "title": "English page title, 55 chars max, no doctor name suffix",
+  "description": "English meta description, 150 chars max",
+  "jsonLd1": "<MedicalWebPage JSON -- inLanguage:[\"en\",\"te\"], datePublished:\"$utcDate\", author+reviewedBy:{\"@type\":\"Physician\",\"name\":\"$doctorName\"}>",
+  "jsonLd2": "<FAQPage JSON -- min 5 Question+acceptedAnswer pairs matching the FAQ items in mainHtml>",
+  "jsonLd3": "{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https://$domain/\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"<page title>\",\"item\":\"https://$domain/<slug>.html\"}]}",
+  "mainHtml": "<full inner HTML for the main element only>"
+}
 
-===  REQUIRED JSON-LD (three blocks, all mandatory) ===
-Block 1 -- MedicalWebPage: inLanguage ["en","te"], datePublished/dateModified today, author + reviewedBy = {"@type":"Physician","name":"$doctorName"}
-Block 2 -- FAQPage: one Question per FAQ item
-Block 3 -- BreadcrumbList (EXACT format required by QA):
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://$domain/"},{"@type":"ListItem","position":2,"name":"<page title>","item":"https://$domain/<slug>.html"}]}
+jsonLd1 and jsonLd2 must be raw JSON strings (no surrounding <script> tags).
 
-===  BILINGUAL RULES ===
-Every visible sentence appears twice: <span class="te-content">Telugu</span><span class="en-content">English</span>. Full sentence in ONE span, never nested. Fluent native Telugu -- no Devanagari/Tamil/Kannada/Malayalam codepoints.
+mainHtml MUST contain in this order:
+1. <div class="breadcrumb"> -- bilingual Home > page breadcrumb
+2. <h1> -- bilingual H1, one per page, contains the primary keyword
+3. <p class="lede"> -- bilingual introductory paragraph
+4. <div class="answer-box"> with <div class="lbl"> label and <p> body (40-60 words, bilingual)
+5. 3-4 body <h2> sections with bilingual prose; include at least one <table class="cmp">
+6. Bilingual FAQ: min 5 <details class="faq"> each with <summary> and <div class="faq-ans">
+7. <div class="ilinks"> with 4-6 links using absolute https://$domain/page.html URLs
+8. <div class="reviewer"> block -- doctor name and review date $utcDate (bilingual)
+9. <div class="disclaimer"> -- strong bilingual medical disclaimer
 
-===  PAGE STRUCTURE ===
-bilingual H1 + lede -> direct-answer box (40-60 words) -> 3-4 body sections -> bilingual FAQ (min 5 Q&A with <details class="faq"> pattern) -> doctor-card from chrome above -> 4-6 internal links (absolute https://$domain/) -> strong disclaimer in both languages.
-
-===  FORBIDDEN ===
-Fabricated stats or survival rates, price/cost figures in INR/Rs/lakh/crore, superlatives (best/No.1/top/leading) on doctor or clinic, testimonials, cure/guarantee language.
-
-STEP 3 - After writing verify the file exists on disk.
-STEP 4 - Your FINAL MESSAGE must be EXACTLY this one line and nothing else:
-SLUG=<the-slug-you-chose>
+mainHtml must NOT contain: <style> tags, <script> tags, <head>, <nav>, <footer>, or doctor card (those are in the template).
 "@
 
-  Write-Host "[gen] ${Site}: sending $($genPrompt.Length)-char prompt to codex (template=$tmpl)..."
+  Write-Host "[gen] ${Site}: sending $($genPrompt.Length)-char prompt to claude..."
+  $rawJson    = $null
+  $claudeJson = $null
   try {
-    $genTail = Invoke-CodexExec -Prompt $genPrompt -StatusOut $genStatusFile -Sandbox "workspace-write" -TimeoutSec 720
-    $ss.genTail = $genTail
-    Write-Host "[gen] ${Site}: codex returned genTail=$(if($genTail){'`"'+$genTail.Substring(0,[Math]::Min(60,$genTail.Length))+'`"'}else{'(empty)'})"
+    $rawJson    = Invoke-ClaudeExec -Prompt $genPrompt -TimeoutSec 600
+    $claudeJson = $rawJson | ConvertFrom-Json
   } catch {
-    $ss.errors += "generation timed out or failed: $_"
-    Write-Host "[timeout] generation for $Site exceeded 720s -- skipping"
-    & git checkout -- $Site 2>$null | Out-Null
-    & git clean -fd -- $Site 2>$null | Out-Null
+    $ss.errors += "claude generation failed: $_"
+    Write-Host "[timeout] ${Site}: claude failed or timed out -- skipping"
     if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
     $failedSites.Add($Site); continue
   }
+
+  # 2a. Validate required JSON fields
+  $requiredFields = @('slug','title','description','jsonLd1','jsonLd2','jsonLd3','mainHtml')
+  $missingFields  = $requiredFields | Where-Object { -not $claudeJson.$_ }
+  if ($missingFields) {
+    $ss.errors += "claude JSON missing: $($missingFields -join ',')"
+    Write-Host "[gen] ${Site}: JSON missing fields -- $($missingFields -join ',')"
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
+    $failedSites.Add($Site); continue
+  }
+
+  # 2b. DRIFT GUARD: reject if mainHtml contains <style> or <script> tags
+  if ($claudeJson.mainHtml -match '<style[\s>]' -or $claudeJson.mainHtml -match '<script[\s>]') {
+    $ss.errors += "drift guard: mainHtml contains forbidden style/script tags"
+    Write-Host "[drift] ${Site}: BLOCKED -- mainHtml has style or script tags"
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
+    $failedSites.Add($Site); continue
+  }
+
+  # 2c. Sanitize slug and check uniqueness
+  $slug = ($claudeJson.slug -replace '[^a-z0-9-]','').ToLower().Trim('-')
+  if (-not $slug) { $slug = "$utcDate-$($Site -replace 'dr-','')" }
+  if ($before -contains "$slug.html") {
+    $ss.errors += "slug collision: $slug.html already exists"
+    Write-Host "[gen] ${Site}: slug '$slug' already committed -- skipping"
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
+    $failedSites.Add($Site); continue
+  }
+  $fileName = "$slug.html"
+
+  # 2d. Fill template placeholders and write file
+  $canonical = "https://$domain/$fileName"
+  $ogImage   = "https://$domain/$portrait"
+  $ogTitle   = "$($claudeJson.title) | $doctorName"
+  $jld1 = '<script type="application/ld+json">' + $claudeJson.jsonLd1 + '</script>'
+  $jld2 = '<script type="application/ld+json">' + $claudeJson.jsonLd2 + '</script>'
+  $jld3 = '<script type="application/ld+json">' + $claudeJson.jsonLd3 + '</script>'
+
+  $finalHtml = $tplHtml
+  $finalHtml = $finalHtml.Replace('{{TITLE}}',          $claudeJson.title)
+  $finalHtml = $finalHtml.Replace('{{DESCRIPTION}}',    $claudeJson.description)
+  $finalHtml = $finalHtml.Replace('{{CANONICAL}}',      $canonical)
+  $finalHtml = $finalHtml.Replace('{{OG_URL}}',         $canonical)
+  $finalHtml = $finalHtml.Replace('{{OG_IMAGE}}',       $ogImage)
+  $finalHtml = $finalHtml.Replace('{{OG_TITLE}}',       $ogTitle)
+  $finalHtml = $finalHtml.Replace('{{OG_DESCRIPTION}}', $claudeJson.description)
+  $finalHtml = $finalHtml.Replace('{{JSON_LD_1}}',      $jld1)
+  $finalHtml = $finalHtml.Replace('{{JSON_LD_2}}',      $jld2)
+  $finalHtml = $finalHtml.Replace('{{JSON_LD_3}}',      $jld3)
+  $finalHtml = $finalHtml.Replace('{{MAIN_CONTENT}}',   $claudeJson.mainHtml)
+
+  $pageAbs = Join-Path $siteDir $fileName
+  [IO.File]::WriteAllText($pageAbs, $finalHtml, (New-Object System.Text.UTF8Encoding($false)))
+  $ss.genTail = "SLUG=$slug"
+  Write-Host "[gen] ${Site}: wrote $Site/$fileName"
   Save-Status
 
   # 3. SCOPE CHECK: reject any changed file outside $Site/ (before contract check)
@@ -395,7 +494,14 @@ SLUG=<the-slug-you-chose>
     if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
     $failedSites.Add($Site); continue
   }
-  $fileName = $new[0]; $slug = $fileName -replace '\.html$',''
+  # $fileName and $slug were set in step 2 -- verify the contract file matches
+  if ($new[0] -ne $fileName) {
+    & git checkout -- $Site 2>$null | Out-Null
+    & git clean -fd -- $Site 2>$null | Out-Null
+    $ss.errors += "contract mismatch: expected $fileName but found $($new[0])"
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
+    $failedSites.Add($Site); continue
+  }
   $ss.page = "$Site/$fileName"; $ss.slug = $slug
   Write-Host "[ok] generated $Site/$fileName"
 
