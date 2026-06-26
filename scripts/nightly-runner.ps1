@@ -440,9 +440,9 @@ foreach($Site in $Sites) {
   # Load global spec (boilerplate: leadform, doctor card, ordering rules)
   $specPath    = Join-Path $Repo "seo-engine\page-spec-prompt.txt"
   $specContent = if (Test-Path $specPath) { [IO.File]::ReadAllText($specPath, [System.Text.UTF8Encoding]::new($false)) } else { "" }
-  # Extract site-specific component examples from this site's real pages (overrides generic patterns)
+  # Scan for site-specific extra components (for logging/future use)
   $siteExamples = Get-SiteComponentExamples -SiteDir $siteDir
-  if ($siteExamples) { Write-Host "[spec] ${Site}: loaded site-specific component examples" }
+  if ($siteExamples) { Write-Host "[spec] ${Site}: has site-specific extras (doctor-note/page-eyebrow/cc)" }
 
   $genPrompt = @"
 ${plannedTopicPrompt}OUTPUT: respond with a single raw JSON object. No prose, no markdown, no tool calls. Your response must begin with { and end with }.
@@ -486,14 +486,8 @@ Your JSON must contain exactly these 7 fields:
   jsonLd3     -- BreadcrumbList schema
   mainHtml    -- complete body HTML (no <style>, <script>, <head>, <nav>, <footer>)
 
-COMPONENT SPEC — base patterns for ordering, leadform, and doctor card:
+COMPONENT SPEC — follow the class names and structures below exactly:
 $specContent
-
-$siteExamples
-
-OUTPUT REMINDER: return ONLY a single JSON object — no markdown fences, no text before or after.
-The "mainHtml" field must be a single fully-rendered HTML string using inline bilingual spans.
-Do NOT return separate en/te keys, do NOT return a content data-model — render the final HTML.
 "@
 
   Write-Host "[gen] ${Site}: sending $($genPrompt.Length)-char prompt to claude..."
