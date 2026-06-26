@@ -100,17 +100,33 @@ for folder, (doctor_name, domain) in SITES.items():
             "status": row_status,
         })
 
-    # Pre-existing pages on disk that are NOT covered by the plan
+    # Pre-existing pages on disk that are NOT covered by the plan.
+    # Handles two layouts:
+    #   flat:   site-dir/slug.html          (8 doctors)
+    #   subdir: site-dir/slug/index.html    (dr-imad PHP site)
     preexisting = []
     if os.path.isdir(site_dir):
-        for f in sorted(os.listdir(site_dir)):
-            if not f.endswith(".html") or f == "thank-you.html":
+        entries = sorted(os.listdir(site_dir))
+        for entry in entries:
+            entry_path = os.path.join(site_dir, entry)
+            # Flat HTML file
+            if entry.endswith(".html") and os.path.isfile(entry_path):
+                if entry == "thank-you.html":
+                    continue
+                slug = entry.replace(".html", "")
+                url  = f"https://{domain}/{entry}"
+            # Subdirectory containing index.html (dr-imad style)
+            elif os.path.isdir(entry_path):
+                index = os.path.join(entry_path, "index.html")
+                if not os.path.isfile(index):
+                    continue
+                slug = entry
+                url  = f"https://{domain}/{entry}/"
+            else:
                 continue
-            slug = f.replace(".html", "")
             if slug in plan_slugs:
-                continue  # plan row already represents this page
-            url  = f"https://{domain}/{f}"
-            date_str = log_lookup.get(url, "NA")
+                continue
+            date_str = log_lookup.get(url, log_lookup.get(url.rstrip("/"), "NA"))
             preexisting.append({
                 "date":   date_str,
                 "topic":  "(pre-existing page)",
