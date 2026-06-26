@@ -188,6 +188,8 @@ function Invoke-ClaudeExec {
     }
     $raw = (Receive-Job -Job $job -ErrorAction Stop | Out-String).Trim()
     if (-not $raw) { throw "claude returned empty output" }
+    # Strip UTF-8 BOM character if job output was captured with BOM-emitting encoder
+    if ($raw.Length -gt 0 -and [int][char]$raw[0] -eq 0xFEFF) { $raw = $raw.Substring(1) }
     # Strip all markdown fences (anywhere in string)
     $raw = [regex]::Replace($raw, '```(?:json)?', '')
     $raw = $raw.Trim()
@@ -522,6 +524,8 @@ mainHtml must NOT contain: <style>, <script>, <head>, <nav>, <footer>, or doctor
   $finalHtml = $finalHtml.Replace('{{MAIN_CONTENT}}',   $claudeJson.mainHtml)
 
   $pageAbs = Join-Path $siteDir $fileName
+  # Defensive BOM strip -- PS5.1 job output can inject U+FEFF into the string
+  if ($finalHtml.Length -gt 0 -and [int][char]$finalHtml[0] -eq 0xFEFF) { $finalHtml = $finalHtml.Substring(1) }
   [IO.File]::WriteAllText($pageAbs, $finalHtml, (New-Object System.Text.UTF8Encoding($false)))
   $ss.genTail = "SLUG=$slug"
   Write-Host "[gen] ${Site}: wrote $Site/$fileName"
