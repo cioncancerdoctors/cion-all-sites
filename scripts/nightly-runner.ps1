@@ -283,6 +283,115 @@ function Get-SiteComponentExamples {
   return $out
 }
 
+# Builds mainHtml from a structured data model when Claude returns content fields
+# instead of rendered HTML. Used as a fallback in the normalization block.
+function Build-MainHtmlFromDataModel {
+  param(
+    [Parameter(Mandatory=$true)]$D,
+    [Parameter(Mandatory=$true)][string]$Domain,
+    [Parameter(Mandatory=$true)][string]$DateStr,
+    [string]$LeadformHtml = "",
+    [string]$DoctorCardHtml = ""
+  )
+  $html = ""
+
+  # 1. Breadcrumb
+  $h1e = if ($D.h1_en) { $D.h1_en } else { ($D.slug -replace '-',' ') }
+  $h1t = if ($D.h1_te) { $D.h1_te } else { $h1e }
+  $html += "<nav aria-label=`"Breadcrumb`" class=`"breadcrumb`"><ol><li><a href=`"index.html`"><span class=`"te-content`">హోమ్</span><span class=`"en-content`">Home</span></a></li><li aria-current=`"page`"><span class=`"te-content`">$h1t</span><span class=`"en-content`">$h1e</span></li></ol></nav>`n"
+
+  # 2. H1 + lede
+  $html += "<h1><span class=`"te-content`">$h1t</span><span class=`"en-content`">$h1e</span></h1>`n"
+  $le = if ($D.lede_en) { $D.lede_en } elseif ($D.intro_en) { $D.intro_en } else { "" }
+  $lt = if ($D.lede_te) { $D.lede_te } elseif ($D.intro_te) { $D.intro_te } else { "" }
+  if ($le) { $html += "<p class=`"lede`"><span class=`"te-content`">$lt</span><span class=`"en-content`">$le</span></p>`n" }
+
+  # 3. Answer box
+  $dae = $dat = ""
+  if ($D.direct_answer_box) { $dae = $D.direct_answer_box.en; $dat = $D.direct_answer_box.te }
+  elseif ($D.direct_answer_en) { $dae = $D.direct_answer_en; $dat = $D.direct_answer_te }
+  if ($dae) {
+    $svgChk = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'
+    $html += "<div class=`"answer-box`"><div class=`"lbl`">$svgChk<span class=`"te-content`">సూటి సమాధానం</span><span class=`"en-content`">Direct answer</span></div><p><span class=`"te-content`">$dat</span><span class=`"en-content`">$dae</span></p></div>`n"
+  }
+
+  # 4. Body sections
+  $bodySections = if ($D.body) { @($D.body) } elseif ($D.sections) { @($D.sections) } else { @() }
+  foreach ($sec in $bodySections) {
+    $he = if ($sec.heading_en) { $sec.heading_en } elseif ($sec.heading) { $sec.heading } else { "" }
+    $ht = if ($sec.heading_te) { $sec.heading_te } else { $he }
+    if ($he) { $html += "<h2><span class=`"te-content`">$ht</span><span class=`"en-content`">$he</span></h2>`n" }
+    # Optional table
+    if ($sec.table) {
+      $tbl = $sec.table
+      $cen = @($tbl.columns_en); $cte = @($tbl.columns_te)
+      $thd = ""; for ($ci=0; $ci -lt $cen.Count; $ci++) { $thd += "<th><span class=`"te-content`">$($cte[$ci])</span><span class=`"en-content`">$($cen[$ci])</span></th>" }
+      $html += "<table class=`"cmp`"><thead><tr>$thd</tr></thead><tbody>"
+      $ren = @($tbl.rows_en); $rte = @($tbl.rows_te)
+      for ($ri=0; $ri -lt $ren.Count; $ri++) {
+        $re = @($ren[$ri]); $rt = @($rte[$ri]); $cells = ""
+        for ($ci2=0; $ci2 -lt $re.Count; $ci2++) { $cells += "<td><span class=`"te-content`">$($rt[$ci2])</span><span class=`"en-content`">$($re[$ci2])</span></td>" }
+        $html += "<tr>$cells</tr>"
+      }
+      $html += "</tbody></table>`n"
+    }
+    # Paragraphs
+    $pe = @($sec.paragraphs_en); $pt = @($sec.paragraphs_te)
+    if (-not $pe -and $sec.paragraphs) { $pe = @($sec.paragraphs) }
+    if ($pe.Count -gt 0) {
+      $html += "<div class=`"prose`">"
+      for ($pi=0; $pi -lt $pe.Count; $pi++) {
+        $pte = if ($pi -lt $pt.Count) { $pt[$pi] } else { "" }
+        $html += "<p><span class=`"te-content`">$pte</span><span class=`"en-content`">$($pe[$pi])</span></p>"
+      }
+      $html += "</div>`n"
+    }
+  }
+
+  # 5. Leadform + 6. Doctor card (verbatim from spec)
+  if ($LeadformHtml)   { $html += $LeadformHtml + "`n" }
+  if ($DoctorCardHtml) { $html += $DoctorCardHtml + "`n" }
+
+  # 7. FAQ
+  $faqs = if ($D.faq) { @($D.faq) } elseif ($D.faq_en) { @($D.faq_en) } else { @() }
+  if ($faqs.Count -gt 0) {
+    $svgPlus = '<svg class="faq-plus" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>'
+    $html += "<h2><span class=`"te-content`">తరచుగా అడిగే ప్రశ్నలు</span><span class=`"en-content`">Frequently asked questions</span></h2>`n"
+    foreach ($f in $faqs) {
+      $qe = if ($f.q_en) { $f.q_en } elseif ($f.question_en) { $f.question_en } else { "" }
+      $qt = if ($f.q_te) { $f.q_te } elseif ($f.question_te) { $f.question_te } else { $qe }
+      $ae = if ($f.a_en) { $f.a_en } elseif ($f.answer_en) { $f.answer_en } else { "" }
+      $at = if ($f.a_te) { $f.a_te } elseif ($f.answer_te) { $f.answer_te } else { $ae }
+      $html += "<details class=`"faq`"><summary>$svgPlus<span class=`"te-content`">$qt</span><span class=`"en-content`">$qe</span></summary><div class=`"faq-ans`"><p><span class=`"te-content`">$at</span><span class=`"en-content`">$ae</span></p></div></details>`n"
+    }
+  }
+
+  # 8. ilinks
+  $links = if ($D.internal_links) { @($D.internal_links) } elseif ($D.ilinks) { @($D.ilinks) } else { @() }
+  if ($links.Count -gt 0) {
+    $svgInfo = '<svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+    $html += "<div class=`"ilinks`">$svgInfo"
+    foreach ($lk in $links) {
+      $href = if ($lk.slug) { "https://$Domain/$($lk.slug).html" } elseif ($lk.url) { $lk.url } else { "#" }
+      $ae = if ($lk.anchor_en) { $lk.anchor_en } elseif ($lk.text_en) { $lk.text_en } else { $lk.slug }
+      $at = if ($lk.anchor_te) { $lk.anchor_te } elseif ($lk.text_te) { $lk.text_te } else { $ae }
+      $html += "<a href=`"$href`"><span class=`"te-content`">$at</span><span class=`"en-content`">$ae</span></a>"
+    }
+    $html += "</div>`n"
+  }
+
+  # 9. Reviewer (build from %%vars%% -- runner will substitute)
+  $svgShield = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'
+  $html += "<div class=`"reviewer`">$svgShield<div class=`"rv-tx`"><strong>%%DOCTOR_NAME%%</strong> &mdash; %%CREDENTIALS_SHORT%%<br><span class=`"te-content`">ద్వారా వైద్యపరంగా సమీక్షించబడింది &middot; $DateStr</span><span class=`"en-content`">Medically reviewed &middot; $DateStr</span></div></div>`n"
+
+  # 10. Disclaimer
+  $die = if ($D.disclaimer_en) { $D.disclaimer_en } else { "Reading this page does not create a doctor-patient relationship. Treatment depends on examination and your reports. In an emergency, go to the nearest hospital now. Do not start or stop any medicine based on this page." }
+  $dit = if ($D.disclaimer_te) { $D.disclaimer_te } else { "ఈ పేజీ చదవడం వైద్యుడు-రోగి సంబంధాన్ని సృష్టించదు. చికిత్స పరీక్ష మరియు మీ రిపోర్టులపై ఆధారపడుతుంది. అత్యవసర పరిస్థితిలో వెంటనే దగ్గరి ఆసుపత్రికి వెళ్ళండి." }
+  $html += "<div class=`"disclaimer`"><span class=`"te-content`">$dit</span><span class=`"en-content`">$die</span></div>`n"
+
+  return $html
+}
+
 # ---------------------------------------------------------------------------
 # STEP 0: audit log FIRST (its absence = run blocked before step 0 = diagnostic)
 # ---------------------------------------------------------------------------
@@ -505,16 +614,18 @@ $specContent
     # Normalize: Claude sometimes returns a rich nested schema instead of the 7 flat fields.
     # Map from known alternative field paths to the flat fields the runner expects.
     if (-not $claudeJson.title) {
-      $t = if ($claudeJson.seo -and $claudeJson.seo.title_en)          { $claudeJson.seo.title_en } `
-           elseif ($claudeJson.seo -and $claudeJson.seo.title)          { $claudeJson.seo.title } `
-           else { "" }
-      $claudeJson | Add-Member -NotePropertyName 'title' -NotePropertyValue $t -Force
+      $t = ""
+      if ($claudeJson.seo)  { $t = if ($claudeJson.seo.title_en) { $claudeJson.seo.title_en } else { $claudeJson.seo.title } }
+      if (-not $t -and $claudeJson.head) { $t = if ($claudeJson.head.title_en) { $claudeJson.head.title_en } else { $claudeJson.head.title } }
+      if (-not $t -and $claudeJson.meta) { $t = if ($claudeJson.meta.title_en) { $claudeJson.meta.title_en } else { $claudeJson.meta.title } }
+      if ($t) { $claudeJson | Add-Member -NotePropertyName 'title' -NotePropertyValue $t -Force }
     }
     if (-not $claudeJson.description) {
-      $d = if ($claudeJson.seo -and $claudeJson.seo.meta_description_en) { $claudeJson.seo.meta_description_en } `
-           elseif ($claudeJson.seo -and $claudeJson.seo.description)     { $claudeJson.seo.description } `
-           else { "" }
-      $claudeJson | Add-Member -NotePropertyName 'description' -NotePropertyValue $d -Force
+      $d = ""
+      if ($claudeJson.seo)  { $d = if ($claudeJson.seo.meta_description_en) { $claudeJson.seo.meta_description_en } else { $claudeJson.seo.description } }
+      if (-not $d -and $claudeJson.head) { $d = if ($claudeJson.head.meta_description_en) { $claudeJson.head.meta_description_en } else { $claudeJson.head.description } }
+      if (-not $d -and $claudeJson.meta) { $d = if ($claudeJson.meta.meta_description_en) { $claudeJson.meta.meta_description_en } else { $claudeJson.meta.description } }
+      if ($d) { $claudeJson | Add-Member -NotePropertyName 'description' -NotePropertyValue $d -Force }
     }
     if ((-not $claudeJson.jsonLd1) -and $claudeJson.jsonld) {
       $jArr = @($claudeJson.jsonld)
@@ -524,8 +635,15 @@ $specContent
       $claudeJson | Add-Member -NotePropertyName 'jsonLd2' -NotePropertyValue $jl2 -Force
     }
     # Nested schema.* format (Claude sometimes returns schema objects instead of JSON strings)
-    if ((-not $claudeJson.jsonLd1) -and $claudeJson.schema -and $claudeJson.schema.medical_web_page) {
-      $claudeJson | Add-Member -NotePropertyName 'jsonLd1' -NotePropertyValue ($claudeJson.schema.medical_web_page | ConvertTo-Json -Depth 20 -Compress) -Force
+    if ((-not $claudeJson.jsonLd1) -and $claudeJson.schema) {
+      # schema.@graph array (newest format)
+      $graph = $claudeJson.schema.'@graph'
+      if ($graph -and @($graph).Count -gt 0) {
+        $claudeJson | Add-Member -NotePropertyName 'jsonLd1' -NotePropertyValue (@($graph)[0] | ConvertTo-Json -Depth 20 -Compress) -Force
+        if (@($graph).Count -gt 1) { $claudeJson | Add-Member -NotePropertyName 'jsonLd2' -NotePropertyValue (@($graph)[1] | ConvertTo-Json -Depth 20 -Compress) -Force }
+      } elseif ($claudeJson.schema.medical_web_page) {
+        $claudeJson | Add-Member -NotePropertyName 'jsonLd1' -NotePropertyValue ($claudeJson.schema.medical_web_page | ConvertTo-Json -Depth 20 -Compress) -Force
+      }
     }
     if ((-not $claudeJson.jsonLd2) -and $claudeJson.schema -and $claudeJson.schema.faq_page) {
       $claudeJson | Add-Member -NotePropertyName 'jsonLd2' -NotePropertyValue ($claudeJson.schema.faq_page | ConvertTo-Json -Depth 20 -Compress) -Force
@@ -542,6 +660,22 @@ $specContent
       $mM = [regex]::Match($claudeJson.html, '(?s)<main[^>]*>(.*)</main>')
       $mHtml = if ($mM.Success) { $mM.Groups[1].Value.Trim() } else { $claudeJson.html }
       $claudeJson | Add-Member -NotePropertyName 'mainHtml' -NotePropertyValue $mHtml -Force
+    }
+    # Data-model fallback: Claude returned structured fields instead of rendered HTML.
+    # Render mainHtml from the data model using the component spec for leadform/doctor-card.
+    if (-not $claudeJson.mainHtml) {
+      if ($claudeJson.body -or $claudeJson.body_en -or $claudeJson.h1_en) {
+        Write-Host "[gen] ${Site}: data model detected -- rendering mainHtml from structured fields..."
+        $specHtmlRaw = if (Test-Path $specPath) { [IO.File]::ReadAllText($specPath, [System.Text.UTF8Encoding]::new($false)) } else { "" }
+        $ro2 = [System.Text.RegularExpressions.RegexOptions]::Multiline
+        $mLF = [regex]::Match($specHtmlRaw, '(?m)^=== LEADFORM[^\r\n]*\r?\n([\s\S]*?)(?=^===)', $ro2)
+        $lfHtml = if ($mLF.Success) { $mLF.Groups[1].Value.Trim() } else { "" }
+        $mDC = [regex]::Match($specHtmlRaw, '(?m)^=== DOCTOR CARD[^\r\n]*\r?\n([\s\S]*?)(?=^===|\z)', $ro2)
+        $dcHtml = if ($mDC.Success) { $mDC.Groups[1].Value.Trim() } else { "" }
+        $rendered = Build-MainHtmlFromDataModel -D $claudeJson -Domain $domain -DateStr $utcDate -LeadformHtml $lfHtml -DoctorCardHtml $dcHtml
+        $claudeJson | Add-Member -NotePropertyName 'mainHtml' -NotePropertyValue $rendered -Force
+        Write-Host "[gen] ${Site}: rendered mainHtml ($($rendered.Length) chars) from data model"
+      }
     }
   } catch {
     $ss.errors += "claude generation failed: $_"
