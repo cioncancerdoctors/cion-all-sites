@@ -290,7 +290,7 @@ foreach($Site in $Sites) {
 
   # Read today's planned topic from content-plan.csv
   $planCsv   = Join-Path $Repo "_data\content-plan.csv"
-  $todayStr  = (Get-Date).ToString("yyyy-MM-dd")
+  $todayStr  = $utcDate
   $planTopic = ""
   $planSlug  = ""
   if (Test-Path $planCsv) {
@@ -300,16 +300,18 @@ foreach($Site in $Sites) {
       if ($planRow) {
           $planTopic = $planRow.topic_en
           $planSlug  = $planRow.slug_hint
-          Write-Host "[plan] $Site: today's topic = '$planTopic' (slug-hint: $planSlug)"
+          Write-Host "[plan] ${Site}: today's topic = '$planTopic' (slug-hint: $planSlug)"
       } else {
-          Write-Host "[plan] $Site: no planned topic for $todayStr — codex picks freely"
+          Write-Host "[plan] ${Site}: no planned topic for $todayStr -- codex picks freely"
       }
   }
+
+  $plannedTopicPrompt = if ($planTopic) { "TODAY'S TOPIC (mandatory): Write a page about `"$planTopic`". Use slug: $planSlug`n`n" } else { "" }
 
   $genPrompt = @"
 You are generating ONE new bilingual (English+Telugu) SEO page for a cancer doctor website. Write the complete HTML file directly to disk.
 
-$(if ($planTopic) { "TODAY'S TOPIC (mandatory): Write a page about `"$planTopic`". Use slug: $planSlug`n`n" } else { "" })
+$plannedTopicPrompt
 SITE: $Site  |  DOMAIN: $domain  |  DOCTOR: $doctorName  |  SPECIALTY: $specialty
 
 CHROME (paste these HTML sections verbatim into your page; do NOT read any file from disk):
@@ -353,11 +355,11 @@ STEP 4 - Your FINAL MESSAGE must be EXACTLY this one line and nothing else:
 SLUG=<the-slug-you-chose>
 "@
 
-  Write-Host "[gen] $Site: sending ${$genPrompt.Length}-char prompt to codex (template=$tmpl)..."
+  Write-Host "[gen] ${Site}: sending $($genPrompt.Length)-char prompt to codex (template=$tmpl)..."
   try {
     $genTail = Invoke-CodexExec -Prompt $genPrompt -StatusOut $genStatusFile -Sandbox "workspace-write" -TimeoutSec 720
     $ss.genTail = $genTail
-    Write-Host "[gen] $Site: codex returned genTail=$(if($genTail){'`"'+$genTail.Substring(0,[Math]::Min(60,$genTail.Length))+'`"'}else{'(empty)'})"
+    Write-Host "[gen] ${Site}: codex returned genTail=$(if($genTail){'`"'+$genTail.Substring(0,[Math]::Min(60,$genTail.Length))+'`"'}else{'(empty)'})"
   } catch {
     $ss.errors += "generation timed out or failed: $_"
     Write-Host "[timeout] generation for $Site exceeded 720s -- skipping"
@@ -527,10 +529,11 @@ TELUGU=FAIL   (issues too severe to fix)
   $ss.ok = $true; $ss.stage = "staged"; Save-Status
   $passed.Add(@{ Site=$Site; FileName=$fileName; Url=$url; Domain=$domain })
   # Update content-plan.csv status to published
-  $py2 = (Get-Command python -ErrorAction SilentlyContinue)?.Source
+  $py2Cmd = Get-Command python -ErrorAction SilentlyContinue
+  $py2    = if ($py2Cmd) { $py2Cmd.Source } else { $null }
   if ($py2 -and (Test-Path $planCsv)) {
-      & python (Join-Path $Repo "scripts\update-plan-status.py") $Site $slug $url "published" 2>$null | Out-Null
-      Write-Host "[plan] $Site: marked published in content-plan.csv"
+      & $py2 (Join-Path $Repo "scripts\update-plan-status.py") $Site $slug $url "published" 2>$null | Out-Null
+      Write-Host "[plan] ${Site}: marked published in content-plan.csv"
   }
   Write-Host "[PASS] ${Site}: $Site/$fileName"
 }
@@ -641,7 +644,8 @@ foreach ($p in $passed) {
 }
 
 # Rebuild all-sites.xlsx tracker
-$py = (Get-Command python -ErrorAction SilentlyContinue)?.Source
+$pyCmd = Get-Command python -ErrorAction SilentlyContinue
+$py    = if ($pyCmd) { $pyCmd.Source } else { $null }
 if ($py) {
   & python (Join-Path $Repo "scripts\build-tracker-xlsx.py") 2>$null | Out-Null
   Write-Host "[log] rebuilt trackers/all-sites.xlsx"
