@@ -167,7 +167,7 @@ function Invoke-ClaudeExec {
     param([string]$exe, [string]$repo, [string]$prompt)
     Set-Location -LiteralPath $repo
     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-    & $exe -p $prompt --model claude-sonnet-4-6 2>$null | Out-String
+    & $exe -p $prompt 2>$null | Out-String
   }
 
   try {
