@@ -375,52 +375,49 @@ foreach($Site in $Sites) {
   $plannedTopicPrompt = if ($planTopic) { "TODAY'S TOPIC (mandatory): '$planTopic'. Preferred slug: $planSlug`n`n" } else { "" }
 
   $genPrompt = @"
-${plannedTopicPrompt}OUTPUT FORMAT: respond with a single raw JSON object. Your response must begin with { and end with }. No preamble, no explanation, no markdown, no tool calls.
+${plannedTopicPrompt}RETURN ONLY THE JSON OBJECT BELOW, with every value filled in. Do not add keys. Do not add prose. Do not wrap in markdown. Start your reply with { and end with }.
 
-You are generating ONE new bilingual (English + Telugu) medical SEO page for a cancer doctor website.
-SITE: $Site | DOMAIN: $domain | DOCTOR: $doctorName | SPECIALTY: $specialty | DATE: $utcDate
-
-EXISTING SLUGS (never reuse any of these): $existing
-
-CONTENT GUARDRAILS (mandatory -- enforced by QA checklist):
-- No fabricated statistics, survival rates, or clinical trial claims
-- No cost/price figures in INR, Rs, lakh, or crore (no exact numbers)
-- No superlatives applied to the doctor or clinic (best, No.1, top, leading, finest)
-- No guarantees, "100% cure", or "miracle" language
-- No patient testimonials or case outcomes
-- All medical claims must be conservative and mainstream oncology
-- First-person doctor voice throughout, in both English and Telugu
-- Use only credentials/speciality already visible in the page template
-
-BILINGUAL RULE -- every patient-facing sentence appears twice in this pattern:
-<span class="te-content">Telugu sentence.</span><span class="en-content">English sentence.</span>
-Full sentence in ONE span. Native Telugu fluency. No Devanagari, Tamil, Kannada, or Malayalam codepoints.
-
-REQUIRED JSON RESPONSE (all 7 fields mandatory, no extras):
 {
-  "slug": "kebab-case-unique-slug",
-  "title": "English page title, 55 chars max, no doctor name suffix",
-  "description": "English meta description, 150 chars max",
-  "jsonLd1": "<MedicalWebPage JSON -- inLanguage:[\"en\",\"te\"], datePublished:\"$utcDate\", author+reviewedBy:{\"@type\":\"Physician\",\"name\":\"$doctorName\"}>",
-  "jsonLd2": "<FAQPage JSON -- min 5 Question+acceptedAnswer pairs matching the FAQ items in mainHtml>",
-  "jsonLd3": "{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https://$domain/\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"<page title>\",\"item\":\"https://$domain/<slug>.html\"}]}",
-  "mainHtml": "<full inner HTML for the main element only>"
+  "slug":        "REPLACE_WITH_kebab-slug-not-in-existing-list",
+  "title":       "REPLACE_WITH_English title max 55 chars",
+  "description": "REPLACE_WITH_English meta description max 150 chars",
+  "jsonLd1":     "REPLACE_WITH_raw MedicalWebPage schema JSON string (no script tags)",
+  "jsonLd2":     "REPLACE_WITH_raw FAQPage schema JSON string with 5+ Q+A pairs (no script tags)",
+  "jsonLd3":     "REPLACE_WITH_raw BreadcrumbList schema JSON string (no script tags)",
+  "mainHtml":    "REPLACE_WITH_see mainHtml rules below"
 }
 
-jsonLd1 and jsonLd2 must be raw JSON strings (no surrounding <script> tags).
+=== CONTEXT ===
+SITE: $Site | DOMAIN: $domain | DOCTOR: $doctorName | SPECIALTY: $specialty | DATE: $utcDate
+EXISTING SLUGS -- never reuse: $existing
 
-mainHtml MUST contain in this order:
-1. <div class="breadcrumb"> -- bilingual Home > page breadcrumb
-2. <h1> -- bilingual H1, one per page, contains the primary keyword
-3. <p class="lede"> -- bilingual introductory paragraph
-4. <div class="answer-box"> with <div class="lbl"> label and <p> body (40-60 words, bilingual)
-5. 3-4 body <h2> sections with bilingual prose; include at least one <table class="cmp">
-6. Bilingual FAQ: min 5 <details class="faq"> each with <summary> and <div class="faq-ans">
-7. <div class="ilinks"> with 4-6 links using absolute https://$domain/page.html URLs
-8. <div class="reviewer"> block -- doctor name and review date $utcDate (bilingual)
-9. <div class="disclaimer"> -- strong bilingual medical disclaimer
+=== mainHtml RULES ===
+mainHtml is the HTML string that goes inside <main>. Use INLINE SPANS for all bilingual text, never <section> blocks:
+  <span class="te-content">తెలుగు వాక్యం.</span><span class="en-content">English sentence.</span>
+Block elements: wrap the whole line in ONE span pair: <p><span class="te-content">...</span><span class="en-content">...</span></p>
+H1/H2 tags: <h1><span class="te-content">...</span><span class="en-content">...</span></h1>
 
-mainHtml must NOT contain: <style> tags, <script> tags, <head>, <nav>, <footer>, or doctor card (those are in the template).
+mainHtml must include IN ORDER:
+1. <div class="breadcrumb"> bilingual breadcrumb (Home > page title)
+2. <h1> with bilingual keyword-rich heading
+3. <p class="lede"> bilingual intro paragraph
+4. <div class="answer-box"><div class="lbl">...<\/div><p>bilingual 40-60 word direct answer<\/p><\/div>
+5. 3-4 <h2> sections with bilingual body prose; include at least one <table class="cmp">
+6. Min 5 <details class="faq"><summary>bilingual Q<\/summary><div class="faq-ans">bilingual A<\/div><\/details>
+7. <div class="ilinks"> with 4-6 <a href="https://$domain/page.html"> internal links (bilingual link text)
+8. <div class="reviewer"> bilingual doctor name + review date $utcDate
+9. <div class="disclaimer"> bilingual medical disclaimer
+
+NEVER include in mainHtml: <style>, <script>, <head>, <nav>, <footer>, doctor card, or <section> blocks.
+
+=== CONTENT GUARDRAILS ===
+- No fabricated statistics, survival rates, or clinical trial claims
+- No cost or price figures (INR, Rs, lakh, crore)
+- No superlatives: best, No.1, top, leading, finest
+- No guarantees or cure claims
+- Conservative mainstream oncology only
+- Telugu must be native fluency -- no Devanagari, Tamil, Kannada, or Malayalam codepoints
+- jsonLd1: include inLanguage:["en","te"], datePublished:"$utcDate", reviewedBy:{@type:Physician,name:"$doctorName"}
 "@
 
   Write-Host "[gen] ${Site}: sending $($genPrompt.Length)-char prompt to claude..."
@@ -429,6 +426,36 @@ mainHtml must NOT contain: <style> tags, <script> tags, <head>, <nav>, <footer>,
   try {
     $rawJson    = Invoke-ClaudeExec -Prompt $genPrompt -TimeoutSec 600
     $claudeJson = $rawJson | ConvertFrom-Json
+
+    # Normalize: Claude sometimes returns a rich nested schema instead of the 7 flat fields.
+    # Map from known alternative field paths to the flat fields the runner expects.
+    if (-not $claudeJson.title) {
+      $t = if ($claudeJson.seo -and $claudeJson.seo.title_en)          { $claudeJson.seo.title_en } `
+           elseif ($claudeJson.seo -and $claudeJson.seo.title)          { $claudeJson.seo.title } `
+           else { "" }
+      $claudeJson | Add-Member -NotePropertyName 'title' -NotePropertyValue $t -Force
+    }
+    if (-not $claudeJson.description) {
+      $d = if ($claudeJson.seo -and $claudeJson.seo.meta_description_en) { $claudeJson.seo.meta_description_en } `
+           elseif ($claudeJson.seo -and $claudeJson.seo.description)     { $claudeJson.seo.description } `
+           else { "" }
+      $claudeJson | Add-Member -NotePropertyName 'description' -NotePropertyValue $d -Force
+    }
+    if ((-not $claudeJson.jsonLd1) -and $claudeJson.jsonld) {
+      $jArr = @($claudeJson.jsonld)
+      $jl1 = if ($jArr.Count -gt 0) { $jArr[0] | ConvertTo-Json -Depth 20 -Compress } else { "" }
+      $jl2 = if ($jArr.Count -gt 1) { $jArr[1] | ConvertTo-Json -Depth 20 -Compress } else { "" }
+      $jl3 = if ($jArr.Count -gt 2) { $jArr[2] | ConvertTo-Json -Depth 20 -Compress } else { `
+             '{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://' + $domain + '/"},{"@type":"ListItem","position":2,"name":"' + $claudeJson.slug + '","item":"https://' + $domain + '/' + $claudeJson.slug + '.html"}]}' }
+      $claudeJson | Add-Member -NotePropertyName 'jsonLd1' -NotePropertyValue $jl1 -Force
+      $claudeJson | Add-Member -NotePropertyName 'jsonLd2' -NotePropertyValue $jl2 -Force
+      $claudeJson | Add-Member -NotePropertyName 'jsonLd3' -NotePropertyValue $jl3 -Force
+    }
+    if ((-not $claudeJson.mainHtml) -and $claudeJson.html) {
+      $mM = [regex]::Match($claudeJson.html, '(?s)<main[^>]*>(.*)</main>')
+      $mHtml = if ($mM.Success) { $mM.Groups[1].Value.Trim() } else { $claudeJson.html }
+      $claudeJson | Add-Member -NotePropertyName 'mainHtml' -NotePropertyValue $mHtml -Force
+    }
   } catch {
     $ss.errors += "claude generation failed: $_"
     Write-Host "[timeout] ${Site}: claude failed or timed out -- skipping"
