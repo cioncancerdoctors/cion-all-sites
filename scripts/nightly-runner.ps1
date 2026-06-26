@@ -151,8 +151,9 @@ function Invoke-CodexExec {
   return ""
 }
 
-# Calls "claude -p --model claude-sonnet-4-6" via stdin; returns raw JSON string.
-# Strips markdown fences if Claude wraps the output. Throws on timeout.
+# Calls "claude -p <prompt> --model claude-sonnet-4-6" and returns the stdout as a string.
+# Prompt is passed as a direct argument (same pattern as Invoke-ClaudeTimeout -- proven to work).
+# Strips markdown fences if Claude wraps the output. Throws on timeout or empty response.
 function Invoke-ClaudeExec {
   param(
     [Parameter(Mandatory=$true)][string]$Prompt,
@@ -160,15 +161,13 @@ function Invoke-ClaudeExec {
   )
   $claudeExe = $script:claudeExe
   $repoPath  = $script:Repo
-  $tmpPrompt = Join-Path $env:TEMP "cion-cla-$(Get-Random).txt"
-  [IO.File]::WriteAllText($tmpPrompt, $Prompt, (New-Object System.Text.UTF8Encoding($false)))
 
   $started = Get-Date
-  $job = Start-Job -ArgumentList $claudeExe, $repoPath, $tmpPrompt -ScriptBlock {
-    param([string]$exe, [string]$repo, [string]$pf)
+  $job = Start-Job -ArgumentList $claudeExe, $repoPath, $Prompt -ScriptBlock {
+    param([string]$exe, [string]$repo, [string]$prompt)
     Set-Location -LiteralPath $repo
     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-    Get-Content $pf -Raw -Encoding UTF8 | & $exe -p --model claude-sonnet-4-6 2>$null | Out-String
+    & $exe -p $prompt --model claude-sonnet-4-6 2>$null | Out-String
   }
 
   try {
@@ -188,13 +187,13 @@ function Invoke-ClaudeExec {
       throw "claude.exe timed out after ${TimeoutSec}s"
     }
     $raw = (Receive-Job -Job $job -ErrorAction Stop | Out-String).Trim()
+    if (-not $raw) { throw "claude returned empty output" }
     if ($raw -match '^\s*```') {
       $raw = [regex]::Replace($raw, '(?s)^\s*```(?:json)?\s*\n?', '')
       $raw = [regex]::Replace($raw, '\s*```\s*$', '')
     }
     return $raw.Trim()
   } finally {
-    Remove-Item $tmpPrompt -ErrorAction SilentlyContinue
     Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
   }
 }
