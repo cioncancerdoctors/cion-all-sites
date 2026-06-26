@@ -437,6 +437,10 @@ mainHtml must NOT contain: <style> tags, <script> tags, <head>, <nav>, <footer>,
   }
 
   # 2a. Validate required JSON fields
+  # Debug: dump first 3000 chars of raw response so we can see what Claude actually returned
+  $debugDir  = Join-Path $Repo "automation-runs\$utcDate"
+  $debugFile = Join-Path $debugDir "debug-claude-raw-${Site}.txt"
+  $rawJson | Out-File -FilePath $debugFile -Encoding utf8 -Force
   $requiredFields = @('slug','title','description','jsonLd1','jsonLd2','jsonLd3','mainHtml')
   $missingFields  = $requiredFields | Where-Object { -not $claudeJson.$_ }
   if ($missingFields) {
