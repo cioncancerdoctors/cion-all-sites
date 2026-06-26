@@ -441,10 +441,15 @@ mainHtml must NOT contain: <style>, <script>, <head>, <nav>, <footer>, or doctor
       $jArr = @($claudeJson.jsonld)
       $jl1 = if ($jArr.Count -gt 0) { $jArr[0] | ConvertTo-Json -Depth 20 -Compress } else { "" }
       $jl2 = if ($jArr.Count -gt 1) { $jArr[1] | ConvertTo-Json -Depth 20 -Compress } else { "" }
-      $jl3 = if ($jArr.Count -gt 2) { $jArr[2] | ConvertTo-Json -Depth 20 -Compress } else { `
-             '{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://' + $domain + '/"},{"@type":"ListItem","position":2,"name":"' + $claudeJson.slug + '","item":"https://' + $domain + '/' + $claudeJson.slug + '.html"}]}' }
       $claudeJson | Add-Member -NotePropertyName 'jsonLd1' -NotePropertyValue $jl1 -Force
       $claudeJson | Add-Member -NotePropertyName 'jsonLd2' -NotePropertyValue $jl2 -Force
+    }
+    # jsonLd3 checked independently -- Claude often omits BreadcrumbList even when jsonLd1+2 present
+    if (-not $claudeJson.jsonLd3) {
+      $jArr3 = @($claudeJson.jsonld)
+      $jl3 = if ($claudeJson.jsonld -and $jArr3.Count -gt 2) { $jArr3[2] | ConvertTo-Json -Depth 20 -Compress } else {
+        '{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://' + $domain + '/"},{"@type":"ListItem","position":2,"name":"' + $claudeJson.slug + '","item":"https://' + $domain + '/' + $claudeJson.slug + '.html"}]}'
+      }
       $claudeJson | Add-Member -NotePropertyName 'jsonLd3' -NotePropertyValue $jl3 -Force
     }
     if ((-not $claudeJson.mainHtml) -and $claudeJson.html) {
