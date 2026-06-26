@@ -188,11 +188,18 @@ function Invoke-ClaudeExec {
     }
     $raw = (Receive-Job -Job $job -ErrorAction Stop | Out-String).Trim()
     if (-not $raw) { throw "claude returned empty output" }
+    # Strip markdown fences (```json ... ```)
     if ($raw -match '^\s*```') {
       $raw = [regex]::Replace($raw, '(?s)^\s*```(?:json)?\s*\n?', '')
       $raw = [regex]::Replace($raw, '\s*```\s*$', '')
     }
-    return $raw.Trim()
+    # Extract the JSON object if Claude added prose before/after it
+    $raw = $raw.Trim()
+    if (-not ($raw.StartsWith('{'))) {
+      $m = [regex]::Match($raw, '(?s)\{.+\}')
+      if ($m.Success) { $raw = $m.Value.Trim() }
+    }
+    return $raw
   } finally {
     Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
   }
@@ -354,7 +361,7 @@ foreach($Site in $Sites) {
   $plannedTopicPrompt = if ($planTopic) { "TODAY'S TOPIC (mandatory): '$planTopic'. Preferred slug: $planSlug`n`n" } else { "" }
 
   $genPrompt = @"
-${plannedTopicPrompt}Return ONLY valid JSON -- no prose, no markdown fences, no explanation outside the JSON object.
+${plannedTopicPrompt}OUTPUT FORMAT: respond with a single raw JSON object. Your response must begin with { and end with }. No preamble, no explanation, no markdown, no tool calls.
 
 You are generating ONE new bilingual (English + Telugu) medical SEO page for a cancer doctor website.
 SITE: $Site | DOMAIN: $domain | DOCTOR: $doctorName | SPECIALTY: $specialty | DATE: $utcDate
