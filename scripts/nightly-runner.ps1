@@ -235,14 +235,13 @@ function Get-SiteChrome {
   return $out
 }
 
-# Extracts real component markup from this site's richest existing content page.
-# Returns a prompt snippet showing the ACTUAL patterns used on this specific site,
-# so Claude matches the design instead of using a generic template.
-# Falls back to empty string when no content pages exist yet (new site first run).
+# Scans this site's richest content page for site-specific extra CSS classes
+# and extracts compact markup examples ONLY for those extras.
+# Core components (answer-box, faq, reviewer, ilinks) are identical across all sites
+# and covered by the global spec -- do NOT duplicate them here.
 function Get-SiteComponentExamples {
   param([Parameter(Mandatory=$true)][string]$SiteDir)
 
-  # Pick the largest content page (best chance of having all components)
   $page = Get-ChildItem $SiteDir -Filter "*.html" -File |
     Where-Object { $_.Name -notmatch '^_|^index' } |
     Sort-Object Length -Descending |
@@ -251,45 +250,36 @@ function Get-SiteComponentExamples {
 
   $html = [IO.File]::ReadAllText($page.FullName, [System.Text.Encoding]::UTF8)
   $ro   = [System.Text.RegularExpressions.RegexOptions]::Singleline
+  $out  = ""
 
-  $out = "SITE-SPECIFIC COMPONENT EXAMPLES (from $($page.Name) - copy these exact patterns):`n`n"
-
-  $m = [regex]::Match($html, '<div class="answer-box">[\s\S]*?</div>\s*</div>', $ro)
-  if ($m.Success) {
-    $v = $m.Value.Trim(); if ($v.Length -gt 700) { $v = $v.Substring(0, 700) + "..." }
-    $out += "=== ANSWER BOX ===`n$v`n`n"
+  # .doctor-note: blockquote-style first-person callout (dr-vinay, dr-murali, dr-kiranmayee)
+  if ($html -match 'class="doctor-note"') {
+    $m = [regex]::Match($html, '<div class="doctor-note">[\s\S]*?</div>\s*</div>', $ro)
+    if ($m.Success) {
+      $v = $m.Value.Trim(); if ($v.Length -gt 400) { $v = $v.Substring(0, 400) + "..." }
+      $out += "EXTRA AVAILABLE: .doctor-note (first-person doctor callout -- use instead of .callout for personal advice):`n$v`n`n"
+    }
   }
 
-  $m = [regex]::Match($html, '<details class="faq">[\s\S]*?</details>', $ro)
-  if ($m.Success) {
-    $v = $m.Value.Trim(); if ($v.Length -gt 600) { $v = $v.Substring(0, 600) + "..." }
-    $out += "=== ONE FAQ ITEM ===`n$v`n`n"
+  # .page-eyebrow: small category label above h1 (dr-sandeep)
+  if ($html -match 'class="page-eyebrow"') {
+    $m = [regex]::Match($html, '<[^>]+class="page-eyebrow"[^>]*>[\s\S]*?</', $ro)
+    if ($m.Success) {
+      $v = $m.Value.Trim(); if ($v.Length -gt 200) { $v = $v.Substring(0, 200) + "..." }
+      $out += "EXTRA AVAILABLE: .page-eyebrow (decorative category above h1):`n$v`n`n"
+    }
   }
 
-  $m = [regex]::Match($html, '<div class="reviewer">[\s\S]*?</div>\s*</div>', $ro)
-  if ($m.Success) {
-    $v = $m.Value.Trim(); if ($v.Length -gt 600) { $v = $v.Substring(0, 600) + "..." }
-    $out += "=== REVIEWER BLOCK ===`n$v`n`n"
+  # .cc: side-by-side compare cards (dr-basudev)
+  if ($html -match '"cc "') {
+    $m = [regex]::Match($html, '<div class="cc[\s\S]*?</div>\s*</div>', $ro)
+    if ($m.Success) {
+      $v = $m.Value.Trim(); if ($v.Length -gt 400) { $v = $v.Substring(0, 400) + "..." }
+      $out += "EXTRA AVAILABLE: .cc (compare cards -- use instead of table for side-by-side comparisons):`n$v`n`n"
+    }
   }
 
-  $m = [regex]::Match($html, '<div class="ilinks">[\s\S]*?</div>', $ro)
-  if ($m.Success) {
-    $v = $m.Value.Trim(); if ($v.Length -gt 500) { $v = $v.Substring(0, 500) + "..." }
-    $out += "=== ILINKS ===`n$v`n`n"
-  }
-
-  # Flag site-specific extra components Claude can use if the CSS defines them
-  $extras = @()
-  if ($html -match 'class="doctor-note"')  { $extras += ".doctor-note (blockquote-style doctor callout for first-person advice)" }
-  if ($html -match 'class="page-eyebrow"') { $extras += ".page-eyebrow (decorative category label above h1)" }
-  if ($html -match '"cc "')                 { $extras += ".cc (side-by-side compare cards instead of table)" }
-  if ($html -match '"quote-mark"')          { $extras += ".quote-mark (decorative quote in .doctor-note)" }
-  if ($extras.Count -gt 0) {
-    $out += "SITE-SPECIFIC EXTRA CLASSES AVAILABLE:`n" + ($extras -join "`n") + "`n`n"
-  }
-
-  # Cap total at 3000 chars to keep total prompt manageable
-  if ($out.Length -gt 3000) { $out = $out.Substring(0, 3000) + "`n...(truncated)" }
+  if ($out) { $out = "SITE-SPECIFIC EXTRAS (use when relevant, from $($page.Name)):`n`n" + $out }
   return $out
 }
 
