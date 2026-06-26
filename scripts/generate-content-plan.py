@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate _data/content-plan.csv — 50 planned topics per doctor, starting tomorrow.
+Generate schedules/content-plan.csv — 50 planned topics per doctor, starting tomorrow.
 Run once: python scripts/generate-content-plan.py
 Re-run to extend or reset (existing 'published' rows are preserved).
 """
@@ -8,7 +8,7 @@ import csv, os
 from datetime import date, timedelta
 
 REPO     = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT      = os.path.join(REPO, "_data", "content-plan.csv")
+OUT      = os.path.join(REPO, "schedules", "content-plan.csv")
 FIELDNAMES = ["doctor_folder","planned_date","topic_en","slug_hint","status","built_slug","built_url","built_at"]
 
 START = date.today() + timedelta(days=1)   # tomorrow
