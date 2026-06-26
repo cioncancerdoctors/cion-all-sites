@@ -648,6 +648,25 @@ $specContent
     if ((-not $claudeJson.jsonLd2) -and $claudeJson.schema -and $claudeJson.schema.faq_page) {
       $claudeJson | Add-Member -NotePropertyName 'jsonLd2' -NotePropertyValue ($claudeJson.schema.faq_page | ConvertTo-Json -Depth 20 -Compress) -Force
     }
+    # Last-resort: build jsonLd1/jsonLd2 from data-model fields when Claude's schema field is empty/incomplete
+    if (-not $claudeJson.jsonLd1) {
+      $pgUrl   = "https://$domain/$($claudeJson.slug).html"
+      $pgName  = if ($claudeJson.title) { $claudeJson.title } elseif ($claudeJson.h1_en) { $claudeJson.h1_en } else { $claudeJson.slug }
+      $pgDesc  = if ($claudeJson.description) { $claudeJson.description } else { "" }
+      $jl1     = '{"@context":"https://schema.org","@type":"MedicalWebPage","name":"' + ($pgName -replace '"','\"') + '","url":"' + $pgUrl + '","inLanguage":["en","te"],"datePublished":"' + $utcDate + '","lastReviewed":"' + $utcDate + '","reviewedBy":{"@type":"Physician","name":"' + ($doctorName -replace '"','\"') + '"}}'
+      $claudeJson | Add-Member -NotePropertyName 'jsonLd1' -NotePropertyValue $jl1 -Force
+    }
+    if (-not $claudeJson.jsonLd2) {
+      $faqs   = if ($claudeJson.faq) { @($claudeJson.faq) } elseif ($claudeJson.faq_en) { @($claudeJson.faq_en) } else { @() }
+      $entities = $faqs | ForEach-Object {
+        $qe = if ($_.q_en) { $_.q_en } elseif ($_.question_en) { $_.question_en } else { "" }
+        $ae = if ($_.a_en) { $_.a_en } elseif ($_.answer_en) { $_.answer_en } else { "" }
+        if ($qe -and $ae) { '{"@type":"Question","name":"' + ($qe -replace '"','\"') + '","acceptedAnswer":{"@type":"Answer","text":"' + ($ae -replace '"','\"') + '"}}' }
+      } | Where-Object { $_ }
+      $entitiesJson = $entities -join ','
+      $jl2 = '{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[' + $entitiesJson + ']}'
+      $claudeJson | Add-Member -NotePropertyName 'jsonLd2' -NotePropertyValue $jl2 -Force
+    }
     # jsonLd3 checked independently -- Claude often omits BreadcrumbList even when jsonLd1+2 present
     if (-not $claudeJson.jsonLd3) {
       $jArr3 = @($claudeJson.jsonld)
