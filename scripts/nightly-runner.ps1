@@ -444,6 +444,11 @@ $specContent
   $claudeJson = $null
   try {
     $rawJson    = Invoke-ClaudeExec -Prompt $genPrompt -TimeoutSec 600
+    # Write raw response immediately so we can diagnose failures
+    $debugDir  = Join-Path $Repo "automation-runs\$utcDate"
+    $debugFile = Join-Path $debugDir "debug-claude-raw-${Site}.txt"
+    if (-not (Test-Path $debugDir)) { New-Item -ItemType Directory -Path $debugDir -Force | Out-Null }
+    $rawJson | Out-File -FilePath $debugFile -Encoding utf8 -Force
     $claudeJson = $rawJson | ConvertFrom-Json
 
     # Normalize: Claude sometimes returns a rich nested schema instead of the 7 flat fields.
@@ -482,7 +487,7 @@ $specContent
     }
   } catch {
     $ss.errors += "claude generation failed: $_"
-    Write-Host "[timeout] ${Site}: claude failed or timed out -- skipping"
+    Write-Host "[timeout] ${Site}: claude failed -- error: $_"
     if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
     $failedSites.Add($Site); continue
   }
