@@ -48,4 +48,4 @@ automation-runs/
 
 # Local-only (editor/agent config + local data templates)
 .claude/
-_data/
+# _data/ contents are governed by _data/.gitignore (template + content-plan tracked; filled CSVs ignored)

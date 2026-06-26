@@ -1,0 +1,5 @@
+# Keep the blank template tracked; never commit filled data or license scans.
+*
+!.gitignore
+!doctor-profiles.template.csv
+!content-plan.csv

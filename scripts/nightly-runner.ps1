@@ -287,9 +287,29 @@ foreach($Site in $Sites) {
   $portrait  = if ($portraitM.Success) { $portraitM.Groups[1].Value } else { "$($Site -replace 'dr-','').png" }
   $dcNameM   = [regex]::Match($chrome, 'class="dc-name">([^<]+)<')
   $doctorName = if ($dcNameM.Success) { $dcNameM.Groups[1].Value } else { "the doctor" }
+
+  # Read today's planned topic from content-plan.csv
+  $planCsv   = Join-Path $Repo "_data\content-plan.csv"
+  $todayStr  = (Get-Date).ToString("yyyy-MM-dd")
+  $planTopic = ""
+  $planSlug  = ""
+  if (Test-Path $planCsv) {
+      $planRow = Import-Csv $planCsv |
+          Where-Object { $_.doctor_folder -eq $Site -and $_.planned_date -eq $todayStr -and $_.status -eq "pending" } |
+          Select-Object -First 1
+      if ($planRow) {
+          $planTopic = $planRow.topic_en
+          $planSlug  = $planRow.slug_hint
+          Write-Host "[plan] $Site: today's topic = '$planTopic' (slug-hint: $planSlug)"
+      } else {
+          Write-Host "[plan] $Site: no planned topic for $todayStr — codex picks freely"
+      }
+  }
+
   $genPrompt = @"
 You are generating ONE new bilingual (English+Telugu) SEO page for a cancer doctor website. Write the complete HTML file directly to disk.
 
+$(if ($planTopic) { "TODAY'S TOPIC (mandatory): Write a page about `"$planTopic`". Use slug: $planSlug`n`n" } else { "" })
 SITE: $Site  |  DOMAIN: $domain  |  DOCTOR: $doctorName  |  SPECIALTY: $specialty
 
 CHROME (paste these HTML sections verbatim into your page; do NOT read any file from disk):
@@ -343,6 +363,7 @@ SLUG=<the-slug-you-chose>
     Write-Host "[timeout] generation for $Site exceeded 720s -- skipping"
     & git checkout -- $Site 2>$null | Out-Null
     & git clean -fd -- $Site 2>$null | Out-Null
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
     $failedSites.Add($Site); continue
   }
   Save-Status
@@ -355,6 +376,7 @@ SLUG=<the-slug-you-chose>
     & git checkout -- $Site 2>$null | Out-Null
     & git clean -fd -- $Site 2>$null | Out-Null
     $ss.errors += "model wrote outside $Site/: $($outOfScope -join ',')"
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
     $failedSites.Add($Site); continue
   }
 
@@ -365,6 +387,7 @@ SLUG=<the-slug-you-chose>
     & git checkout -- $Site 2>$null | Out-Null
     & git clean -fd -- $Site 2>$null | Out-Null
     $ss.errors += "expected exactly 1 new page, got $($new.Count)"
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
     $failedSites.Add($Site); continue
   }
   $fileName = $new[0]; $slug = $fileName -replace '\.html$',''
@@ -430,6 +453,7 @@ SLUG=<the-slug-you-chose>
             & git checkout -- $Site 2>$null | Out-Null
             & git clean -fd -- $Site 2>$null | Out-Null
             $ss.errors += "codex P0 violation after fix: $($p0Lines2 -join ' | ')"
+            if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
             $failedSites.Add($Site); continue
           }
         }
@@ -475,11 +499,13 @@ TELUGU=FAIL   (issues too severe to fix)
     Write-Host "[timeout] Telugu review for $Site exceeded 300s -- skipping"
     & git checkout -- $Site 2>$null | Out-Null
     & git clean -fd -- $Site 2>$null | Out-Null
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
     $failedSites.Add($Site); continue
   }
   Save-Status
   if($ss.teluguTail -match 'TELUGU=FAIL') {
     $ss.errors += "Telugu reviewer: FAIL"
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
     $failedSites.Add($Site); continue
   }
   Write-Host "[ok] Telugu: $($ss.teluguTail)"
@@ -492,6 +518,7 @@ TELUGU=FAIL   (issues too severe to fix)
   $ss.validate = $val; $ss.url = $url; Save-Status
   if($val -notmatch 'VALIDATE:OK') {
     $ss.errors += "validate: $val"
+    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
     $failedSites.Add($Site); continue
   }
   Write-Host "[ok] validate: $val"
@@ -499,6 +526,12 @@ TELUGU=FAIL   (issues too severe to fix)
   # All gates passed -- record for batch commit (sitemap updated in post-loop)
   $ss.ok = $true; $ss.stage = "staged"; Save-Status
   $passed.Add(@{ Site=$Site; FileName=$fileName; Url=$url; Domain=$domain })
+  # Update content-plan.csv status to published
+  $py2 = (Get-Command python -ErrorAction SilentlyContinue)?.Source
+  if ($py2 -and (Test-Path $planCsv)) {
+      & python (Join-Path $Repo "scripts\update-plan-status.py") $Site $slug $url "published" 2>$null | Out-Null
+      Write-Host "[plan] $Site: marked published in content-plan.csv"
+  }
   Write-Host "[PASS] ${Site}: $Site/$fileName"
 }
 
