@@ -256,14 +256,17 @@ foreach($Site in $Sites) {
   # Remove untracked HTML files left by previous failed runs -- they corrupt the $before snapshot
   & git clean -f -- $Site 2>$null | Out-Null
   # $before = only git-tracked HTML files (committed originals, not generated leftovers)
-  $tracked = (& git ls-files $Site 2>$null | Out-String) -split "`n" |
+  # TrimEnd() strips the trailing \r that Out-String+split leaves on Windows (PS5.1 CRLF bug).
+  $tracked = (& git ls-files $Site 2>$null) |
+    ForEach-Object { $_.TrimEnd() } |
     Where-Object { $_ -match '\.html$' } |
     ForEach-Object { Split-Path $_ -Leaf }
   $before  = @($tracked | Where-Object { $_ })
   $existing = ($before | ForEach-Object { $_ -replace '\.html$','' }) -join ', '
   Write-Host "[gen] $Site tmpl-pick from $($before.Count) existing pages"
   # Pick SMALLEST non-excluded COMMITTED page as template (fewer tokens to read)
-  $tmpl = (& git ls-files $Site 2>$null | Out-String) -split "`n" |
+  $tmpl = (& git ls-files $Site 2>$null) |
+    ForEach-Object { $_.TrimEnd() } |
     Where-Object { $_ -match '\.html$' -and ($_ -notmatch '/(index|about|thank-you|privacy)\.html$') } |
     ForEach-Object { [PSCustomObject]@{ Name=(Split-Path $_ -Leaf); Len=(Get-Item (Join-Path $Repo $_)).Length } } |
     Sort-Object Len | Select-Object -First 1 | ForEach-Object { $_.Name }
@@ -371,7 +374,7 @@ SLUG=<the-slug-you-chose>
   Save-Status
 
   # 3. SCOPE CHECK: reject any changed file outside $Site/ (before contract check)
-  $changedPaths = ((& git diff --name-only 2>$null) | Out-String) -split "`n" | Where-Object { $_.Trim() }
+  $changedPaths = (& git diff --name-only 2>$null) | ForEach-Object { $_.TrimEnd() } | Where-Object { $_ }
   $outOfScope   = @($changedPaths | Where-Object { $_ -and (-not $_.StartsWith("$Site/")) })
   if($outOfScope.Count -gt 0) {
     foreach($f in $outOfScope) { & git checkout -- $f 2>$null | Out-Null }
