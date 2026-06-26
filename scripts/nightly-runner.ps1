@@ -188,17 +188,31 @@ function Invoke-ClaudeExec {
     }
     $raw = (Receive-Job -Job $job -ErrorAction Stop | Out-String).Trim()
     if (-not $raw) { throw "claude returned empty output" }
-    # Strip markdown fences (```json ... ```)
-    if ($raw -match '^\s*```') {
-      $raw = [regex]::Replace($raw, '(?s)^\s*```(?:json)?\s*\n?', '')
-      $raw = [regex]::Replace($raw, '\s*```\s*$', '')
-    }
-    # Extract the JSON object if Claude added prose before/after it
+    # Strip all markdown fences (anywhere in string)
+    $raw = [regex]::Replace($raw, '```(?:json)?', '')
     $raw = $raw.Trim()
-    if (-not ($raw.StartsWith('{'))) {
-      $m = [regex]::Match($raw, '(?s)\{.+\}')
-      if ($m.Success) { $raw = $m.Value.Trim() }
+    # Stack-walk to find the LAST complete top-level JSON object.
+    # Claude sometimes emits a small stub ({slug,title}) first, then the full object.
+    # This handles prose preamble, two-object output, and {/} inside string literals.
+    $depth = 0; $startPos = -1; $inStr = $false; $escaping = $false; $lastJson = $null
+    for ($i = 0; $i -lt $raw.Length; $i++) {
+      $c = $raw[$i]
+      if ($escaping)        { $escaping = $false; continue }
+      if ($inStr) {
+        if ($c -eq '\')     { $escaping = $true }
+        elseif ($c -eq '"') { $inStr = $false }
+        continue
+      }
+      if ($c -eq '"')       { $inStr = $true; continue }
+      if ($c -eq '{')       { if ($depth -eq 0) { $startPos = $i }; $depth++ }
+      elseif ($c -eq '}' -and $depth -gt 0) {
+        $depth--
+        if ($depth -eq 0 -and $startPos -ge 0) {
+          $lastJson = $raw.Substring($startPos, $i - $startPos + 1)
+        }
+      }
     }
+    if ($lastJson) { $raw = $lastJson.Trim() }
     return $raw
   } finally {
     Remove-Job -Job $job -Force -ErrorAction SilentlyContinue
