@@ -1095,11 +1095,14 @@ if ($py) {
   Write-Host "[log] rebuilt trackers/all-sites.xlsx"
 }
 
-# Commit the updated logs
+# Commit the updated logs locally -- push is deferred until after smoke test passes,
+# so the page-log push does NOT race with the merge push and confuse GitHub Actions
+# (two rapid pushes cause Actions to supercede the merge run with the page-log run,
+# showing Changed folders:[] and skipping the FTP deploy entirely).
 & git add page-log.csv trackers/ 2>$null | Out-Null
 & git -c user.name="CION Nightly Runner" -c user.email="cioncancerdoctors@gmail.com" `
   commit -m "page-log: add $($passed.Count) new page(s) from nightly $utcDate" 2>$null | Out-Null
-& git push origin main 2>$null | Out-Null
+# NOTE: git push intentionally omitted here -- see "push page-log" after smoke test
 
 # ---------------------------------------------------------------------------
 # DEPLOY POLL: find the Actions run bound to $mergeSha (not just "latest")
@@ -1186,6 +1189,12 @@ Save-Status
 if(-not $smokeOk) {
   Write-Host "SMOKE FAILED -- auto-reverting merge"
   $currentHead = ((& git rev-parse HEAD 2>$null) | Out-String).Trim()
+  # The page-log commit is local (never pushed) so HEAD may be one commit ahead of mergeSha.
+  # Drop it first so we land back on the merge commit, then revert that.
+  if($currentHead -ne $mergeSha) {
+    & git reset --hard $mergeSha 2>$null | Out-Null
+    $currentHead = ((& git rev-parse HEAD 2>$null) | Out-String).Trim()
+  }
   if($currentHead -eq $mergeSha) {
     & git revert $mergeSha --no-edit 2>$null | Out-Null
     & git push origin main 2>$null | Out-Null
@@ -1198,6 +1207,12 @@ if(-not $smokeOk) {
   }
   Stage "reverted"; exit 5
 }
+
+# ---------------------------------------------------------------------------
+# PUSH PAGE-LOG: only after smoke passes -- avoids GitHub Actions run supercede
+# ---------------------------------------------------------------------------
+& git push origin main 2>$null | Out-Null
+Write-Host "[ok] page-log pushed to main"
 
 # ---------------------------------------------------------------------------
 # SUCCESS
