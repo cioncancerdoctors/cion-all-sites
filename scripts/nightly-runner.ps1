@@ -607,6 +607,13 @@ foreach ($p in $passed) {
   Write-Host "[log] rebuilt trackers\$siteName.csv ($($rows.Count - 1) pages)"
 }
 
+# Rebuild all-sites.xlsx tracker
+$py = (Get-Command python -ErrorAction SilentlyContinue)?.Source
+if ($py) {
+  & python (Join-Path $Repo "scripts\build-tracker-xlsx.py") 2>$null | Out-Null
+  Write-Host "[log] rebuilt trackers/all-sites.xlsx"
+}
+
 # Commit the updated logs
 & git add page-log.csv trackers/ 2>$null | Out-Null
 & git -c user.name="CION Nightly Runner" -c user.email="cioncancerdoctors@gmail.com" `
