@@ -622,9 +622,22 @@ $specContent
     }
     if (-not $claudeJson.description) {
       $d = ""
-      if ($claudeJson.seo)  { $d = if ($claudeJson.seo.meta_description_en) { $claudeJson.seo.meta_description_en } else { $claudeJson.seo.description } }
-      if (-not $d -and $claudeJson.head) { $d = if ($claudeJson.head.meta_description_en) { $claudeJson.head.meta_description_en } else { $claudeJson.head.description } }
-      if (-not $d -and $claudeJson.meta) { $d = if ($claudeJson.meta.meta_description_en) { $claudeJson.meta.meta_description_en } else { $claudeJson.meta.description } }
+      if ($claudeJson.seo) {
+        $d = if ($claudeJson.seo.meta_description_en) { $claudeJson.seo.meta_description_en } `
+             elseif ($claudeJson.seo.meta_description) { $claudeJson.seo.meta_description } `
+             elseif ($claudeJson.seo.description)      { $claudeJson.seo.description } `
+             else { "" }
+      }
+      if (-not $d -and $claudeJson.head) {
+        $d = if ($claudeJson.head.meta_description_en) { $claudeJson.head.meta_description_en } `
+             elseif ($claudeJson.head.meta_description) { $claudeJson.head.meta_description } `
+             else { $claudeJson.head.description }
+      }
+      if (-not $d -and $claudeJson.meta) {
+        $d = if ($claudeJson.meta.meta_description_en) { $claudeJson.meta.meta_description_en } `
+             elseif ($claudeJson.meta.meta_description) { $claudeJson.meta.meta_description } `
+             else { $claudeJson.meta.description }
+      }
       if ($d) { $claudeJson | Add-Member -NotePropertyName 'description' -NotePropertyValue $d -Force }
     }
     if ((-not $claudeJson.jsonLd1) -and $claudeJson.jsonld) {
