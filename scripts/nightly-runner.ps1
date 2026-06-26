@@ -253,13 +253,21 @@ foreach($Site in $Sites) {
 
   # 1. Snapshot existing slugs + lookup specialty (script owns the uniqueness contract)
   $siteDir = Join-Path $Repo $Site
-  $before  = Get-ChildItem $siteDir -Filter *.html -File | Select-Object -Expand Name
+  # Remove untracked HTML files left by previous failed runs -- they corrupt the $before snapshot
+  & git clean -f -- $Site 2>$null | Out-Null
+  # $before = only git-tracked HTML files (committed originals, not generated leftovers)
+  $tracked = (& git ls-files $Site 2>$null | Out-String) -split "`n" |
+    Where-Object { $_ -match '\.html$' } |
+    ForEach-Object { Split-Path $_ -Leaf }
+  $before  = @($tracked | Where-Object { $_ })
   $existing = ($before | ForEach-Object { $_ -replace '\.html$','' }) -join ', '
-  # Pick SMALLEST non-excluded page as template (fewer tokens to read)
-  $tmpl = (Get-ChildItem $siteDir -Filter *.html -File |
-    Where-Object { $_.Name -notin @('index.html','about.html','thank-you.html','privacy.html') } |
-    Sort-Object Length |
-    Select-Object -First 1).Name
+  Write-Host "[gen] $Site tmpl-pick from $($before.Count) existing pages"
+  # Pick SMALLEST non-excluded COMMITTED page as template (fewer tokens to read)
+  $tmpl = (& git ls-files $Site 2>$null | Out-String) -split "`n" |
+    Where-Object { $_ -match '\.html$' -and ($_ -notmatch '/(index|about|thank-you|privacy)\.html$') } |
+    ForEach-Object { [PSCustomObject]@{ Name=(Split-Path $_ -Leaf); Len=(Get-Item (Join-Path $Repo $_)).Length } } |
+    Sort-Object Len | Select-Object -First 1 | ForEach-Object { $_.Name }
+  if(-not $tmpl) { $tmpl = "second-opinion.html" }
   if(-not $tmpl) { $tmpl = "index.html" }
   # Doctor specialty from CSV (used to pick a relevant new topic)
   $csvPath = Join-Path $Repo "_data\doctor-profiles.filled.csv"
@@ -325,9 +333,11 @@ STEP 4 - Your FINAL MESSAGE must be EXACTLY this one line and nothing else:
 SLUG=<the-slug-you-chose>
 "@
 
+  Write-Host "[gen] $Site: sending ${$genPrompt.Length}-char prompt to codex (template=$tmpl)..."
   try {
     $genTail = Invoke-CodexExec -Prompt $genPrompt -StatusOut $genStatusFile -Sandbox "workspace-write" -TimeoutSec 720
     $ss.genTail = $genTail
+    Write-Host "[gen] $Site: codex returned genTail=$(if($genTail){'`"'+$genTail.Substring(0,[Math]::Min(60,$genTail.Length))+'`"'}else{'(empty)'})"
   } catch {
     $ss.errors += "generation timed out or failed: $_"
     Write-Host "[timeout] generation for $Site exceeded 720s -- skipping"
@@ -560,6 +570,26 @@ $mergeSha = ((& git rev-parse HEAD 2>$null) | Out-String).Trim()
 $status.mergeSha = $mergeSha; Save-Status
 & git push origin main 2>$null | Out-Null
 Write-Host "[ok] Pushed merge $mergeSha to main -> GitHub Actions deploying"
+
+# ---------------------------------------------------------------------------
+# PAGE TRACKER: append each published page to page-log.csv (persistent, cumulative)
+# ---------------------------------------------------------------------------
+$logPath = Join-Path $Repo "page-log.csv"
+if (-not (Test-Path $logPath)) {
+  [IO.File]::WriteAllText($logPath, "timestamp_utc,site,domain,slug,url`n", (New-Object System.Text.UTF8Encoding($false)))
+}
+$ts = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+foreach ($p in $passed) {
+  $slug = $p.FileName -replace '\.html$',''
+  $row  = "$ts,$($p.Site),$($p.Domain),$slug,$($p.Url)`n"
+  [IO.File]::AppendAllText($logPath, $row, (New-Object System.Text.UTF8Encoding($false)))
+  Write-Host "[log] $($p.Site): $($p.Url)"
+}
+# Commit the updated log alongside the merge push
+& git add page-log.csv 2>$null | Out-Null
+& git -c user.name="CION Nightly Runner" -c user.email="cioncancerdoctors@gmail.com" `
+  commit -m "page-log: add $($passed.Count) new page(s) from nightly $utcDate" 2>$null | Out-Null
+& git push origin main 2>$null | Out-Null
 
 # ---------------------------------------------------------------------------
 # DEPLOY POLL: find the Actions run bound to $mergeSha (not just "latest")
