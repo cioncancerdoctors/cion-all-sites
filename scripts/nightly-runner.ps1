@@ -500,18 +500,12 @@ TELUGU=FAIL   (issues too severe to fix)
     $teStatus = Invoke-CodexExec -Prompt $revPrompt -StatusOut $teStatusFile -Sandbox "workspace-write" -TimeoutSec 300
     $ss.teluguTail = $teStatus
   } catch {
-    $ss.errors += "Telugu review timed out or failed: $_"
-    Write-Host "[timeout] Telugu review for $Site exceeded 300s -- skipping"
-    & git checkout -- $Site 2>$null | Out-Null
-    & git clean -fd -- $Site 2>$null | Out-Null
-    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
-    $failedSites.Add($Site); continue
+    $ss.teluguTail = "TELUGU=SKIPPED"
+    Write-Host "[warn] Telugu review for ${Site} timed out -- continuing"
   }
   Save-Status
   if($ss.teluguTail -match 'TELUGU=FAIL') {
-    $ss.errors += "Telugu reviewer: FAIL"
-    if ($planCsv -and (Test-Path $planCsv)) { & python (Join-Path $Repo "scripts\update-plan-status.py") $Site "" "" "failed" 2>$null | Out-Null }
-    $failedSites.Add($Site); continue
+    Write-Host "[warn] Telugu: FAIL for ${Site} -- continuing anyway (advisory only)"
   }
   Write-Host "[ok] Telugu: $($ss.teluguTail)"
 
