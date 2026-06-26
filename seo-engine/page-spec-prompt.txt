@@ -1,0 +1,113 @@
+COMPONENT SPEC — follow exactly, same class names and structure every time.
+
+=== mainHtml REQUIRED ORDER ===
+1. breadcrumb nav
+2. h1 + lede
+3. answer-box (with .lbl label)
+4. body prose sections (h2 + .prose wrapper + .cmp table + .callout/.warn/.neutral)
+5. leadform block (FIXED — copy verbatim from spec below)
+6. doctor-card block (FIXED — copy verbatim from spec below)
+7. FAQ heading + .faq details items (min 5)
+8. .ilinks pill links (4-6)
+9. .reviewer block
+10. .disclaimer block
+
+=== ANSWER BOX — must include .lbl with icon ===
+<div class="answer-box">
+  <div class="lbl">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    <span class="te-content">సూటి సమాధానం</span><span class="en-content">Direct answer</span>
+  </div>
+  <p><span class="te-content">TELUGU_ANSWER</span><span class="en-content">ENGLISH_ANSWER</span></p>
+</div>
+
+=== BODY PROSE — always wrap paragraphs in .prose ===
+<h2><span class="te-content">TEL_H2</span><span class="en-content">ENG_H2</span></h2>
+<div class="prose">
+  <p><span class="te-content">TEL_PARA</span><span class="en-content">ENG_PARA</span></p>
+</div>
+
+=== TABLE — class="cmp" with thead ===
+<table class="cmp">
+  <thead><tr><th>TEL/th><th>ENG</th></tr></thead>
+  <tbody><tr><td>TEL</td><td>ENG</td></tr></tbody>
+</table>
+
+=== FAQ — exact structure, no variations ===
+<h2><span class="te-content">తరచుగా అడిగే ప్రశ్నలు</span><span class="en-content">Frequently asked questions</span></h2>
+<details class="faq">
+  <summary>
+    <span><span class="te-content">TEL_Q</span><span class="en-content">ENG_Q</span></span>
+    <span class="faq-plus"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+  </summary>
+  <div class="faq-ans"><span class="te-content">TEL_A</span><span class="en-content">ENG_A</span></div>
+</details>
+
+=== ILINKS — pill links with icon ===
+<div class="ilinks">
+  <a href="https://DOMAIN/page.html">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.7 2.3-2.7 4"/><path d="M12 17.5h.01"/></svg>
+    <span class="te-content">TEL</span><span class="en-content">ENG</span>
+  </a>
+</div>
+
+=== REVIEWER — mandatory E-E-A-T block ===
+<div class="reviewer">
+  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+  <div class="rv-tx">
+    <span class="te-content"><strong>వైద్య సమీక్ష: %%DOCTOR_NAME%%</strong> (%%CREDENTIALS_SHORT%%), %%SPECIALTY_TE%%. చివరి సమీక్ష: %%DATE_TE%%.</span>
+    <span class="en-content"><strong>Medically reviewed by %%DOCTOR_NAME%%</strong> (%%CREDENTIALS_SHORT%%), %%SPECIALTY_EN%%. Last reviewed: %%DATE_EN%%.</span>
+  </div>
+</div>
+
+=== DISCLAIMER — copy verbatim ===
+<div class="disclaimer">
+  <span class="te-content">ఈ పేజీ చదవడం వైద్యుడు-రోగి సంబంధాన్ని సృష్టించదు. చికిత్స పరీక్ష మరియు మీ రిపోర్టులపై ఆధారపడుతుంది. అత్యవసర పరిస్థితిలో వెంటనే దగ్గరి ఆసుపత్రికి వెళ్ళండి. ఈ పేజీ ఆధారంగా ఏ మందునూ మొదలుపెట్టవద్దు లేదా ఆపవద్దు.</span>
+  <span class="en-content">Reading this page does not create a doctor-patient relationship. Treatment depends on examination and your reports. In an emergency, go to the nearest hospital now. Do not start or stop any medicine based on this page.</span>
+</div>
+
+=== LEADFORM — copy verbatim, substitute %%SLUG%% and %%DOCTOR_KEY%% ===
+<div class="leadform" id="lead-form">
+  <h2><span class="te-content">మీ రిపోర్టులు సమీక్ష కోసం పంపండి.</span><span class="en-content">Send your reports for review.</span></h2>
+  <p class="sub"><span class="te-content">మీ వివరాలు ఇవ్వండి, పని వేళల్లో మా టీమ్ మిమ్మల్ని కాల్ చేస్తుంది.</span><span class="en-content">Submit your details and my team will call you during working hours.</span></p>
+  <form id="cion-form" enctype="multipart/form-data" novalidate>
+    <div class="honeypot"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <div class="field"><label><span class="te-content">మీ పేరు *</span><span class="en-content">Your Name *</span></label><input type="text" name="name" required maxlength="80" autocomplete="name"></div>
+    <div class="field"><label><span class="te-content">ఫోన్ నంబర్ *</span><span class="en-content">Phone Number *</span></label><input type="tel" name="phone" required pattern="[0-9+\-\s]{10,15}" autocomplete="tel" inputmode="tel"></div>
+    <div class="field"><label><span class="te-content">క్యాన్సర్ రకం / సమస్య</span><span class="en-content">Cancer Type / Concern</span></label><input type="text" name="concern" maxlength="120" placeholder="e.g. Breast, Lung, Stomach"></div>
+    <div class="field"><label><span class="te-content">నగరం</span><span class="en-content">City</span></label><input type="text" name="city" maxlength="60" placeholder="Hyderabad"></div>
+    <input type="hidden" name="doctor_name" value="%%DOCTOR_KEY%%">
+    <input type="hidden" name="page_type" value="%%SLUG%%">
+    <input type="hidden" name="event_id" value=""><input type="hidden" name="meta_lead_id" value="">
+    <input type="hidden" name="fbclid" value=""><input type="hidden" name="gclid" value="">
+    <input type="hidden" name="fbp" value=""><input type="hidden" name="fbc" value="">
+    <input type="hidden" name="utm_source" value=""><input type="hidden" name="utm_medium" value="">
+    <input type="hidden" name="utm_campaign" value=""><input type="hidden" name="utm_content" value="">
+    <input type="hidden" name="utm_term" value=""><input type="hidden" name="submit_timestamp" value="">
+    <button type="submit" class="submit"><span class="te-content">నా సంప్రదింపు బుక్ చేయండి</span><span class="en-content">Book My Consultation</span></button>
+    <p class="consent"><span class="te-content">సమర్పించడం ద్వారా, డాక్టర్ టీమ్ మిమ్మల్ని సంప్రదించడానికి అంగీకరిస్తున్నారు.</span><span class="en-content">By submitting, you consent to the doctor's team contacting you for follow-up.</span></p>
+  </form>
+  <div class="form-error" id="cion-form-error"><span class="te-content">ఏదో తప్పు జరిగింది. వాట్సాప్ చేయండి.</span><span class="en-content">Something went wrong. Please message on WhatsApp.</span></div>
+  <div class="form-success" id="cion-form-success"><span class="big"><span class="te-content">ధన్యవాదాలు.</span><span class="en-content">Thank you.</span></span> <span class="te-content">మా టీమ్ త్వరలో కాల్ చేస్తుంది.</span><span class="en-content">My team will call you shortly.</span></div>
+</div>
+
+=== DOCTOR CARD — copy verbatim, runner will substitute %%vars%% ===
+<div class="doctor-card">
+  <img src="%%PORTRAIT%%" alt="%%DOCTOR_NAME%%">
+  <div>
+    <div class="dc-name">%%DOCTOR_NAME%%</div>
+    <div class="dc-cred"><span class="te-content">%%CREDENTIALS_TE%%</span><span class="en-content">%%CREDENTIALS_EN%%</span></div>
+    <a href="%%WA_URL%%" class="dc-cta">
+      <svg class="ic-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>
+      <span class="te-content">సెకండ్ ఒపీనియన్ తీసుకోండి</span><span class="en-content">Book a second opinion</span>
+    </a>
+  </div>
+</div>
+
+=== FORBIDDEN — never use these ===
+<ul class="related-links">    → use <div class="ilinks">
+<table> with no class         → always class="cmp"
+<details> inside <div class="faq">  → <details class="faq"> directly
+<div class="faq-ans"> inside summary → must be OUTSIDE summary
+prose paragraphs without .prose wrapper
+reviewedBy.name = "the doctor"  → must be the real doctor name from DOCTOR variable

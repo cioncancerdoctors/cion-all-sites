@@ -334,12 +334,18 @@ foreach($Site in $Sites) {
   $before  = @($tracked | Where-Object { $_ })
   $existing = ($before | ForEach-Object { $_ -replace '\.html$','' }) -join ', '
   Write-Host "[gen] ${Site}: using _template.html ($($before.Count) existing pages)"
-  # Doctor specialty from CSV
-  $csvPath   = Join-Path $Repo "_data\doctor-profiles.filled.csv"
-  $specialty = "Oncology"
+  # Doctor profile from CSV (specialty, name, credentials)
+  $csvPath       = Join-Path $Repo "_data\doctor-profiles.filled.csv"
+  $specialty     = "Oncology"
+  $doctorNameTe  = ""
+  $doctorQuals   = ""
   if (Test-Path $csvPath) {
     $row = Import-Csv $csvPath | Where-Object { $_.doctor_folder -eq $Site } | Select-Object -First 1
-    if ($row -and $row.specialty) { $specialty = $row.specialty }
+    if ($row) {
+      if ($row.specialty)      { $specialty    = $row.specialty }
+      if ($row.name_telugu)    { $doctorNameTe = $row.name_telugu }
+      if ($row.qualifications -and $row.qualifications -notmatch '^FILL') { $doctorQuals = $row.qualifications }
+    }
   }
 
   # 2. GENERATE via Claude (returns JSON; runner fills _template.html)
@@ -351,11 +357,18 @@ foreach($Site in $Sites) {
   }
   $tplHtml = [IO.File]::ReadAllText($tplPath, [System.Text.Encoding]::UTF8)
 
-  # Extract portrait filename and doctor name from template (for og:image and schema)
-  $portraitM  = [regex]::Match($tplHtml, 'src="([^"]*portrait[^"]*)"')
-  $portrait   = if ($portraitM.Success) { $portraitM.Groups[1].Value } else { "$($Site -replace 'dr-','').png" }
-  $dcNameM    = [regex]::Match($tplHtml, 'class="dc-name">([^<]+)<')
-  $doctorName = if ($dcNameM.Success) { $dcNameM.Groups[1].Value.Trim() } else { "the doctor" }
+  # Extract portrait, doctor name, and WA URL from template or site directory
+  $portraitM    = [regex]::Match($tplHtml, 'src="([^"]*portrait[^"]*)"')
+  $portraitFile = Get-ChildItem $siteDir -Filter '*portrait*' -File | Select-Object -First 1
+  $portrait     = if ($portraitM.Success)  { $portraitM.Groups[1].Value } `
+                  elseif ($portraitFile)   { $portraitFile.Name } `
+                  else                     { "$($Site -replace 'dr-','').png" }
+  $footNameM  = [regex]::Match($tplHtml, 'class="footer-name">([^<]+)<')
+  $doctorName = if ($footNameM.Success) { $footNameM.Groups[1].Value.Trim() } else { "the doctor" }
+  $waUrlM     = [regex]::Match($tplHtml, 'href="(https://wa\.me/[^"]+)"')
+  $waUrl      = if ($waUrlM.Success) { $waUrlM.Groups[1].Value } else { "https://wa.me/919999999999" }
+  # Short credentials (drop university names in parentheses) for reviewer block
+  $qualShort  = if ($doctorQuals) { $doctorQuals -replace '\s*\([^)]+\)',',' -replace ',+',', ' -replace ',\s*$','' -replace '\s+',' ' | ForEach-Object { $_.Trim() } } else { "" }
 
   # Read today's planned topic from content-plan.csv
   $planCsv   = Join-Path $Repo "_data\content-plan.csv"
@@ -376,12 +389,30 @@ foreach($Site in $Sites) {
   }
   $plannedTopicPrompt = if ($planTopic) { "TODAY'S TOPIC (mandatory): '$planTopic'. Preferred slug: $planSlug`n`n" } else { "" }
 
+  # Load component spec (single source of truth for HTML patterns)
+  $specPath    = Join-Path $Repo "seo-engine\page-spec-prompt.txt"
+  $specContent = if (Test-Path $specPath) { [IO.File]::ReadAllText($specPath, [System.Text.UTF8Encoding]::new($false)) } else { "" }
+
   $genPrompt = @"
 ${plannedTopicPrompt}OUTPUT: respond with a single raw JSON object. No prose, no markdown, no tool calls. Your response must begin with { and end with }.
 
 You are writing content for ONE new bilingual (English + Telugu) medical SEO page.
-SITE: $Site | DOMAIN: $domain | DOCTOR: $doctorName | SPECIALTY: $specialty | DATE: $utcDate
+SITE: $Site | DOMAIN: $domain | DATE: $utcDate
 EXISTING SLUGS (never reuse): $existing
+
+SITE-SPECIFIC VALUES — use these exact strings wherever the spec shows %%var%% placeholders:
+  %%DOCTOR_NAME%%     = $doctorName
+  %%DOCTOR_NAME_TE%%  = $doctorNameTe
+  %%CREDENTIALS_EN%%  = $doctorQuals
+  %%CREDENTIALS_SHORT%% = $qualShort
+  %%SPECIALTY_EN%%    = $specialty
+  %%PORTRAIT%%        = $portrait
+  %%WA_URL%%          = $waUrl
+  %%DOCTOR_KEY%%      = $Site
+  %%DATE_EN%%         = $utcDate
+  %%DATE_TE%%         = $utcDate
+  %%SPECIALTY_TE%%    = $specialty
+  %%SLUG%%            = (your chosen slug value)
 
 CONTENT GUARDRAILS (mandatory):
 - No fabricated statistics, survival rates, or clinical trial claims
@@ -389,33 +420,23 @@ CONTENT GUARDRAILS (mandatory):
 - No superlatives (best, No.1, top, leading, finest)
 - No guarantees or cure claims; no patient testimonials
 - Conservative mainstream oncology only
-- Telugu: native fluency, no Devanagari / Tamil / Kannada / Malayalam codepoints
+- Telugu: native fluency, no Devanagari/Tamil/Kannada/Malayalam codepoints
+- First-person voice: write as the doctor speaking ("I explain...", "In my experience...", "My team will call you")
 
-BILINGUAL: Use INLINE SPANS throughout mainHtml (never <section> blocks):
+BILINGUAL: Use INLINE SPANS for every visible text node — never split content by language into separate sections:
   <p><span class="te-content">తెలుగు.</span><span class="en-content">English.</span></p>
-  <h1><span class="te-content">తెలుగు H1</span><span class="en-content">English H1</span></h1>
 
-Your JSON must contain the following fields (you may include others for your own organisation):
-  slug        -- unique kebab-case page slug
-  title       -- English title (55 chars max)
-  description -- English meta description (150 chars max)
-  jsonLd1     -- raw JSON string: MedicalWebPage schema with inLanguage:["en","te"], datePublished:"$utcDate", reviewedBy:{@type:Physician,name:"$doctorName"}
-  jsonLd2     -- raw JSON string: FAQPage schema (5+ Q+A pairs from the FAQ section)
-  jsonLd3     -- raw JSON string: BreadcrumbList schema
-  mainHtml    -- HTML string for the <main> element (see structure below)
+Your JSON must contain exactly these 7 fields:
+  slug        -- unique kebab-case slug (3-5 words, matches the topic)
+  title       -- English title ≤55 chars
+  description -- English meta description ≤150 chars
+  jsonLd1     -- MedicalWebPage schema: inLanguage:["en","te"], datePublished:"$utcDate", reviewedBy:{"@type":"Physician","name":"$doctorName"}
+  jsonLd2     -- FAQPage schema (5+ Q+A pairs matching the FAQ section)
+  jsonLd3     -- BreadcrumbList schema
+  mainHtml    -- complete body HTML (no <style>, <script>, <head>, <nav>, <footer>)
 
-mainHtml must include (in order):
-1. <div class="breadcrumb"> -- bilingual breadcrumb
-2. <h1> -- bilingual primary keyword H1
-3. <p class="lede"> -- bilingual intro
-4. <div class="answer-box"> -- bilingual 40-60 word direct answer
-5. 3-4 <h2> body sections with bilingual prose + one <table class="cmp">
-6. Min 5 <details class="faq"> with bilingual <summary> + <div class="faq-ans">
-7. <div class="ilinks"> -- 4-6 absolute https://$domain/ internal links (bilingual text)
-8. <div class="reviewer"> -- bilingual doctor name + lastReviewed $utcDate
-9. <div class="disclaimer"> -- bilingual medical disclaimer
-
-mainHtml must NOT contain: <style>, <script>, <head>, <nav>, <footer>, or doctor card.
+COMPONENT SPEC — follow exactly, same class names and structure every time:
+$specContent
 "@
 
   Write-Host "[gen] ${Site}: sending $($genPrompt.Length)-char prompt to claude..."
@@ -499,7 +520,24 @@ mainHtml must NOT contain: <style>, <script>, <head>, <nav>, <footer>, or doctor
   }
   $fileName = "$slug.html"
 
-  # 2d. Fill template placeholders and write file
+  # 2d. Substitute %%spec-vars%% in mainHtml (belt-and-suspenders: Claude should fill these, runner guarantees it)
+  $mHtml = $claudeJson.mainHtml
+  $mHtml = $mHtml -replace '%%DOCTOR_NAME%%',      $doctorName
+  $mHtml = $mHtml -replace '%%DOCTOR_NAME_TE%%',   $doctorNameTe
+  $mHtml = $mHtml -replace '%%CREDENTIALS_EN%%',   $doctorQuals
+  $mHtml = $mHtml -replace '%%CREDENTIALS_TE%%',   $doctorQuals
+  $mHtml = $mHtml -replace '%%CREDENTIALS_SHORT%%',$qualShort
+  $mHtml = $mHtml -replace '%%SPECIALTY_EN%%',     $specialty
+  $mHtml = $mHtml -replace '%%SPECIALTY_TE%%',     $specialty
+  $mHtml = $mHtml -replace '%%PORTRAIT%%',         $portrait
+  $mHtml = $mHtml -replace '%%WA_URL%%',           ($waUrl -replace '&','&amp;')
+  $mHtml = $mHtml -replace '%%DOCTOR_KEY%%',       $Site
+  $mHtml = $mHtml -replace '%%DATE_EN%%',          $utcDate
+  $mHtml = $mHtml -replace '%%DATE_TE%%',          $utcDate
+  $mHtml = $mHtml -replace '%%SLUG%%',             $slug
+  $claudeJson | Add-Member -NotePropertyName 'mainHtml' -NotePropertyValue $mHtml -Force
+
+  # 2e. Fill template placeholders and write file
   $canonical = "https://$domain/$fileName"
   # Always regenerate jsonLd3 from the definitive canonical so breadcrumb last-item always matches
   $forcedBreadcrumb = '{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://' + $domain + '/"},{"@type":"ListItem","position":2,"name":"' + $claudeJson.title + '","item":"' + $canonical + '"}]}'
