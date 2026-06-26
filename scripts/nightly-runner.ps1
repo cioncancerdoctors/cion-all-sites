@@ -585,8 +585,30 @@ foreach ($p in $passed) {
   [IO.File]::AppendAllText($logPath, $row, (New-Object System.Text.UTF8Encoding($false)))
   Write-Host "[log] $($p.Site): $($p.Url)"
 }
-# Commit the updated log alongside the merge push
-& git add page-log.csv 2>$null | Out-Null
+
+# Rebuild per-site tracker CSV for each published site
+$allLog = @{}
+Import-Csv $logPath | ForEach-Object { $allLog[$_.url] = $_.timestamp_utc }
+foreach ($p in $passed) {
+  $siteDom  = $p.Domain
+  $siteName = $p.Site
+  $csvOut   = Join-Path $Repo "trackers\$siteName.csv"
+  $rows     = @("date,slug,url")
+  Get-ChildItem (Join-Path $Repo $siteName) -Filter *.html -File |
+    Where-Object { $_.Name -ne 'thank-you.html' } |
+    Sort-Object Name |
+    ForEach-Object {
+      $s    = $_.Name -replace '\.html$',''
+      $u    = "https://$siteDom/$($_.Name)"
+      $d    = if ($allLog.ContainsKey($u)) { $allLog[$u] } else { 'NA' }
+      $rows += "$d,$s,$u"
+    }
+  [IO.File]::WriteAllText($csvOut, ($rows -join "`n") + "`n", (New-Object System.Text.UTF8Encoding($false)))
+  Write-Host "[log] rebuilt trackers\$siteName.csv ($($rows.Count - 1) pages)"
+}
+
+# Commit the updated logs
+& git add page-log.csv trackers/ 2>$null | Out-Null
 & git -c user.name="CION Nightly Runner" -c user.email="cioncancerdoctors@gmail.com" `
   commit -m "page-log: add $($passed.Count) new page(s) from nightly $utcDate" 2>$null | Out-Null
 & git push origin main 2>$null | Out-Null
