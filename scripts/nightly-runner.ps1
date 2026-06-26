@@ -375,49 +375,45 @@ foreach($Site in $Sites) {
   $plannedTopicPrompt = if ($planTopic) { "TODAY'S TOPIC (mandatory): '$planTopic'. Preferred slug: $planSlug`n`n" } else { "" }
 
   $genPrompt = @"
-${plannedTopicPrompt}RETURN ONLY THE JSON OBJECT BELOW, with every value filled in. Do not add keys. Do not add prose. Do not wrap in markdown. Start your reply with { and end with }.
+${plannedTopicPrompt}OUTPUT: respond with a single raw JSON object. No prose, no markdown, no tool calls. Your response must begin with { and end with }.
 
-{
-  "slug":        "REPLACE_WITH_kebab-slug-not-in-existing-list",
-  "title":       "REPLACE_WITH_English title max 55 chars",
-  "description": "REPLACE_WITH_English meta description max 150 chars",
-  "jsonLd1":     "REPLACE_WITH_raw MedicalWebPage schema JSON string (no script tags)",
-  "jsonLd2":     "REPLACE_WITH_raw FAQPage schema JSON string with 5+ Q+A pairs (no script tags)",
-  "jsonLd3":     "REPLACE_WITH_raw BreadcrumbList schema JSON string (no script tags)",
-  "mainHtml":    "REPLACE_WITH_see mainHtml rules below"
-}
-
-=== CONTEXT ===
+You are writing content for ONE new bilingual (English + Telugu) medical SEO page.
 SITE: $Site | DOMAIN: $domain | DOCTOR: $doctorName | SPECIALTY: $specialty | DATE: $utcDate
-EXISTING SLUGS -- never reuse: $existing
+EXISTING SLUGS (never reuse): $existing
 
-=== mainHtml RULES ===
-mainHtml is the HTML string that goes inside <main>. Use INLINE SPANS for all bilingual text, never <section> blocks:
-  <span class="te-content">తెలుగు వాక్యం.</span><span class="en-content">English sentence.</span>
-Block elements: wrap the whole line in ONE span pair: <p><span class="te-content">...</span><span class="en-content">...</span></p>
-H1/H2 tags: <h1><span class="te-content">...</span><span class="en-content">...</span></h1>
-
-mainHtml must include IN ORDER:
-1. <div class="breadcrumb"> bilingual breadcrumb (Home > page title)
-2. <h1> with bilingual keyword-rich heading
-3. <p class="lede"> bilingual intro paragraph
-4. <div class="answer-box"><div class="lbl">...<\/div><p>bilingual 40-60 word direct answer<\/p><\/div>
-5. 3-4 <h2> sections with bilingual body prose; include at least one <table class="cmp">
-6. Min 5 <details class="faq"><summary>bilingual Q<\/summary><div class="faq-ans">bilingual A<\/div><\/details>
-7. <div class="ilinks"> with 4-6 <a href="https://$domain/page.html"> internal links (bilingual link text)
-8. <div class="reviewer"> bilingual doctor name + review date $utcDate
-9. <div class="disclaimer"> bilingual medical disclaimer
-
-NEVER include in mainHtml: <style>, <script>, <head>, <nav>, <footer>, doctor card, or <section> blocks.
-
-=== CONTENT GUARDRAILS ===
+CONTENT GUARDRAILS (mandatory):
 - No fabricated statistics, survival rates, or clinical trial claims
 - No cost or price figures (INR, Rs, lakh, crore)
-- No superlatives: best, No.1, top, leading, finest
-- No guarantees or cure claims
+- No superlatives (best, No.1, top, leading, finest)
+- No guarantees or cure claims; no patient testimonials
 - Conservative mainstream oncology only
-- Telugu must be native fluency -- no Devanagari, Tamil, Kannada, or Malayalam codepoints
-- jsonLd1: include inLanguage:["en","te"], datePublished:"$utcDate", reviewedBy:{@type:Physician,name:"$doctorName"}
+- Telugu: native fluency, no Devanagari / Tamil / Kannada / Malayalam codepoints
+
+BILINGUAL: Use INLINE SPANS throughout mainHtml (never <section> blocks):
+  <p><span class="te-content">తెలుగు.</span><span class="en-content">English.</span></p>
+  <h1><span class="te-content">తెలుగు H1</span><span class="en-content">English H1</span></h1>
+
+Your JSON must contain the following fields (you may include others for your own organisation):
+  slug        -- unique kebab-case page slug
+  title       -- English title (55 chars max)
+  description -- English meta description (150 chars max)
+  jsonLd1     -- raw JSON string: MedicalWebPage schema with inLanguage:["en","te"], datePublished:"$utcDate", reviewedBy:{@type:Physician,name:"$doctorName"}
+  jsonLd2     -- raw JSON string: FAQPage schema (5+ Q+A pairs from the FAQ section)
+  jsonLd3     -- raw JSON string: BreadcrumbList schema
+  mainHtml    -- HTML string for the <main> element (see structure below)
+
+mainHtml must include (in order):
+1. <div class="breadcrumb"> -- bilingual breadcrumb
+2. <h1> -- bilingual primary keyword H1
+3. <p class="lede"> -- bilingual intro
+4. <div class="answer-box"> -- bilingual 40-60 word direct answer
+5. 3-4 <h2> body sections with bilingual prose + one <table class="cmp">
+6. Min 5 <details class="faq"> with bilingual <summary> + <div class="faq-ans">
+7. <div class="ilinks"> -- 4-6 absolute https://$domain/ internal links (bilingual text)
+8. <div class="reviewer"> -- bilingual doctor name + lastReviewed $utcDate
+9. <div class="disclaimer"> -- bilingual medical disclaimer
+
+mainHtml must NOT contain: <style>, <script>, <head>, <nav>, <footer>, or doctor card.
 "@
 
   Write-Host "[gen] ${Site}: sending $($genPrompt.Length)-char prompt to claude..."
