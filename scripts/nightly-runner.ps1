@@ -490,6 +490,10 @@ COMPONENT SPEC — base patterns for ordering, leadform, and doctor card:
 $specContent
 
 $siteExamples
+
+OUTPUT REMINDER: return ONLY a single JSON object — no markdown fences, no text before or after.
+The "mainHtml" field must be a single fully-rendered HTML string using inline bilingual spans.
+Do NOT return separate en/te keys, do NOT return a content data-model — render the final HTML.
 "@
 
   Write-Host "[gen] ${Site}: sending $($genPrompt.Length)-char prompt to claude..."
@@ -524,6 +528,13 @@ $siteExamples
       $jl2 = if ($jArr.Count -gt 1) { $jArr[1] | ConvertTo-Json -Depth 20 -Compress } else { "" }
       $claudeJson | Add-Member -NotePropertyName 'jsonLd1' -NotePropertyValue $jl1 -Force
       $claudeJson | Add-Member -NotePropertyName 'jsonLd2' -NotePropertyValue $jl2 -Force
+    }
+    # Nested schema.* format (Claude sometimes returns schema objects instead of JSON strings)
+    if ((-not $claudeJson.jsonLd1) -and $claudeJson.schema -and $claudeJson.schema.medical_web_page) {
+      $claudeJson | Add-Member -NotePropertyName 'jsonLd1' -NotePropertyValue ($claudeJson.schema.medical_web_page | ConvertTo-Json -Depth 20 -Compress) -Force
+    }
+    if ((-not $claudeJson.jsonLd2) -and $claudeJson.schema -and $claudeJson.schema.faq_page) {
+      $claudeJson | Add-Member -NotePropertyName 'jsonLd2' -NotePropertyValue ($claudeJson.schema.faq_page | ConvertTo-Json -Depth 20 -Compress) -Force
     }
     # jsonLd3 checked independently -- Claude often omits BreadcrumbList even when jsonLd1+2 present
     if (-not $claudeJson.jsonLd3) {
