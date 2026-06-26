@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{CANONICAL}}">
+  <meta property="og:url" content="{{OG_URL}}">
+  <meta property="og:image" content="{{OG_IMAGE}}">
+  <meta property="og:image:alt" content="Dr. Basudev Pokhrel">
+  <meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" href="favicon.png">
+<meta property="og:title" content="{{OG_TITLE}}">
+<meta property="og:locale" content="en_IN">
+<meta property="og:locale:alternate" content="te_IN">
+<meta property="og:description" content="{{OG_DESCRIPTION}}">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+{{JSON_LD_1}}
+{{JSON_LD_2}}
+
+<style>
+/* ── TOKENS ── */
+:root{
+  --ink:#2B2F36;
+  --ink2:#565E68;
+  --burgundy:#7B1E2B;
+  --burgundy-dk:#651622;
+  --burgundy-soft:#F4E6E8;
+  --gray:#F3F4F6;
+  --white:#fff;
+  --border:#DDE1E6;
+  --wa:#1FA855;
+  --head:'Sora','Noto Sans Telugu',sans-serif;
+  --body:'Manrope','Noto Sans Telugu',sans-serif;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--body);background:var(--white);color:var(--ink);line-height:1.7;font-size:15px;overflow-x:hidden;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+
+/* ── ICON BASE ── */
+.ic{width:24px;height:24px;flex-shrink:0;}
+
+/* ── LANG VISIBILITY ── */
+.te-content{display:inline;}
+.en-content{display:none;}
+html[lang="en"] .te-content{display:none;}
+html[lang="en"] .en-content{display:inline;}
+.block.te-content,.te-content.block{display:block;}
+html[lang="en"] .block.te-content{display:none;}
+html[lang="en"] .en-content.block{display:block;}
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-toggle{display:flex;align-items:center;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.lang-opt{font-family:var(--head);font-size:11px;font-weight:600;letter-spacing:0.04em;padding:5px 10px;color:var(--ink2);cursor:pointer;transition:all .2s;background:transparent;}
+.lang-opt.active{color:#fff;background:var(--burgundy);}
+.lang-opt:hover:not(.active){color:var(--ink);}
+
+/* ── HEADER ── */
+.site-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 18px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-name{font-family:var(--head);font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-0.01em;white-space:nowrap;}
+.hdr-name small{font-family:var(--body);font-size:9px;font-weight:600;color:var(--burgundy);letter-spacing:0.12em;text-transform:uppercase;display:block;margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.hamburger{width:32px;height:32px;display:flex;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;}
+.hamburger span{width:100%;height:2px;background:var(--ink);display:block;transition:all .3s var(--ease);}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ── NAV DRAWER ── */
+.nav-overlay{position:fixed;inset:0;z-index:998;background:rgba(20,22,26,0.5);opacity:0;pointer-events:none;transition:opacity .3s;}
+.nav-overlay.show{opacity:1;pointer-events:all;}
+.nav-drawer{position:fixed;top:0;right:0;bottom:0;width:80%;max-width:330px;z-index:999;background:var(--ink);transform:translateX(100%);transition:transform .35s var(--ease);padding:78px 24px 28px;overflow-y:auto;box-shadow:-8px 0 32px rgba(0,0,0,0.25);}
+.nav-drawer.open{transform:translateX(0);}
+.nav-drawer nav a{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.72);font-size:14.5px;font-weight:500;transition:color .2s;}
+.nav-drawer nav a:hover{color:#fff;}
+.nav-drawer nav a .ic{width:20px;height:20px;color:var(--burgundy-soft);opacity:0.85;}
+.nav-cta{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.nav-wa,.nav-call{display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:600;padding:13px 12px;border-radius:4px;text-align:center;}
+.nav-wa{background:#1FA855;color:#fff;}
+.nav-call{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);}
+.nav-cta .ic{width:17px;height:17px;}
+
+/* ── MAIN / ARTICLE ── */
+.wrap{max-width:780px;margin:0 auto;padding:84px 20px 44px;}
+.breadcrumb{font-family:var(--head);font-size:11px;font-weight:500;letter-spacing:0.04em;color:var(--ink2);margin-bottom:22px;}
+.breadcrumb a{color:var(--burgundy);font-weight:600;}
+h1{font-family:var(--head);font-size:clamp(28px,7vw,42px);font-weight:800;line-height:1.08;letter-spacing:-0.02em;color:var(--ink);margin-bottom:14px;}
+h1 em{font-style:normal;color:var(--burgundy);}
+.lede{font-size:16px;color:var(--ink2);line-height:1.78;margin-bottom:26px;}
+
+/* ── ANSWER BOX ── */
+.answer-box{background:var(--burgundy-soft);border-left:3px solid var(--burgundy);border-radius:0 6px 6px 0;padding:20px 22px;margin:0 0 30px;}
+.answer-box .lbl{display:flex;align-items:center;gap:8px;font-family:var(--head);font-size:9px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--burgundy);margin-bottom:9px;}
+.answer-box .lbl .ic{width:14px;height:14px;}
+.answer-box p{font-size:15px;color:var(--ink);line-height:1.72;}
+
+h2{font-family:var(--head);font-size:23px;font-weight:700;color:var(--ink);margin:34px 0 12px;line-height:1.18;letter-spacing:-0.01em;}
+h2 em{font-style:normal;color:var(--burgundy);}
+h3{font-family:var(--head);font-size:17px;font-weight:700;color:var(--ink);margin:22px 0 8px;line-height:1.25;}
+.prose p{font-size:15px;color:var(--ink2);line-height:1.85;margin-bottom:14px;}
+.prose strong{color:var(--ink);font-weight:600;}
+.prose ul{margin:6px 0 16px;padding-left:20px;}
+.prose ul li{font-size:15px;color:var(--ink2);line-height:1.7;margin-bottom:7px;}
+
+/* ── TWO-CARD COMPARE ── */
+.compare{display:grid;grid-template-columns:1fr;gap:14px;margin:18px 0;}
+.cc{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--burgundy);border-radius:6px;padding:18px 20px;}
+.cc h3{margin-top:0;display:flex;align-items:center;gap:9px;}
+.cc h3 .ic{width:20px;height:20px;color:var(--burgundy);}
+.cc p{font-size:13.5px;color:var(--ink2);line-height:1.7;}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+th{background:var(--gray);font-family:var(--head);font-size:12px;font-weight:700;color:var(--ink);letter-spacing:0.02em;}
+td{color:var(--ink2);line-height:1.6;}
+tr:last-child td{border-bottom:none;}
+td b{color:var(--ink);font-weight:600;}
+
+/* ── STATUS LABEL ── */
+.status{display:inline-block;font-family:var(--head);font-size:10px;font-weight:600;letter-spacing:0.04em;color:var(--burgundy);background:var(--burgundy-soft);border-radius:3px;padding:2px 7px;margin-right:4px;vertical-align:middle;}
+
+/* ── WARN / CARETAKER ── */
+.warn{background:#FBEAEA;border-left:3px solid var(--burgundy);border-radius:0 6px 6px 0;padding:16px 18px;margin:14px 0;font-size:14px;color:#7a2230;line-height:1.7;}
+.warn b{color:var(--burgundy-dk);}
+
+/* ── NEUTRAL / CALLOUT ── */
+.neutral{background:var(--gray);border:1px solid var(--border);border-radius:6px;padding:18px 20px;margin:14px 0;font-size:14px;color:var(--ink2);line-height:1.8;}
+.callout{background:var(--white);border:1px solid var(--border);border-left:3px solid var(--burgundy);border-radius:0 6px 6px 0;padding:18px 20px;margin:14px 0;}
+.checklist{list-style:none;margin:0;padding:0;}
+.checklist li{display:flex;gap:11px;align-items:flex-start;font-size:14px;color:var(--ink2);line-height:1.6;padding:9px 0;border-bottom:1px solid var(--gray);}
+.checklist li:last-child{border-bottom:none;}
+.checklist li::before{content:'';width:16px;height:16px;flex-shrink:0;margin-top:3px;background:var(--burgundy);border-radius:50%;-webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>') center/12px no-repeat;mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>') center/12px no-repeat;}
+
+/* ── LEAD MAGNET ── */
+.leadmag{background:var(--ink);color:#fff;border-radius:8px;padding:24px 22px;margin:18px 0;}
+.leadmag h3{color:#fff;margin:0 0 8px;font-size:18px;}
+.leadmag p{font-size:14px;color:rgba(255,255,255,0.78);line-height:1.75;margin-bottom:16px;}
+.leadmag a{display:inline-flex;align-items:center;gap:8px;background:var(--wa);color:#fff;font-family:var(--head);font-size:13.5px;font-weight:600;padding:13px 20px;border-radius:5px;}
+
+/* ── LEAD FORM ── */
+.leadform{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--burgundy);border-radius:8px;padding:24px 22px;margin:32px 0;box-shadow:0 12px 32px rgba(43,47,54,0.08);}
+.leadform h2{font-family:var(--head);font-weight:700;font-size:21px;margin:0 0 5px;}
+.leadform .sub{color:var(--ink2);font-size:13.5px;margin:0 0 18px;line-height:1.6;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-family:var(--head);font-size:12px;font-weight:600;margin-bottom:5px;color:var(--ink);}
+.field input,.field textarea{width:100%;padding:12px 13px;border:1px solid var(--border);border-radius:5px;font-size:15px;font-family:inherit;color:var(--ink);background:var(--gray);transition:border-color .2s,background .2s;}
+.field input:focus,.field textarea:focus{outline:2px solid var(--burgundy);border-color:var(--burgundy);background:#fff;}
+.hint{font-size:11px;color:var(--ink2);margin-top:4px;}
+.honeypot{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
+.submit{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;background:var(--burgundy);color:#fff;border:0;padding:15px;border-radius:5px;font-family:var(--head);font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;transition:background .2s;}
+.submit:hover{background:var(--burgundy-dk);}
+.submit:disabled{opacity:.6;cursor:default;}
+.submit .ic{width:18px;height:18px;}
+.wa-fallback{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--wa);color:#fff;border-radius:5px;padding:13px;font-family:var(--head);font-size:13px;font-weight:600;margin-top:10px;}
+.wa-fallback .ic{width:18px;height:18px;}
+.consent{font-size:11px;color:var(--ink2);margin-top:12px;line-height:1.55;}
+.form-error{display:none;align-items:flex-start;gap:9px;background:#FBEAEA;color:#9b2c2c;padding:13px 14px;border-radius:6px;font-size:13px;margin-top:10px;line-height:1.5;}
+.form-error.active{display:flex;}
+.form-error .ic{width:18px;height:18px;flex-shrink:0;margin-top:1px;}
+.form-success{display:none;background:var(--burgundy-soft);color:var(--ink);border:1px solid var(--burgundy);padding:22px;border-radius:8px;font-size:15px;text-align:center;line-height:1.6;}
+.form-success.active{display:block;}
+.form-success .big{font-family:var(--head);font-size:18px;font-weight:700;color:var(--burgundy);display:block;margin-bottom:6px;}
+
+/* ── DOCTOR CARD ── */
+.doctor-card{display:flex;gap:16px;align-items:center;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:18px;margin:28px 0;}
+.doctor-card img{width:72px;height:72px;border-radius:6px;object-fit:cover;object-position:center top;flex-shrink:0;border:1px solid var(--border);}
+.dc-name{font-family:var(--head);font-size:18px;font-weight:700;color:var(--ink);}
+.dc-cred{font-size:11.5px;color:var(--ink2);margin:3px 0 11px;line-height:1.5;}
+.dc-cta{display:inline-flex;align-items:center;gap:8px;background:var(--burgundy);color:#fff;border-radius:5px;padding:10px 18px;font-family:var(--head);font-size:12px;font-weight:600;}
+.dc-cta .ic{width:16px;height:16px;}
+
+/* ── INTERNAL LINKS ── */
+.ilinks{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0;}
+.ilinks a{display:inline-flex;align-items:center;gap:7px;font-family:var(--head);font-size:12px;font-weight:600;color:var(--burgundy);border:1px solid var(--border);border-radius:5px;padding:9px 14px;background:var(--white);transition:border-color .2s;}
+.ilinks a:hover{border-color:var(--burgundy);}
+.ilinks a .ic{width:15px;height:15px;}
+
+/* ── FAQ ── */
+.faq-list{margin-top:18px;}
+.faq{background:var(--white);border:1px solid var(--border);border-radius:6px;margin-bottom:10px;overflow:hidden;}
+.faq[open]{border-color:var(--burgundy);}
+.faq summary{display:flex;justify-content:space-between;align-items:center;gap:14px;cursor:pointer;padding:16px 18px;font-family:var(--head);font-size:14.5px;font-weight:600;color:var(--ink);list-style:none;}
+.faq summary::-webkit-details-marker{display:none;}
+.faq summary .ic{color:var(--burgundy);transition:transform .25s var(--ease);flex-shrink:0;width:20px;height:20px;}
+.faq[open] summary .ic{transform:rotate(45deg);}
+.faq-ans{padding:0 18px 16px;font-size:13.5px;color:var(--ink2);line-height:1.8;}
+
+/* ── REVIEWER / DISCLAIMER ── */
+.reviewer{display:flex;gap:12px;align-items:flex-start;font-size:12px;color:var(--ink2);line-height:1.65;border-top:1px solid var(--border);padding-top:18px;margin-top:28px;}
+.reviewer .ic{width:22px;height:22px;color:var(--burgundy);flex-shrink:0;margin-top:1px;}
+.reviewer b{color:var(--ink);font-weight:600;}
+.disclaimer{font-size:12px;color:var(--ink2);background:var(--gray);border:1px solid var(--border);border-radius:6px;padding:16px 18px;margin-top:16px;line-height:1.7;}
+.disclaimer strong{color:var(--ink);font-weight:600;}
+
+/* ── FOOTER ── */
+footer{background:#1F2329;padding:34px 20px 96px;color:rgba(255,255,255,0.45);font-size:12px;line-height:1.8;text-align:center;}
+.footer-name{font-family:var(--head);font-size:18px;font-weight:700;color:rgba(255,255,255,0.85);margin-bottom:8px;}
+.footer-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin:16px 0;padding:14px 0;border-top:1px solid rgba(255,255,255,0.1);border-bottom:1px solid rgba(255,255,255,0.1);}
+.footer-nav a{color:rgba(255,255,255,0.55);font-family:var(--head);font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;}
+.footer-nav a:hover{color:#fff;}
+
+/* ── STICKY BAR ── */
+.sticky-bar{position:fixed;bottom:0;left:0;right:0;z-index:900;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);}
+.sb-call,.sb-wa{display:flex;align-items:center;justify-content:center;gap:7px;padding:15px;font-family:var(--head);font-size:13px;font-weight:600;}
+.sb-call{color:var(--ink);border-right:1px solid var(--border);}
+.sb-wa{color:#fff;background:var(--burgundy);}
+.sb-call .ic,.sb-wa .ic{width:18px;height:18px;}
+
+@media(min-width:768px){
+  .compare{grid-template-columns:1fr 1fr;}
+  .sticky-bar{display:none;}
+  footer{padding-bottom:34px;}
+}
+</style>
+{{JSON_LD_3}}
+</head>
+<body>
+
+<div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
+
+<!-- STICKY BAR -->
+<div class="sticky-bar">
+  <a href="tel:+919063490160" class="sb-call">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+    <span class="te-content">కాల్ చేయండి</span><span class="en-content">Call Now</span>
+  </a>
+  <a href="https://wa.me/919063490160?text=%E0%B0%A8%E0%B0%AE%E0%B0%B8%E0%B1%8D%E0%B0%95%E0%B0%BE%E0%B0%B0%E0%B0%82%20%E0%B0%A1%E0%B0%BE.%20%E0%B0%AC%E0%B0%B8%E0%B1%81%E0%B0%A6%E0%B1%87%E0%B0%B5%E0%B1%8D%2C%20%E0%B0%B2%E0%B0%BF%E0%B0%82%E0%B0%AB%E0%B1%8B%E0%B0%AE%E0%B0%BE%20%E0%B0%97%E0%B1%81%E0%B0%B0%E0%B0%BF%E0%B0%82%E0%B0%9A%E0%B0%BF%20%E0%B0%AE%E0%B0%BE%E0%B0%9F%E0%B1%8D%E0%B0%B2%E0%B0%BE%E0%B0%A1%E0%B0%BE%E0%B0%B2%E0%B0%BF." class="sb-wa">
+    <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884Z"/></svg>
+    <span class="te-content">వాట్సాప్</span><span class="en-content">WhatsApp</span>
+  </a>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="hdr-name">
+    Dr. Basudev Pokhrel
+    <small><span class="te-content">హిమటాలజిస్ట్ &amp; BMT · హైదరాబాద్</span><span class="en-content">Haematologist &amp; BMT · Hyderabad</span></small>
+  </div>
+  <div class="hdr-right">
+    <div class="lang-toggle">
+      <div class="lang-opt active" id="lang-te" onclick="setLang('te')">తె</div>
+      <div class="lang-opt" id="lang-en" onclick="setLang('en')">EN</div>
+    </div>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<!-- NAV DRAWER -->
+<div class="nav-drawer" id="navDrawer">
+  <nav>
+    <a href="index.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg>
+      <span class="te-content">హోమ్</span><span class="en-content">Home</span>
+    </a>
+    <a href="leukaemia.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c3.5 4.2 6 7.4 6 10.5a6 6 0 0 1-12 0c0-3.1 2.5-6.3 6-10.5Z"/></svg>
+      <span class="te-content">లుకేమియా</span><span class="en-content">Leukaemia</span>
+    </a>
+    <a href="lymphoma.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="3.2"/><circle cx="15.5" cy="14" r="3.7"/><path d="M10.4 11 13 12"/></svg>
+      <span class="te-content">లింఫోమా</span><span class="en-content">Lymphoma</span>
+    </a>
+    <a href="myeloma.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h6.5L19 9.5V18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M13 4v5h5"/><path d="M9 13.5h6M9 16.5h4"/></svg>
+      <span class="te-content">మల్టిపుల్ మైలోమా</span><span class="en-content">Multiple Myeloma</span>
+    </a>
+    <a href="bone-marrow-transplant.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4h4v4"/><path d="M3 20a9 9 0 0 1 9-9 9 9 0 0 0 9-7"/><path d="M7 20H3v-4"/><path d="M21 4a9 9 0 0 1-9 9 9 9 0 0 0-9 7"/></svg>
+      <span class="te-content">బోన్ మ్యారో ట్రాన్స్‌ప్లాంట్</span><span class="en-content">Bone Marrow Transplant</span>
+    </a>
+    <a href="second-opinion.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
+      <span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second Opinion</span>
+    </a>
+    <a href="about.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      <span class="te-content">నా గురించి</span><span class="en-content">About</span>
+    </a>
+  </nav>
+  <div class="nav-cta">
+    <a href="https://wa.me/919063490160" class="nav-wa">
+      <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884Z"/></svg>
+      WhatsApp
+    </a>
+    <a href="tel:+919063490160" class="nav-call">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+      90634 90160
+    </a>
+  </div>
+</div>
+
+<main class="wrap">
+{{MAIN_CONTENT}}
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-name">Dr. Basudev Pokhrel</div>
+  <span class="te-content">హిమటాలజిస్ట్ &amp; BMT ఫిజిషియన్ · CION క్యాన్సర్ క్లినిక్స్, అమీర్‌పేట్, హైదరాబాద్ · +91 90634 90160</span>
+  <span class="en-content">Haematologist &amp; BMT Physician · CION Cancer Clinics, Ameerpet, Hyderabad · +91 90634 90160</span>
+  <nav class="footer-nav">
+    <a href="index.html"><span class="te-content">హోమ్</span><span class="en-content">Home</span></a>
+    <a href="leukaemia.html"><span class="te-content">లుకేమియా</span><span class="en-content">Leukaemia</span></a>
+    <a href="lymphoma.html"><span class="te-content">లింఫోమా</span><span class="en-content">Lymphoma</span></a>
+    <a href="myeloma.html"><span class="te-content">మైలోమా</span><span class="en-content">Myeloma</span></a>
+    <a href="bone-marrow-transplant.html"><span class="te-content">ట్రాన్స్‌ప్లాంట్</span><span class="en-content">Transplant</span></a>
+    <a href="second-opinion.html"><span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second Opinion</span></a>
+    <a href="about.html"><span class="te-content">నా గురించి</span><span class="en-content">About</span></a>
+  </nav>
+</footer>
+
+<script>
+function setLang(lang){
+  document.documentElement.lang = lang;
+  document.getElementById('lang-te').classList.toggle('active', lang === 'te');
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('cion_lang', lang); } catch(e){}
+}
+function toggleNav(){
+  var d = document.getElementById('navDrawer');
+  var h = document.getElementById('hamburger');
+  var o = document.getElementById('navOverlay');
+  var open = d.classList.toggle('open');
+  h.classList.toggle('open', open);
+  o.classList.toggle('show', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeNav(){
+  document.getElementById('navDrawer').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+(function(){
+  try {
+    var saved = localStorage.getItem('cion_lang');
+    if (saved === 'en' || saved === 'te') setLang(saved);
+  } catch(e){}
+})();
+
+/* ---- Lead form: hidden fields + submit (same contract as /api/submit.php) ---- */
+(function(){
+  function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);return v.toString(16);});}
+  function getCookie(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):'';}
+  function getParam(n){return new URLSearchParams(location.search).get(n)||'';}
+
+  var form=document.getElementById('cion-form'); if(!form) return;
+  var eventId=uuid();
+  form.event_id.value=eventId; form.meta_lead_id.value=eventId;
+  form.fbp.value=getCookie('_fbp'); form.fbc.value=getCookie('_fbc');
+  form.fbclid.value=getParam('fbclid'); form.gclid.value=getParam('gclid');
+  form.utm_source.value=getParam('utm_source'); form.utm_medium.value=getParam('utm_medium');
+  form.utm_campaign.value=getParam('utm_campaign'); form.utm_content.value=getParam('utm_content');
+  form.utm_term.value=getParam('utm_term'); form.submit_timestamp.value=Date.now();
+
+  var errBox=document.getElementById('cion-form-error');
+
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    if(errBox) errBox.classList.remove('active');
+    var btn=form.querySelector('.submit');
+    var label=btn.innerHTML;
+    btn.disabled=true; btn.textContent='Submitting...';
+    form.submit_timestamp.value=Date.now();
+    try{
+      var res=await fetch('/api/submit.php',{method:'POST',body:new FormData(form)});
+      var text=await res.text();
+      var data=null; try{ data=text?JSON.parse(text):null; }catch(_){}
+      if(res.ok && data && data.success){
+        form.style.display='none';
+        var okBox=document.getElementById('cion-form-success'); if(okBox) okBox.classList.add('active');
+      } else { throw new Error((data&&data.error)||'submit_failed'); }
+    }catch(err){
+      btn.disabled=false; btn.innerHTML=label;
+      if(errBox) errBox.classList.add('active');
+    }
+  });
+})();
+</script>
+</body>
+</html>

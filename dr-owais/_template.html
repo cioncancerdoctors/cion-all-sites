@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{CANONICAL}}">
+  <meta property="og:url" content="{{OG_URL}}">
+  <meta property="og:image" content="{{OG_IMAGE}}">
+  <meta property="og:image:alt" content="Dr. Owais Mohammed">
+  <meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" href="favicon.png">
+<meta property="og:title" content="{{OG_TITLE}}">
+<meta property="og:locale" content="en_IN">
+<meta property="og:locale:alternate" content="te_IN">
+<meta property="og:description" content="{{OG_DESCRIPTION}}">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+{{JSON_LD_1}}
+{{JSON_LD_2}}
+
+<style>
+:root {
+  --ink:        #1F2440;
+  --ink2:       #4B5278;
+  --indigo:     #2E3A8C;
+  --indigo-dk:  #232C6E;
+  --sky:        #EDF1FB;
+  --indigo-soft:#E3E8F7;
+  --white:      #FFFFFF;
+  --border:     #D8DEEF;
+  --warm:       #F7F8FC;
+  --gold:       #C4942A;
+  --wa:         #25D366;
+  --font:       'Plus Jakarta Sans', 'Noto Sans Telugu', system-ui, sans-serif;
+  --ease:       cubic-bezier(.4,0,.2,1);
+  --radius:     14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--white); color: var(--ink); line-height: 1.7; font-size: 15px; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+
+/* ── LANG VISIBILITY ── */
+.te-content { display: inline; }
+.en-content { display: none; }
+html[lang="en"] .te-content { display: none; }
+html[lang="en"] .en-content { display: inline; }
+.block.te-content, .te-content.block { display: block; }
+html[lang="en"] .block.te-content { display: none; }
+html[lang="en"] .en-content.block { display: block; }
+
+/* ── ICONS ── */
+.ic { width: 24px; height: 24px; flex-shrink: 0; }
+.ic-sm { width: 18px; height: 18px; }
+.ic-lg { width: 28px; height: 28px; }
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-toggle { display: flex; align-items: center; gap: 0; border: 1px solid var(--border); border-radius: 40px; overflow: hidden; background: var(--white); }
+.lang-opt { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; padding: 6px 13px; color: var(--ink2); cursor: pointer; transition: all 0.2s; border-radius: 40px; }
+.lang-opt.active { color: #fff; background: var(--indigo); }
+.lang-opt:hover:not(.active) { color: var(--indigo); }
+
+/* ── HEADER ── */
+.site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 18px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.hdr-name { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; white-space: nowrap; }
+.hdr-name small { font-weight: 500; font-size: 9.5px; color: var(--ink2); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-top: 0px; }
+.hdr-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.hamburger { width: 38px; height: 38px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; border-radius: 10px; border: 1px solid var(--border); background: var(--white); }
+.hamburger span { width: 17px; height: 2px; background: var(--ink); border-radius: 2px; display: block; transition: all 0.3s var(--ease); }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── NAV DRAWER ── */
+.nav-overlay { position: fixed; inset: 0; z-index: 998; background: rgba(31,36,64,0.45); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.nav-overlay.show { opacity: 1; pointer-events: all; }
+.nav-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 80%; max-width: 330px; z-index: 999; background: var(--white); transform: translateX(100%); transition: transform 0.35s var(--ease); padding: 22px 20px; overflow-y: auto; box-shadow: -10px 0 40px rgba(31,36,64,0.18); }
+.nav-drawer.open { transform: translateX(0); }
+.nav-drawer-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+.nav-drawer-head .nd-title { font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: 0.02em; }
+.nav-close { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 9px; color: var(--ink2); cursor: pointer; border: 1px solid var(--border); }
+.nav-drawer nav a { display: flex; align-items: center; gap: 13px; padding: 13px 12px; border-radius: 11px; color: var(--ink2); font-size: 14.5px; font-weight: 500; transition: all 0.18s; margin-bottom: 2px; }
+.nav-drawer nav a:hover { color: var(--indigo); background: var(--sky); }
+.nav-drawer nav a .ic { color: var(--indigo); width: 21px; height: 21px; }
+.nav-cta { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.nav-wa { background: var(--wa); color: #fff; font-size: 13px; font-weight: 600; padding: 13px 14px; border-radius: 40px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 7px; }
+.nav-call { background: var(--sky); color: var(--indigo); font-size: 13px; font-weight: 600; padding: 13px 14px; border-radius: 40px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 7px; }
+
+/* ── STICKY BAR ── */
+.sticky-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 9px 12px; padding-bottom: calc(9px + env(safe-area-inset-bottom)); background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-top: 1px solid var(--border); }
+.sb-call { padding: 13px; text-align: center; font-size: 13.5px; font-weight: 600; color: var(--indigo); display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 40px; border: 1px solid var(--indigo-soft); margin-right: 6px; }
+.sb-wa { padding: 13px; text-align: center; font-size: 13.5px; font-weight: 600; color: #fff; background: var(--wa); display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 40px; margin-left: 6px; }
+.sb-call .ic, .sb-wa .ic { width: 17px; height: 17px; }
+
+/* ── BUTTONS / PILLS ── */
+.btn-pill { display: inline-flex; align-items: center; gap: 10px; background: var(--indigo); color: #fff; border-radius: 40px; padding: 15px 28px; font-size: 14.5px; font-weight: 600; letter-spacing: 0.01em; transition: all 0.2s var(--ease); box-shadow: 0 10px 24px rgba(46,58,140,0.22); }
+.btn-pill:hover { background: var(--indigo-dk); transform: translateY(-1px); }
+.btn-pill .ic { width: 19px; height: 19px; }
+.tag-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--indigo-soft); color: var(--indigo); font-size: 12px; font-weight: 600; padding: 6px 13px; border-radius: 40px; letter-spacing: 0.01em; }
+
+/* ── ARTICLE LAYOUT ── */
+.wrap { max-width: 760px; margin: 0 auto; padding: 84px 20px 44px; }
+.breadcrumb { font-size: 12px; color: var(--ink2); letter-spacing: 0.02em; margin-bottom: 20px; }
+.breadcrumb a { color: var(--indigo); font-weight: 600; }
+h1 { font-size: clamp(28px, 7vw, 42px); font-weight: 800; line-height: 1.12; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 16px; }
+.lede { font-size: 16px; color: var(--ink2); line-height: 1.8; margin-bottom: 26px; }
+
+.answer-box { background: var(--sky); border-left: 4px solid var(--indigo); border-radius: 0 12px 12px 0; padding: 20px 22px; margin: 0 0 30px; }
+.answer-box .lbl { display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--indigo); margin-bottom: 9px; }
+.answer-box .lbl .ic { width: 15px; height: 15px; }
+.answer-box p { font-size: 15.5px; color: var(--ink); line-height: 1.72; }
+
+h2 { font-size: clamp(22px, 5.4vw, 28px); font-weight: 700; color: var(--ink); letter-spacing: -0.015em; margin: 36px 0 12px; line-height: 1.22; }
+.prose p { font-size: 15px; color: var(--ink2); line-height: 1.85; margin-bottom: 14px; }
+.prose strong { color: var(--ink); font-weight: 600; }
+.prose a { color: var(--indigo); font-weight: 600; }
+
+table.cmp { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 13.5px; }
+table.cmp th, table.cmp td { border: 1px solid var(--border); padding: 11px 13px; text-align: left; vertical-align: top; }
+table.cmp th { background: var(--ink); color: #fff; font-weight: 600; }
+table.cmp td:first-child { background: var(--sky); font-weight: 600; color: var(--ink); width: 38%; }
+
+.callout { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin: 16px 0; }
+.callout h3 { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+.checklist { list-style: none; margin: 0; }
+.checklist li { font-size: 14px; color: var(--ink2); line-height: 1.6; padding: 8px 0 8px 26px; position: relative; border-bottom: 1px solid var(--sky); }
+.checklist li:last-child { border-bottom: none; }
+.checklist li::before { content: '›'; position: absolute; left: 7px; color: var(--indigo); font-weight: 700; font-size: 16px; }
+
+.neutral { background: var(--warm); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin: 16px 0; font-size: 14.5px; color: var(--ink2); line-height: 1.85; }
+.warn { border-left: 4px solid var(--gold); background: #FBF6EA; border-radius: 0 10px 10px 0; padding: 15px 18px; margin: 14px 0; font-size: 14px; color: #5c4a1f; line-height: 1.75; }
+.warn b { color: #4a3c18; }
+
+.leadmag { background: var(--ink); color: #fff; border-radius: 16px; padding: 24px 22px; margin: 20px 0; }
+.leadmag h3 { font-size: 20px; font-weight: 700; margin-bottom: 9px; line-height: 1.3; }
+.leadmag p { font-size: 14px; color: rgba(255,255,255,0.78); line-height: 1.8; margin-bottom: 16px; }
+.leadmag a { display: inline-flex; align-items: center; gap: 8px; background: var(--wa); color: #fff; border-radius: 40px; padding: 13px 24px; font-size: 13.5px; font-weight: 600; }
+.leadmag a .ic { width: 17px; height: 17px; }
+
+/* ── LEAD FORM ── */
+.leadform { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 26px 22px; margin: 32px 0; box-shadow: 0 12px 34px rgba(46,58,140,0.08); }
+.leadform h2 { font-size: 22px; margin: 0 0 5px; }
+.leadform .sub { color: var(--ink2); font-size: 13.5px; margin: 0 0 18px; line-height: 1.65; }
+.field { margin-bottom: 13px; }
+.field label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 6px; color: var(--ink); }
+.field input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 9px; font-size: 15px; font-family: inherit; color: var(--ink); background: var(--warm); }
+.field input:focus { outline: 2px solid var(--indigo); border-color: var(--indigo); background: #fff; }
+.hint { font-size: 11.5px; color: var(--ink2); margin-top: 4px; }
+.honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.submit { width: 100%; background: var(--indigo); color: #fff; border: 0; padding: 15px; border-radius: 9px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; font-family: inherit; transition: opacity 0.2s; }
+.submit:hover { opacity: 0.93; }
+.submit:disabled { opacity: 0.6; cursor: default; }
+.wa-fallback { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: var(--wa); color: #fff; border-radius: 9px; padding: 13px; font-size: 13.5px; font-weight: 600; margin-top: 10px; }
+.consent { font-size: 11.5px; color: var(--ink2); margin-top: 12px; line-height: 1.6; }
+.form-error { display: none; background: #FBEAEA; color: #9b2c2c; padding: 12px 14px; border-radius: 9px; font-size: 13px; margin-top: 10px; line-height: 1.5; }
+.form-error.active { display: block; }
+.form-success { display: none; background: var(--sky); color: var(--ink); border: 1px solid var(--indigo); padding: 20px; border-radius: 12px; font-size: 15px; text-align: center; line-height: 1.6; }
+.form-success.active { display: block; }
+.form-success .big { font-size: 18px; font-weight: 700; color: var(--indigo); display: block; margin-bottom: 6px; }
+
+.doctor-card { display: flex; gap: 16px; align-items: center; background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin: 30px 0; }
+.doctor-card img { width: 66px; height: 66px; border-radius: 12px; object-fit: cover; object-position: center top; flex-shrink: 0; border: 2px solid var(--indigo-soft); }
+.dc-name { font-size: 18px; font-weight: 700; color: var(--ink); }
+.dc-cred { font-size: 11.5px; color: var(--ink2); margin: 3px 0 11px; line-height: 1.5; }
+.dc-cta { display: inline-flex; align-items: center; gap: 8px; background: var(--indigo); color: #fff; border-radius: 40px; padding: 10px 18px; font-size: 12.5px; font-weight: 600; }
+
+.faq { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s; }
+.faq[open] { border-color: var(--indigo-soft); box-shadow: 0 8px 24px rgba(31,36,64,0.06); }
+.faq summary { display: flex; justify-content: space-between; align-items: center; gap: 14px; cursor: pointer; padding: 17px 18px; font-size: 14.5px; font-weight: 600; color: var(--ink); list-style: none; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq-plus { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; background: var(--sky); color: var(--indigo); display: flex; align-items: center; justify-content: center; transition: transform 0.25s var(--ease); }
+.faq[open] .faq-plus { transform: rotate(45deg); }
+.faq-ans { font-size: 13.5px; color: var(--ink2); line-height: 1.8; padding: 0 18px 17px; }
+
+.ilinks { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0; }
+.ilinks a { font-size: 12.5px; color: var(--indigo); border: 1px solid var(--border); border-radius: 30px; padding: 9px 15px; background: var(--white); display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
+.ilinks a:hover { background: var(--sky); }
+.ilinks a .ic { width: 15px; height: 15px; }
+
+.reviewer { display: flex; align-items: flex-start; gap: 13px; background: var(--sky); border: 1px solid var(--indigo-soft); border-radius: var(--radius); padding: 18px 20px; margin-top: 28px; }
+.reviewer .ic { color: var(--indigo); width: 22px; height: 22px; margin-top: 2px; }
+.reviewer .rv-tx { font-size: 12.5px; color: var(--ink2); line-height: 1.65; }
+.reviewer .rv-tx strong { color: var(--ink); font-weight: 700; }
+.disclaimer { font-size: 11.5px; color: var(--ink2); background: var(--warm); border: 1px solid var(--border); border-radius: 10px; padding: 15px 17px; margin-top: 16px; line-height: 1.75; }
+
+/* ── FOOTER ── */
+footer { background: var(--ink); padding: 40px 20px calc(96px + env(safe-area-inset-bottom)); color: rgba(255,255,255,0.5); }
+.footer-name { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.footer-sub { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+.footer-nav { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 22px 0; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); }
+.footer-nav a { color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 500; letter-spacing: 0.03em; transition: color 0.2s; }
+.footer-nav a:hover { color: #fff; }
+.footer-reg { font-size: 11.5px; color: rgba(255,255,255,0.4); line-height: 1.7; }
+.footer-reg p { margin-top: 8px; }
+
+@media (min-width: 768px) {
+  .sticky-bar { display: none; }
+  footer { padding-bottom: 46px; }
+}
+</style>
+{{JSON_LD_3}}
+</head>
+<body>
+
+<div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
+
+<!-- STICKY BAR -->
+<div class="sticky-bar">
+  <a href="tel:+919063490160" class="sb-call">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L16 13l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+    <span class="te-content">కాల్ చేయండి</span><span class="en-content">Call Now</span>
+  </a>
+  <a href="https://wa.me/919063490160?text=%E0%B0%A8%E0%B0%AE%E0%B0%B8%E0%B1%8D%E0%B0%95%E0%B0%BE%E0%B0%B0%E0%B0%82%20%E0%B0%A1%E0%B0%BE.%20%E0%B0%92%E0%B0%B5%E0%B1%88%E0%B0%B8%E0%B1%8D%2C%20%E0%B0%95%E0%B1%80%E0%B0%AE%E0%B1%8B%20%E0%B0%97%E0%B1%81%E0%B0%B0%E0%B0%BF%E0%B0%82%E0%B0%9A%E0%B0%BF%20%E0%B0%85%E0%B0%A1%E0%B0%97%E0%B0%BE%E0%B0%B2%E0%B0%BF." class="sb-wa">
+    <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <span class="te-content">వాట్సాప్</span><span class="en-content">WhatsApp</span>
+  </a>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="hdr-name">
+    Dr. Owais Mohammed
+    <small>Medical Oncologist · Hyderabad</small>
+  </div>
+  <div class="hdr-right">
+    <div class="lang-toggle">
+      <div class="lang-opt active" id="lang-te" onclick="setLang('te')">తె</div>
+      <div class="lang-opt" id="lang-en" onclick="setLang('en')">EN</div>
+    </div>
+    <div class="hamburger" id="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<!-- NAV DRAWER -->
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-head">
+    <span class="nd-title"><span class="te-content">మెనూ</span><span class="en-content">Menu</span></span>
+    <div class="nav-close" onclick="closeNav()">
+      <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/><path d="M9.5 20v-5h5v5"/></svg>
+      <span class="te-content">హోమ్</span><span class="en-content">Home</span>
+    </a>
+    <a href="chemotherapy.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5 20.5 15a3.5 3.5 0 0 1-5 5L4 8.5a3.5 3.5 0 0 1 5-5Z"/><path d="m9 9 6 6"/></svg>
+      <span class="te-content">కీమోథెరపీ</span><span class="en-content">Chemotherapy</span>
+    </a>
+    <a href="immunotherapy.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+      <span class="te-content">ఇమ్యునోథెరపీ</span><span class="en-content">Immunotherapy</span>
+    </a>
+    <a href="lung-cancer.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v8"/><path d="M9 7c0 3-.5 4-2.5 5.5C4.5 14 4 16 4 18a2 2 0 0 0 2.6 1.9C8 19.4 9 17.5 9 14.5V7Z"/><path d="M15 7c0 3 .5 4 2.5 5.5C19.5 14 20 16 20 18a2 2 0 0 1-2.6 1.9C16 19.4 15 17.5 15 14.5V7Z"/></svg>
+      <span class="te-content">లంగ్ క్యాన్సర్</span><span class="en-content">Lung Cancer</span>
+    </a>
+    <a href="understanding-cancer.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.7 2.3-2.7 4"/><path d="M12 17.5h.01"/></svg>
+      <span class="te-content">క్యాన్సర్‌ను అర్థం చేసుకోవడం</span><span class="en-content">Understanding Cancer</span>
+    </a>
+    <a href="second-opinion.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second Opinion</span>
+    </a>
+    <a href="about.html" onclick="closeNav()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>
+      <span class="te-content">నా గురించి</span><span class="en-content">About</span>
+    </a>
+  </nav>
+  <div class="nav-cta">
+    <a href="https://wa.me/919063490160" class="nav-wa">
+      <svg class="ic-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp
+    </a>
+    <a href="tel:+919063490160" class="nav-call">
+      <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L16 13l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+      <span class="te-content">కాల్</span><span class="en-content">Call</span>
+    </a>
+  </div>
+</div>
+
+<main class="wrap">
+{{MAIN_CONTENT}}
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-name">Dr. Owais Mohammed</div>
+  <div class="footer-sub">
+    Medical Oncologist<br>
+    MBBS (Osmania Medical College) · MD General Medicine (Kakatiya Medical College)<br>
+    CION Cancer Clinics, Plot No. 573/I, 1st Floor, Park View Building, Road No. 1, Banjara Hills, Hyderabad 500034
+  </div>
+  <div class="footer-nav">
+    <a href="index.html"><span class="te-content">హోమ్</span><span class="en-content">Home</span></a>
+    <a href="chemotherapy.html"><span class="te-content">కీమోథెరపీ</span><span class="en-content">Chemotherapy</span></a>
+    <a href="immunotherapy.html"><span class="te-content">ఇమ్యునోథెరపీ</span><span class="en-content">Immunotherapy</span></a>
+    <a href="lung-cancer.html"><span class="te-content">లంగ్ క్యాన్సర్</span><span class="en-content">Lung Cancer</span></a>
+    <a href="understanding-cancer.html"><span class="te-content">క్యాన్సర్‌ను అర్థం చేసుకోవడం</span><span class="en-content">Understanding Cancer</span></a>
+    <a href="second-opinion.html"><span class="te-content">సెకండ్ ఒపీనియన్</span><span class="en-content">Second Opinion</span></a>
+    <a href="about.html"><span class="te-content">నా గురించి</span><span class="en-content">About</span></a>
+  </div>
+  <div class="footer-reg">
+    <p><span class="te-content">ఈ వెబ్‌సైట్ సమాచార ప్రయోజనాల కోసం మాత్రమే, ఇది వైద్య సలహా కాదు. ఏ చికిత్స నిర్ణయం తీసుకునే ముందు మీ వైద్యుడిని సంప్రదించండి.</span><span class="en-content">This website is for informational purposes only and does not constitute medical advice. Consult your doctor before making any treatment decision.</span></p>
+    <p>© 2026 Dr. Owais Mohammed · CION Cancer Clinics · Hyderabad · +91 90634 90160</p>
+  </div>
+</footer>
+
+<script>
+function setLang(l) {
+  document.documentElement.lang = l;
+  document.getElementById('lang-te').classList.toggle('active', l === 'te');
+  document.getElementById('lang-en').classList.toggle('active', l === 'en');
+  try { localStorage.setItem('cion-lang', l); } catch(e){}
+}
+function toggleNav() {
+  var d = document.getElementById('navDrawer');
+  var h = document.getElementById('hamburger');
+  var o = document.getElementById('navOverlay');
+  var open = d.classList.toggle('open');
+  h.classList.toggle('open', open);
+  o.classList.toggle('show', open);
+}
+function closeNav() {
+  document.getElementById('navDrawer').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('show');
+}
+(function(){
+  try {
+    var saved = localStorage.getItem('cion-lang');
+    if (saved === 'en') setLang('en');
+  } catch(e){}
+})();
+
+/* ---- Lead form: hidden fields + submit (same contract as /api/submit.php) ---- */
+(function(){
+  function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);return v.toString(16);});}
+  function getCookie(n){var m=document.cookie.match('(?:^|; )'+n+'=([^;]*)');return m?decodeURIComponent(m[1]):'';}
+  function getParam(n){return new URLSearchParams(location.search).get(n)||'';}
+
+  var form=document.getElementById('cion-form'); if(!form) return;
+  var eventId=uuid();
+  form.event_id.value=eventId; form.meta_lead_id.value=eventId;
+  form.fbp.value=getCookie('_fbp'); form.fbc.value=getCookie('_fbc');
+  form.fbclid.value=getParam('fbclid'); form.gclid.value=getParam('gclid');
+  form.utm_source.value=getParam('utm_source'); form.utm_medium.value=getParam('utm_medium');
+  form.utm_campaign.value=getParam('utm_campaign'); form.utm_content.value=getParam('utm_content');
+  form.utm_term.value=getParam('utm_term'); form.submit_timestamp.value=Date.now();
+
+  var errBox=document.getElementById('cion-form-error');
+
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    if(errBox) errBox.classList.remove('active');
+    var btn=form.querySelector('.submit');
+    var label=btn.textContent;
+    btn.disabled=true; btn.textContent='Submitting...';
+    form.submit_timestamp.value=Date.now();
+    try{
+      var res=await fetch('/api/submit.php',{method:'POST',body:new FormData(form)});
+      var text=await res.text();
+      var data=null; try{ data=text?JSON.parse(text):null; }catch(_){}
+      if(res.ok && data && data.success){
+        form.style.display='none';
+        var okBox=document.getElementById('cion-form-success'); if(okBox) okBox.classList.add('active');
+      } else { throw new Error((data&&data.error)||'submit_failed'); }
+    }catch(err){
+      btn.disabled=false; btn.textContent=label;
+      if(errBox) errBox.classList.add('active');
+    }
+  });
+})();
+</script>
+</body>
+</html>
