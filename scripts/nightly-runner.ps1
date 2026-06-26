@@ -613,6 +613,16 @@ $specContent
 
     # Normalize: Claude sometimes returns a rich nested schema instead of the 7 flat fields.
     # Map from known alternative field paths to the flat fields the runner expects.
+
+    # Stringify any JSON-LD fields that Claude returned as objects instead of strings.
+    # ConvertFrom-Json parses nested objects; .ToString() would produce @{...} notation.
+    foreach ($ldField in @('jsonLd1','jsonLd2','jsonLd3')) {
+      $v = $claudeJson.$ldField
+      if ($v -and ($v -isnot [string])) {
+        $claudeJson | Add-Member -NotePropertyName $ldField -NotePropertyValue ($v | ConvertTo-Json -Depth 20 -Compress) -Force
+      }
+    }
+
     if (-not $claudeJson.title) {
       $t = ""
       if ($claudeJson.seo)  { $t = if ($claudeJson.seo.title_en) { $claudeJson.seo.title_en } else { $claudeJson.seo.title } }
@@ -771,6 +781,11 @@ $specContent
   # Always regenerate jsonLd3 from the definitive canonical so breadcrumb last-item always matches
   $forcedBreadcrumb = '{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://' + $domain + '/"},{"@type":"ListItem","position":2,"name":"' + $claudeJson.title + '","item":"' + $canonical + '"}]}'
   $claudeJson | Add-Member -NotePropertyName 'jsonLd3' -NotePropertyValue $forcedBreadcrumb -Force
+  # Clamp description to 155 chars (meta description limit)
+  $desc155 = $claudeJson.description
+  if ($desc155 -and $desc155.Length -gt 155) { $desc155 = $desc155.Substring(0, 152) + "..." }
+  $claudeJson | Add-Member -NotePropertyName 'description' -NotePropertyValue $desc155 -Force
+
   $ogImage   = "https://$domain/$portrait"
   $ogTitle   = "$($claudeJson.title) | $doctorName"
   $jld1 = '<script type="application/ld+json">' + $claudeJson.jsonLd1 + '</script>'
