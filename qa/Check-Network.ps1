@@ -44,7 +44,7 @@ foreach ($folder in $siteDomain.Keys) {
   if (-not (Test-Path $rbPath)) { $p0.Add("${folder}: robots.txt missing") }
   elseif (([IO.File]::ReadAllText($rbPath)) -notmatch [regex]::Escape("Sitemap: https://$domain/sitemap.xml")) { $p0.Add("$folder/robots.txt: missing/!wrong Sitemap line") }
 
-  Get-ChildItem $dir -Recurse -Filter *.html | ForEach-Object {
+  Get-ChildItem $dir -Recurse -Filter *.html | Where-Object { $_.Name -ne '_template.html' } | ForEach-Object {
     $rel = $_.FullName.Replace($root + '\','').Replace('\','/')
     $t = [IO.File]::ReadAllText($_.FullName)
     $isHome = ($_.Name -eq 'index.html')
@@ -64,8 +64,8 @@ foreach ($folder in $siteDomain.Keys) {
     $so = One $t '<span\b'; $sc = One $t '</span>'; if ($so -ne $sc) { $p0.Add("${rel}: span imbalance $so/$sc") }
     if ($t -match 'class="(status|now|redflag)"') { $p1.Add("${rel}: legacy badge pill (prefer prose)") }
 
-    if ($t -match '/api/submit\.php') { if ($t -notmatch 'name="concern"') { $p0.Add("${rel}: form missing name=concern") } }
-    else { if (-not $isHome) { $p1.Add("${rel}: no /api/submit.php form") } }
+    if ($t -match 'id="cion-form"') { if ($t -notmatch 'name="concern"') { $p0.Add("${rel}: form missing name=concern") } }
+    elseif ($t -match '/api/submit\.php') { $p1.Add("${rel}: submit.php JS present but no cion-form element") }
 
     if ($t -notmatch '(?i)<meta charset="?utf-8') { $p0.Add("${rel}: no <meta charset utf-8>") }
     if ($t -notmatch '<html lang="en"') { $p0.Add("${rel}: <html lang=en> missing (English-primary, config 07)") }

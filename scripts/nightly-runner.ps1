@@ -499,6 +499,9 @@ mainHtml must NOT contain: <style>, <script>, <head>, <nav>, <footer>, or doctor
 
   # 2d. Fill template placeholders and write file
   $canonical = "https://$domain/$fileName"
+  # Always regenerate jsonLd3 from the definitive canonical so breadcrumb last-item always matches
+  $forcedBreadcrumb = '{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://' + $domain + '/"},{"@type":"ListItem","position":2,"name":"' + $claudeJson.title + '","item":"' + $canonical + '"}]}'
+  $claudeJson | Add-Member -NotePropertyName 'jsonLd3' -NotePropertyValue $forcedBreadcrumb -Force
   $ogImage   = "https://$domain/$portrait"
   $ogTitle   = "$($claudeJson.title) | $doctorName"
   $jld1 = '<script type="application/ld+json">' + $claudeJson.jsonLd1 + '</script>'
