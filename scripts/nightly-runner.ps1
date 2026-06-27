@@ -781,9 +781,16 @@ $specContent
   # Always regenerate jsonLd3 from the definitive canonical so breadcrumb last-item always matches
   $forcedBreadcrumb = '{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://' + $domain + '/"},{"@type":"ListItem","position":2,"name":"' + $claudeJson.title + '","item":"' + $canonical + '"}]}'
   $claudeJson | Add-Member -NotePropertyName 'jsonLd3' -NotePropertyValue $forcedBreadcrumb -Force
-  # Clamp description to 155 chars (meta description limit)
+  # Sanitize and clamp description: meta descriptions must be ASCII-safe (search engines display
+  # them as plain text). Replace em/en dashes with hyphens; strip any remaining non-ASCII.
+  # Also covers garbled multi-byte sequences if the em-dash was captured via CP1252.
   $desc155 = $claudeJson.description
-  if ($desc155 -and $desc155.Length -gt 155) { $desc155 = $desc155.Substring(0, 152) + "..." }
+  if ($desc155) {
+    $desc155 = $desc155 -replace [char]0x2014,'-' -replace [char]0x2013,'-'  # em-dash, en-dash
+    $desc155 = $desc155 -replace [char]0xE2,'' -replace [char]0x20AC,'' -replace [char]0x201C,'' -replace [char]0x201D,''  # CP1252-corrupted em-dash chars
+    $desc155 = ($desc155 -replace '[^\x20-\x7E]','').Trim() -replace '\s{2,}',' '
+    if ($desc155.Length -gt 155) { $desc155 = $desc155.Substring(0, 152) + '...' }
+  }
   $claudeJson | Add-Member -NotePropertyName 'description' -NotePropertyValue $desc155 -Force
 
   $ogImage   = "https://$domain/$portrait"
